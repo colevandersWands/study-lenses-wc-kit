@@ -9,3 +9,4 @@ import './reverse/register.js';
 import './uppercase/register.js';
 import './lowercase/register.js';
 import './jsx-demo/register.js';
+import './loop-guard/register.js';

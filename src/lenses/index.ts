@@ -9,6 +9,8 @@ import reverse from './reverse/index.js';
 import uppercase from './uppercase/index.js';
 import lowercase from './lowercase/index.js';
 import jsxDemo from './jsx-demo/index.js';
+import format from './format/index.js';
+import loopGuard from './loop-guard/index.js';
 
 // Generate mutable export object using names as keys (compile-time deterministic)
 // Note: Removed 'as const' to allow runtime mutations from study.load()
@@ -17,4 +19,6 @@ export default {
   [uppercase.name]: uppercase, // 'uppercase': uppercaseObj
   [lowercase.name]: lowercase, // 'lowercase': lowercaseObj
   [jsxDemo.name]: jsxDemo, // 'jsx-demo': jsxDemoObj
+  [format.name]: format, // 'format': formatObj
+  [loopGuard.name]: loopGuard, // 'loop-guard': loopGuardObj
 };
