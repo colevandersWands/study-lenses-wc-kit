@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snippet Component Test</title>
+    <style>
+        body { 
+            font-family: system-ui, sans-serif; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+        .test-section.pass {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+        .test-section.fail {
+            border-color: #dc3545;
+            background: #fff8f8;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .checklist {
+            margin: 10px 0;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .checklist li {
+            margin: 5px 0;
+        }
+        .expected {
+            color: #666;
+            font-style: italic;
+            background: #e9ecef;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        h1 { color: #007acc; }
+        h2 { color: #333; margin-top: 0; }
+        .snippet-display {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        sl-snippet {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Snippet Component Test</h1>
+    <p>Testing the sl-snippet web component for code loading and metadata extraction.</p>
+    
+    <!-- Test 1: Inline code with code attribute -->
+    <div class="test-section">
+        <h2>Test 1: Inline Code via Code Attribute</h2>
+        <div class="expected">
+            <strong>Expected:</strong> Should display inline code passed via code attribute
+        </div>
+        
+        <div class="snippet-display">
+            <sl-snippet code="console.log('Hello from code attribute');"></sl-snippet>
+        </div>
+        
+        <div class="checklist">
+            <strong>Manual Verification Checklist:</strong>
+            <ul>
+                <li>☐ Code is displayed</li>
+                <li>☐ Formatting preserved (pre-formatted text)</li>
+                <li>☐ Language detected as 'js' (check data attributes)</li>
+                <li>☐ Test flag is false (check data attributes)</li>
+                <li>☐ No console errors</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test 2: File loading with src attribute -->
+    <div class="test-section">
+        <h2>Test 2: File Loading via Src Attribute</h2>
+        <div class="expected">
+            <strong>Expected:</strong> Should attempt to load file from src path (may show stub warning)
+        </div>
+        
+        <div class="snippet-display">
+            <sl-snippet src="./example.js"></sl-snippet>
+        </div>
+        
+        <div class="snippet-display">
+            <sl-snippet src="../examples/content/module.mjs"></sl-snippet>
+        </div>
+        
+        <div class="checklist">
+            <strong>Manual Verification Checklist:</strong>
+            <ul>
+                <li>☐ Attempts to load file (check console for [STUB] warning)</li>
+                <li>☐ Shows stub content or actual file if available</li>
+                <li>☐ Language detected from file extension</li>
+                <li>☐ Handles .js and .mjs extensions correctly</li>
+                <li>☐ Error handling if file doesn't exist</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test 3: Language attribute -->
+    <div class="test-section">
+        <h2>Test 3: Language Detection and Override</h2>
+        <div class="expected">
+            <strong>Expected:</strong> Should use lang attribute to override language detection
+        </div>
+        
+        <h3>JavaScript (default):</h3>
+        <div class="snippet-display">
+            <sl-snippet code="const x = 42;"></sl-snippet>
+        </div>
+        
+        <h3>Python (explicit):</h3>
+        <div class="snippet-display">
+            <sl-snippet code="def hello(): return 'world'" lang="python"></sl-snippet>
+        </div>
+        
+        <h3>TypeScript file:</h3>
+        <div class="snippet-display">
+            <sl-snippet src="./types.ts"></sl-snippet>
+        </div>
+        
+        <div class="checklist">
+            <strong>Manual Verification Checklist:</strong>
+            <ul>
+                <li>☐ Default language is 'js'</li>
+                <li>☐ Lang attribute overrides detection</li>
+                <li>☐ File extension determines language for src</li>
+                <li>☐ data-lang attribute reflects correct language</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test 4: Test flag detection -->
+    <div class="test-section">
+        <h2>Test 4: Test Flag Detection</h2>
+        <div class="expected">
+            <strong>Expected:</strong> Should detect test files and set test flag accordingly
+        </div>
+        
+        <h3>Regular file:</h3>
+        <div class="snippet-display">
+            <sl-snippet src="./regular.js"></sl-snippet>
+        </div>
+        
+        <h3>Test file (.test.):</h3>
+        <div class="snippet-display">
+            <sl-snippet src="./component.test.js"></sl-snippet>
+        </div>
+        
+        <h3>Spec file (.spec.):</h3>
+        <div class="snippet-display">
+            <sl-snippet src="./utils.spec.ts"></sl-snippet>
+        </div>
+        
+        <h3>Explicit test flag:</h3>
+        <div class="snippet-display">
+            <sl-snippet code="describe('test', () => {});" test></sl-snippet>
+        </div>
+        
+        <div class="checklist">
+            <strong>Manual Verification Checklist:</strong>
+            <ul>
+                <li>☐ Regular files have test=false</li>
+                <li>☐ .test. files have test=true</li>
+                <li>☐ .spec. files have test=true</li>
+                <li>☐ Test attribute forces test=true</li>
+                <li>☐ data-test attribute reflects correct value</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test 5: TextContent fallback -->
+    <div class="test-section">
+        <h2>Test 5: TextContent as Code Source</h2>
+        <div class="expected">
+            <strong>Expected:</strong> Should use element's text content when no code or src attribute
+        </div>
+        
+        <div class="snippet-display">
+            <sl-snippet>
+function greet(name) {
+    return `Hello, ${name}!`;
+}
+
+greet('World');
+            </sl-snippet>
+        </div>
+        
+        <div class="checklist">
+            <strong>Manual Verification Checklist:</strong>
+            <ul>
+                <li>☐ TextContent used as code source</li>
+                <li>☐ Whitespace and formatting preserved</li>
+                <li>☐ Multi-line code displayed correctly</li>
+                <li>☐ No duplication of content</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test 6: Code precedence -->
+    <div class="test-section">
+        <h2>Test 6: Attribute Precedence</h2>
+        <div class="expected">
+            <strong>Expected:</strong> Code attribute should take precedence over src attribute
+        </div>
+        
+        <div class="snippet-display">
+            <sl-snippet 
+                code="console.log('from code attribute');" 
+                src="./file.js">
+                This textContent should be ignored
+            </sl-snippet>
+        </div>
+        
+        <div class="checklist">
+            <strong>Manual Verification Checklist:</strong>
+            <ul>
+                <li>☐ Shows code attribute content</li>
+                <li>☐ Ignores src attribute</li>
+                <li>☐ Ignores textContent</li>
+                <li>☐ Precedence: code > src > textContent</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test 7: Empty and error cases -->
+    <div class="test-section">
+        <h2>Test 7: Empty and Error Cases</h2>
+        <div class="expected">
+            <strong>Expected:</strong> Should handle empty content and errors gracefully
+        </div>
+        
+        <h3>Empty snippet:</h3>
+        <div class="snippet-display">
+            <sl-snippet></sl-snippet>
+        </div>
+        
+        <h3>Empty code attribute:</h3>
+        <div class="snippet-display">
+            <sl-snippet code=""></sl-snippet>
+        </div>
+        
+        <h3>Invalid file path:</h3>
+        <div class="snippet-display">
+            <sl-snippet src="/non/existent/path.js"></sl-snippet>
+        </div>
+        
+        <div class="checklist">
+            <strong>Manual Verification Checklist:</strong>
+            <ul>
+                <li>☐ Empty snippets handled without errors</li>
+                <li>☐ Shows appropriate placeholder or empty state</li>
+                <li>☐ File loading errors shown appropriately</li>
+                <li>☐ Console shows helpful error messages</li>
+                <li>☐ Component doesn't break page</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test 8: Dynamic updates -->
+    <div class="test-section">
+        <h2>Test 8: Dynamic Attribute Updates</h2>
+        <div class="expected">
+            <strong>Expected:</strong> Should react to attribute changes
+        </div>
+        
+        <div class="snippet-display">
+            <sl-snippet id="dynamic-snippet" code="Initial code"></sl-snippet>
+        </div>
+        
+        <button onclick="updateSnippet()">Update Code</button>
+        <button onclick="changeLanguage()">Change Language</button>
+        <button onclick="toggleTest()">Toggle Test</button>
+        
+        <script>
+            function updateSnippet() {
+                const snippet = document.getElementById('dynamic-snippet');
+                snippet.setAttribute('code', 'Updated code: ' + new Date().toISOString());
+            }
+            
+            function changeLanguage() {
+                const snippet = document.getElementById('dynamic-snippet');
+                const currentLang = snippet.getAttribute('lang') || 'js';
+                const newLang = currentLang === 'js' ? 'python' : 'js';
+                snippet.setAttribute('lang', newLang);
+            }
+            
+            function toggleTest() {
+                const snippet = document.getElementById('dynamic-snippet');
+                if (snippet.hasAttribute('test')) {
+                    snippet.removeAttribute('test');
+                } else {
+                    snippet.setAttribute('test', '');
+                }
+            }
+        </script>
+        
+        <div class="checklist">
+            <strong>Manual Verification Checklist:</strong>
+            <ul>
+                <li>☐ Updates when code attribute changes</li>
+                <li>☐ Language attribute updates reflected</li>
+                <li>☐ Test flag toggles correctly</li>
+                <li>☐ Re-renders without flickering</li>
+                <li>☐ No memory leaks or errors</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test 9: Complex code examples -->
+    <div class="test-section">
+        <h2>Test 9: Complex Code Display</h2>
+        <div class="expected">
+            <strong>Expected:</strong> Should handle complex, multi-line code with various syntax
+        </div>
+        
+        <div class="snippet-display">
+            <sl-snippet>
+class EventEmitter {
+    constructor() {
+        this.events = {};
+    }
+    
+    on(event, listener) {
+        if (!this.events[event]) {
+            this.events[event] = [];
+        }
+        this.events[event].push(listener);
+    }
+    
+    emit(event, ...args) {
+        if (!this.events[event]) return;
+        this.events[event].forEach(listener => {
+            listener.apply(this, args);
+        });
+    }
+    
+    off(event, listenerToRemove) {
+        if (!this.events[event]) return;
+        this.events[event] = this.events[event].filter(
+            listener => listener !== listenerToRemove
+        );
+    }
+}
+
+// Usage
+const emitter = new EventEmitter();
+emitter.on('data', (value) => console.log('Received:', value));
+emitter.emit('data', 42);
+            </sl-snippet>
+        </div>
+        
+        <div class="checklist">
+            <strong>Manual Verification Checklist:</strong>
+            <ul>
+                <li>☐ Class definition displayed correctly</li>
+                <li>☐ Indentation preserved</li>
+                <li>☐ Comments visible</li>
+                <li>☐ Long lines handled (horizontal scroll if needed)</li>
+                <li>☐ Overall readability maintained</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Test 10: Integration test -->
+    <div class="test-section">
+        <h2>Test 10: Integration with Study Lenses</h2>
+        <div class="expected">
+            <strong>Expected:</strong> Should work as child of study-lenses and provide code to lenses
+        </div>
+        
+        <study-lenses>
+            <sl-snippet code="const integration = 'test';"></sl-snippet>
+            <sl-lens-uppercase></sl-lens-uppercase>
+            <sl-lens-reverse></sl-lens-reverse>
+        </study-lenses>
+        
+        <div class="checklist">
+            <strong>Manual Verification Checklist:</strong>
+            <ul>
+                <li>☐ Snippet provides code to sibling lenses</li>
+                <li>☐ Code flows correctly through study panel</li>
+                <li>☐ All components render properly</li>
+                <li>☐ No conflicts or errors</li>
+                <li>☐ Layout works as expected</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Import and register components -->
+    <script type="module">
+        // Register all components needed for testing
+        import './register.js';
+        import '../lenses/uppercase/register.js';
+        import '../lenses/reverse/register.js';
+        import '../study/register.js';
+        
+        console.log('✅ Snippet component test loaded successfully');
+        
+        // Add testing helpers
+        window.testSnippet = {
+            // Get snippet data from element
+            getSnippetData(element) {
+                if (!element || !element.snippet) return null;
+                return element.snippet;
+            },
+            
+            // Test the parse function directly
+            async testParse(pathOrCode, options = {}) {
+                const module = await import('./parse.js');
+                return module.parse(pathOrCode, options);
+            },
+            
+            // Validate all snippets on page
+            validateAll() {
+                const snippets = document.querySelectorAll('sl-snippet');
+                console.log(`Found ${snippets.length} snippet components`);
+                
+                snippets.forEach((el, i) => {
+                    const data = this.getSnippetData(el);
+                    console.log(`Snippet ${i + 1}:`, {
+                        hasCode: !!data?.code,
+                        lang: data?.lang,
+                        test: data?.test,
+                        codeLength: data?.code?.length
+                    });
+                });
+            }
+        };
+        
+        // Run validation after load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🔍 Validating snippet components...');
+            
+            setTimeout(() => {
+                window.testSnippet.validateAll();
+                
+                // Test parse function
+                console.log('🧪 Testing parse function...');
+                window.testSnippet.testParse('console.log("test");').then(result => {
+                    console.log('✅ Parse inline code:', result);
+                });
+                
+                window.testSnippet.testParse('./test.js').then(result => {
+                    console.log('✅ Parse file path:', result);
+                });
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

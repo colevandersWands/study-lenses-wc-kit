@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lowercase Lens Component Test</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        background: white;
+      }
+      .test-section.pass {
+        border-color: #28a745;
+        background: #f8fff9;
+      }
+      .test-section.fail {
+        border-color: #dc3545;
+        background: #fff8f8;
+      }
+      pre {
+        background: #f5f5f5;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+      .checklist {
+        margin: 10px 0;
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+      }
+      .checklist li {
+        margin: 5px 0;
+      }
+      .expected {
+        color: #666;
+        font-style: italic;
+        background: #e9ecef;
+        padding: 8px;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+      h1 {
+        color: #007acc;
+      }
+      h2 {
+        color: #333;
+        margin-top: 0;
+      }
+      .transform-output {
+        border: 1px solid #ddd;
+        margin: 10px 0;
+        border-radius: 4px;
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧪 Lowercase Lens Component Test</h1>
+    <p>Testing the sl-lens-lowercase web component that converts code to lowercase.</p>
+
+    <!-- Test 1: Basic lowercase transformation -->
+    <div class="test-section">
+      <h2>Test 1: Basic Lowercase Transformation</h2>
+      <div class="expected">
+        <strong>Expected:</strong> Should convert "HELLO WORLD" to "hello world"
+      </div>
+
+      <div class="transform-output">
+        <sl-lens-lowercase code="HELLO WORLD"></sl-lens-lowercase>
+      </div>
+
+      <div class="checklist">
+        <strong>Manual Verification Checklist:</strong>
+        <ul>
+          <li>☐ Shows "hello world" (all lowercase)</li>
+          <li>☐ Original case is completely converted</li>
+          <li>☐ No console errors</li>
+          <li>☐ Component renders immediately</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Test 2: Mixed case text -->
+    <div class="test-section">
+      <h2>Test 2: Mixed Case Text</h2>
+      <div class="expected">
+        <strong>Expected:</strong> Should handle mixed case and convert all to lowercase
+      </div>
+
+      <div class="transform-output">
+        <sl-lens-lowercase code="HeLLo WoRLd! ThIs Is MiXeD cAsE."></sl-lens-lowercase>
+      </div>
+
+      <div class="checklist">
+        <strong>Manual Verification Checklist:</strong>
+        <ul>
+          <li>☐ All letters converted to lowercase</li>
+          <li>☐ Punctuation and spaces preserved</li>
+          <li>☐ Special characters remain unchanged</li>
+          <li>☐ Output is readable and correct</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Test 3: JavaScript code transformation -->
+    <div class="test-section">
+      <h2>Test 3: JavaScript Code Transformation</h2>
+      <div class="expected">
+        <strong>Expected:</strong> Should convert JavaScript keywords and identifiers to lowercase
+      </div>
+
+      <div class="transform-output">
+        <sl-lens-lowercase
+          code="FUNCTION TEST() { CONST MESSAGE = 'HELLO'; RETURN MESSAGE.TOUPPERCASE(); }"
+        ></sl-lens-lowercase>
+      </div>
+
+      <div class="checklist">
+        <strong>Manual Verification Checklist:</strong>
+        <ul>
+          <li>☐ All keywords converted: function, const, return</li>
+          <li>☐ Identifier names converted: test, message</li>
+          <li>☐ String content converted: 'hello'</li>
+          <li>☐ Method names converted: touppercase()</li>
+          <li>☐ Code structure preserved</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Test 4: File loading -->
+    <div class="test-section">
+      <h2>Test 4: File Path Loading</h2>
+      <div class="expected">
+        <strong>Expected:</strong> Should load file content and convert to lowercase
+      </div>
+
+      <div class="transform-output">
+        <sl-lens-lowercase code="../examples/content/greet.js"></sl-lens-lowercase>
+      </div>
+
+      <div class="checklist">
+        <strong>Manual Verification Checklist:</strong>
+        <ul>
+          <li>☐ File loads successfully (or shows appropriate error)</li>
+          <li>☐ Loaded content is converted to lowercase</li>
+          <li>☐ File path is resolved correctly</li>
+          <li>☐ Loading state handled appropriately</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Test 5: Empty and edge cases -->
+    <div class="test-section">
+      <h2>Test 5: Empty and Edge Cases</h2>
+      <div class="expected">
+        <strong>Expected:</strong> Should handle empty strings and special cases gracefully
+      </div>
+
+      <h3>Empty Code:</h3>
+      <div class="transform-output">
+        <sl-lens-lowercase code=""></sl-lens-lowercase>
+      </div>
+
+      <h3>Numbers and Symbols Only:</h3>
+      <div class="transform-output">
+        <sl-lens-lowercase code="123456 !@#$%^&*() []{}"></sl-lens-lowercase>
+      </div>
+
+      <h3>Unicode Characters:</h3>
+      <div class="transform-output">
+        <sl-lens-lowercase code="HÉLLO WÖRLD 🚀 ÉMOJIS"></sl-lens-lowercase>
+      </div>
+
+      <div class="checklist">
+        <strong>Manual Verification Checklist:</strong>
+        <ul>
+          <li>☐ Empty code handled without errors</li>
+          <li>☐ Numbers and symbols remain unchanged</li>
+          <li>☐ Unicode characters converted correctly</li>
+          <li>☐ Emoji characters preserved</li>
+          <li>☐ No visual glitches or layout issues</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Test 6: Configuration attributes -->
+    <div class="test-section">
+      <h2>Test 6: Configuration and Attributes</h2>
+      <div class="expected">
+        <strong>Expected:</strong> Should accept various attributes without breaking
+      </div>
+
+      <h3>With Lang Attribute:</h3>
+      <div class="transform-output">
+        <sl-lens-lowercase code="PYTHON_CODE = 'HELLO'" lang="python"></sl-lens-lowercase>
+      </div>
+
+      <h3>With Test Attribute:</h3>
+      <div class="transform-output">
+        <sl-lens-lowercase
+          code="DESCRIBE('TEST', () => { EXPECT(TRUE).TOBE(TRUE); });"
+          test
+        ></sl-lens-lowercase>
+      </div>
+
+      <div class="checklist">
+        <strong>Manual Verification Checklist:</strong>
+        <ul>
+          <li>☐ Lang attribute doesn't interfere with transformation</li>
+          <li>☐ Test attribute is handled gracefully</li>
+          <li>☐ Additional attributes don't cause errors</li>
+          <li>☐ Core functionality remains unchanged</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Test 7: TextContent fallback -->
+    <div class="test-section">
+      <h2>Test 7: TextContent as Code Source</h2>
+      <div class="expected">
+        <strong>Expected:</strong> Should use element textContent when no code attribute
+      </div>
+
+      <div class="transform-output">
+        <sl-lens-lowercase>CONSOLE.LOG("HELLO FROM TEXTCONTENT");</sl-lens-lowercase>
+      </div>
+
+      <div class="checklist">
+        <strong>Manual Verification Checklist:</strong>
+        <ul>
+          <li>☐ TextContent used as code source</li>
+          <li>☐ Content converted to lowercase</li>
+          <li>☐ Fallback mechanism works correctly</li>
+          <li>☐ No duplication of content</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Test 8: Multiline code -->
+    <div class="test-section">
+      <h2>Test 8: Multiline Code Transformation</h2>
+      <div class="expected">
+        <strong>Expected:</strong> Should preserve line breaks while converting case
+      </div>
+
+      <div class="transform-output">
+        <sl-lens-lowercase
+          code="FUNCTION FIBONACCI(N) {
+  IF (N <= 1) RETURN N;
+  RETURN FIBONACCI(N - 1) + FIBONACCI(N - 2);
+}
+
+CONSOLE.LOG(FIBONACCI(10));"
+        ></sl-lens-lowercase>
+      </div>
+
+      <div class="checklist">
+        <strong>Manual Verification Checklist:</strong>
+        <ul>
+          <li>☐ All lines converted to lowercase</li>
+          <li>☐ Line breaks preserved</li>
+          <li>☐ Indentation maintained</li>
+          <li>☐ Code structure remains readable</li>
+          <li>☐ Multi-line display works correctly</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Test 9: Integration with other components -->
+    <div class="test-section">
+      <h2>Test 9: Integration in Study Panel</h2>
+      <div class="expected">
+        <strong>Expected:</strong> Should work correctly within study-lenses component
+      </div>
+
+      <study-lenses code="CONST GREETING = 'HELLO WORLD'; CONSOLE.LOG(GREETING);">
+        <sl-lens-lowercase></sl-lens-lowercase>
+        <sl-lens-reverse></sl-lens-reverse>
+      </study-lenses>
+
+      <div class="checklist">
+        <strong>Manual Verification Checklist:</strong>
+        <ul>
+          <li>☐ Receives code from parent study-lenses</li>
+          <li>☐ Transforms code correctly in panel mode</li>
+          <li>☐ Other lenses also receive same original code</li>
+          <li>☐ No interference between components</li>
+          <li>☐ Layout and spacing work properly</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Import and register components -->
+    <script type="module">
+      // Register all components needed for testing
+      import './register.js';
+      import '../reverse/register.js';
+      import '../../study/register.js';
+
+      console.log('✅ Lowercase lens component test loaded successfully');
+
+      // Add interactive testing helpers
+      window.testLowercaseLens = {
+        // Helper function to test lens directly
+        testFunction(code, config = {}) {
+          const { lens } = import('./lens.js');
+          const { config: configFactory } = import('./config.js');
+
+          return lens.then((lensFunc) => {
+            const snippet = { code, lang: 'js', test: false };
+            return lensFunc.lens(snippet, configFactory(config));
+          });
+        },
+
+        // Test various code samples
+        testSamples() {
+          const samples = [
+            'SIMPLE TEXT',
+            'FUNCTION TEST() { RETURN "HELLO"; }',
+            'MIXED cAsE tExT',
+            '123 NUMBERS AND SYMBOLS !@#',
+          ];
+
+          samples.forEach((sample, i) => {
+            console.log(`Sample ${i + 1}: "${sample}"`);
+            this.testFunction(sample).then((result) => {
+              console.log(`Result ${i + 1}: "${result.snippet.code}"`);
+            });
+          });
+        },
+      };
+
+      // Validate components after page load
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('🔍 Performing lowercase component validation...');
+
+        setTimeout(() => {
+          const lowercaseElements = document.querySelectorAll('sl-lens-lowercase');
+          console.log(`Found ${lowercaseElements.length} lowercase components`);
+
+          let allWorking = true;
+          lowercaseElements.forEach((el, i) => {
+            const hasContent = el.textContent.trim().length > 0;
+            if (!hasContent) {
+              console.warn(`⚠️  Lowercase component ${i + 1} appears to have no content`);
+              allWorking = false;
+            } else {
+              const content = el.textContent.trim();
+              const hasUppercase = /[A-Z]/.test(content);
+              if (hasUppercase) {
+                console.warn(`⚠️  Lowercase component ${i + 1} still contains uppercase letters`);
+                allWorking = false;
+              }
+            }
+          });
+
+          if (allWorking) {
+            console.log('✅ All lowercase components appear to be working correctly');
+          } else {
+            console.log('❌ Some lowercase components may not be working correctly');
+          }
+
+          // Test the function directly
+          console.log('🧪 Testing direct lens import...');
+          window.testLowercaseLens
+            .testFunction('HELLO WORLD')
+            .then((result) => {
+              console.log('✅ Direct lens function test passed:', result.snippet.code);
+            })
+            .catch((err) => {
+              console.error('❌ Direct lens function test failed:', err);
+            });
+        }, 1500); // Wait for components to initialize
+      });
+    </script>
+  </body>
+</html>

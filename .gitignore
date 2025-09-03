@@ -1,0 +1,45 @@
+# Build outputs
+dist/
+*.js
+*.js.map  
+*.d.ts
+*.d.ts.map
+
+# Dependencies
+node_modules/
+
+# Development
+.vscode/
+.idea/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+html/
+
+# Cache directories
+.eslintcache
+*.tsbuildinfo
+.cache/
+.temp/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# Package manager lock files (optional - uncomment if not tracking)
+# package-lock.json
+# yarn.lock

@@ -1,0 +1,16 @@
+/**
+ * Snippet Utilities Barrel Export
+ * Both lens function and view component with shared signature
+ */
+
+import parse from './parse.js';
+import view from './view.js';
+
+// Re-export types for TypeScript users
+export type { SnippetOptions } from './parse.js';
+
+// Default export only (generic object interface)
+export default {
+  parse,
+  view,
+};
