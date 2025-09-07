@@ -30,7 +30,7 @@ import type {
  * @param lenses Array of lens specifications (functions, objects, or [item, config] tuples)
  * @returns Final result with snippet and optional ui
  */
-export const pipe = async (snippet: Snippet, lenses: LensSpec[] = []): Promise<StudyOutput> => {
+export const pipeLenses = async (snippet: Snippet, lenses: LensSpec[] = []): Promise<StudyOutput> => {
   let currentSnippet = { ...snippet };
 
   for (const lensSpec of lenses) {
@@ -152,4 +152,4 @@ export const validatePipelineInput = (snippet: Snippet, lenses: LensSpec[]): str
 };
 
 // Default export for convenience
-export default pipe;
+export default pipeLenses;

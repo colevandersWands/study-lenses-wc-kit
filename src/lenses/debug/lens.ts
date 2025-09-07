@@ -1,12 +1,12 @@
 /**
- * Debugger Lens Function
+ * Debug Lens Function
  * Transform lens that wraps code with language-appropriate debugger statements
  */
 
 import type { Snippet, LensOutput } from '../../types.js';
 import _config from './config.js';
 
-interface DebuggerConfig {
+interface DebugConfig {
   enabled?: boolean;
   customPrefix?: string;
   customSuffix?: string;
@@ -20,7 +20,7 @@ interface DebuggerConfig {
  * @param config - Configuration options
  * @returns Wrapped code with debugger statements
  */
-const wrapWithDebugger = (code: string, lang: string, config: DebuggerConfig): string => {
+const wrapWithDebugger = (code: string, lang: string, config: DebugConfig): string => {
   const spacing = '\n'.repeat(config.lineSpacing || 3);
   
   // Handle custom prefix/suffix if provided

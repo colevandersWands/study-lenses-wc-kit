@@ -22,6 +22,7 @@ export type { SnippetOptions } from './snippet/index.js';
 import lenses from './lenses/index.js';
 import study from './study/index.js';
 import snippet from './snippet/index.js';
+import ui from './ui/index.js';
 
 // Main export - everything users need in one organized object
 export const studyLenses = {
@@ -33,6 +34,9 @@ export const studyLenses = {
 
   // Snippet utilities (top-level - not a lens)
   snippet,
+
+  // UI components for visual interfaces
+  ui,
 };
 
 // Default export for convenience

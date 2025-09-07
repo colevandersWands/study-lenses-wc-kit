@@ -1,8 +1,8 @@
-# Debugger Lens Technical Documentation
+# Debug Lens Technical Documentation
 
 ## Architecture Overview
 
-The Debugger Lens is implemented as a **transform-only lens** that modifies code snippets by wrapping them with language-appropriate debugging statements. It follows the Study Lenses WC-Kit functional/procedural architecture patterns.
+The Debug Lens is implemented as a **transform-only lens** that modifies code snippets by wrapping them with language-appropriate debugging statements. It follows the Study Lenses WC-Kit functional/procedural architecture patterns.
 
 ## Core Components
 
@@ -252,12 +252,12 @@ await pipe(snippet, [debugger.lens, jsxDemo]);
 
 ```html
 <!-- Declarative usage -->
-<sl-lens-debugger code="console.log('test')"></sl-lens-debugger>
+<sl-lens-debug code="console.log('test')"></sl-lens-debug>
 
 <!-- Programmatic usage -->
 <script>
   import { register } from './debugger/wc.js';
-  const tagName = register(); // Returns 'sl-lens-debugger'
+  const tagName = register(); // Returns 'sl-lens-debug'
   
   const element = document.createElement(tagName);
   element.setAttribute('code', 'console.log("dynamic")');
@@ -282,7 +282,7 @@ const customConfig = debugger.config({
 const result2 = debugger.lens(snippet, customConfig);
 
 // Web component configuration
-document.querySelector('sl-lens-debugger').setAttribute('config', 
+document.querySelector('sl-lens-debug').setAttribute('config', 
   JSON.stringify({ enabled: false })
 );
 ```
@@ -328,7 +328,7 @@ const loggingWrapper = (code: string, logLevel: string) => {
 
 ```typescript
 // Extended configuration interface
-interface ExtendedDebuggerConfig extends DebuggerConfig {
+interface ExtendedDebugConfig extends DebugConfig {
   logLevel?: 'debug' | 'info' | 'warn';
   conditional?: string;
   timestamp?: boolean;
@@ -374,7 +374,7 @@ debugger;
 
 **After:**
 ```html
-<sl-lens-debugger code="console.log('Hello, World!')"></sl-lens-debugger>
+<sl-lens-debug code="console.log('Hello, World!')"></sl-lens-debug>
 ```
 
 ### From Language-Specific Tools
@@ -389,15 +389,15 @@ import pdb; pdb.set_trace()
 
 ```html
 <!-- After -->
-<sl-lens-debugger code="print('Hello, World!')" lang="python"></sl-lens-debugger>
+<sl-lens-debug code="print('Hello, World!')" lang="python"></sl-lens-debug>
 ```
 
 **Java: From IDE breakpoints to portable comments:**
 ```html
 <!-- Generates portable breakpoint comments -->
-<sl-lens-debugger 
+<sl-lens-debug 
   code="System.out.println('Hello, World!');" 
-  lang="java"></sl-lens-debugger>
+  lang="java"></sl-lens-debug>
 ```
 
 This documentation provides comprehensive technical details for maintainers, contributors, and advanced users of the Debugger Lens.

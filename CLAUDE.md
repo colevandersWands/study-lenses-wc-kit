@@ -42,8 +42,10 @@ The core innovation of Study Lenses WC-Kit is the smart pipeline that processes 
 
 #### Pipeline Implementation (`study/pipe.ts`)
 
+**Main Function:** `pipeLenses` (renamed from `pipe`)
+
 ```typescript
-export const pipe = async (snippet: Snippet, lenses: LensSpec[]): Promise<LensOutput> => {
+export const pipeLenses = async (snippet: Snippet, lenses: LensSpec[]): Promise<StudyOutput> => {
   let currentSnippet = { ...snippet };
 
   for (const lensSpec of lenses) {
@@ -119,23 +121,23 @@ import { uppercase } from '../lenses/uppercase/index.js';
 import { jsxDemo } from '../lenses/jsx-demo/index.js';
 
 // Transform chain: function → function → final output
-await pipe(snippet, [reverse.lens, uppercase.lens]);
+await pipeLenses(snippet, [reverse.lens, uppercase.lens]);
 // "hello" → "olleh" → "OLLEH" (continues to end)
 
 // Transform → visual: object → object → object (stops at jsx-demo view)
-await pipe(snippet, [reverse, uppercase, jsxDemo]);
+await pipeLenses(snippet, [reverse, uppercase, jsxDemo]);
 // "hello" → "olleh" → "OLLEH" → <JSX component> (stops at jsx-demo)
 
 // Function with config: override default config
-await pipe(snippet, [[reverse.lens, { enabled: true }]]);
+await pipeLenses(snippet, [[reverse.lens, { enabled: true }]]);
 // "hello" → "olleh" (with custom config)
 
 // Object with config override: merge with lens defaults
-await pipe(snippet, [[uppercase, { theme: 'dark' }]]);
+await pipeLenses(snippet, [[uppercase, { theme: 'dark' }]]);
 // "hello" → "HELLO" (with merged config)
 
 // Mixed LensSpec patterns in single pipeline
-await pipe(snippet, [
+await pipeLenses(snippet, [
   reverse.lens,                    // Simple function
   [uppercase.lens, { loud: true }], // Function + config
   jsxDemo                          // Lens object (terminus with view)
@@ -1033,6 +1035,151 @@ export interface CodeSource {
 ```
 
 This tracking enables debugging and optimization by showing exactly where each piece of code originated from in the discovery hierarchy.
+
+## UI Components Architecture
+
+Study Lenses WC-Kit includes a `/ui` directory containing visual components that use lenses for interactive code manipulation. These components provide high-level interfaces for common tasks while maintaining the functional/procedural design principles.
+
+### UI Component Philosophy
+
+- **Pure Functions**: UI components are implemented as pure functions that return DOM elements
+- **No DOM Feedback**: Execution components (like run) operate silently with console output only  
+- **Event-Driven Communication**: Components communicate via custom events for code sharing
+- **Pipeline Integration**: UI components use `pipeLenses` function to leverage existing lens ecosystem
+
+### Available UI Components
+
+#### `sl-ui-study-bar` - Code Context Manager
+
+A flexbox container that manages code distribution to child UI components:
+
+```html
+<sl-ui-study-bar code="console.log('Shared context');">
+  <sl-ui-run></sl-ui-run>
+  <sl-ui-open-in></sl-ui-open-in>
+</sl-ui-study-bar>
+```
+
+**Key Features:**
+- Code discovery using standard 5-level precedence
+- Event delegation for child component communication
+- Responsive flexbox layout with automatic wrapping
+- Snippet caching for child component access
+
+#### `sl-ui-run` - Code Execution Controls
+
+Interactive controls for executing JavaScript code through configurable lens pipelines:
+
+```html
+<sl-ui-run code="console.log('Direct execution');"></sl-ui-run>
+```
+
+**Controls:**
+- **▶️ Run Button** - Executes code through pipeline
+- **Debug Checkbox** - Adds debugger statements to execution
+- **Loop Guard Checkbox** - Enables loop protection with AST transformation  
+- **Loop Guard Max** - Configurable iteration limit (1-10000)
+
+**Pipeline Behavior:**
+- Basic: `[run]`
+- Loop Guard: `[loopGuard, run]`
+- Loop Guard + Format: `[loopGuard, format, run]` (formatting applied after loop guard)
+- Debug: `[run]` with debug configuration
+
+**Language Support:**
+- JavaScript (`.js`) - executed as script type
+- ES Modules (`.mjs`) - executed as module type
+- Dynamic test detection from snippet.test property
+
+### UI Component Implementation Pattern
+
+All UI components follow the same implementation pattern:
+
+```typescript
+// component.ts - Pure function implementation
+export const component = (snippet: Snippet | null = null): HTMLElement => {
+  const container = document.createElement('div');
+  // Build UI elements
+  // Add event listeners
+  // Return container
+};
+
+// register.ts - Web component wrapper
+class UIComponent extends HTMLElement {
+  async connectedCallback() {
+    const snippet = await extractCodeFromElement(this);
+    const result = component(snippet);
+    this.appendChild(result);
+  }
+}
+
+// index.ts - Standard exports
+export default {
+  component, // Pure function
+  name,      // Base name ('run', 'study-bar')
+  register,  // Registration function
+};
+```
+
+### Event-Based Communication System
+
+UI components use custom events for code sharing:
+
+```typescript
+// Child component requesting code from parent study-bar
+const event = new CustomEvent('request-code', {
+  detail: { 
+    callback: (snippet: Snippet) => { 
+      // Use snippet data
+    } 
+  },
+  bubbles: true // Must bubble to reach study-bar
+});
+element.dispatchEvent(event);
+
+// Study-bar listens and provides snippet
+container.addEventListener('request-code', (event: CustomEvent) => {
+  event.stopPropagation();
+  if (event.detail?.callback) {
+    event.detail.callback(cachedSnippet);
+  }
+});
+```
+
+### Registration and Export Structure
+
+UI components integrate seamlessly with the existing registration system:
+
+```typescript
+// Main exports include UI components
+export const studyLenses = {
+  lenses,   // Core lens collection
+  study,    // Pipeline and study functions
+  snippet,  // Snippet utilities
+  ui,       // UI components
+};
+
+// Automatic registration via existing system
+// registerAllWC(studyLenses) finds and registers all UI components
+```
+
+### UI Development Guidelines
+
+1. **Pure Functions First**: Implement logic as pure functions, wrap in minimal web components
+2. **No Visual Feedback**: Execution components log to console, no DOM success/error states
+3. **Event Communication**: Use custom events for parent-child communication
+4. **Code Discovery**: Follow standard 5-level precedence in all components
+5. **Pipeline Integration**: Use `pipeLenses` for any lens composition needs
+6. **Responsive Design**: Use flexbox layouts with wrapping support
+
+### Future UI Components
+
+The UI architecture supports extending with additional components:
+
+- **`sl-ui-lens-selector`** - Dynamic lens application with dropdown selection
+- **`sl-ui-open-in`** - External tool integration (jstutor, jsViz, etc.)
+- **`sl-ui-format`** - Code formatting controls
+- **`sl-ui-trace-table`** - Variable tracing visualization
 
 ## Common Development Patterns
 

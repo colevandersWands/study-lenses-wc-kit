@@ -1,12 +1,12 @@
 /**
- * Debugger Lens Function Tests
+ * Debug Lens Function Tests
  */
 
 import { describe, it, expect } from 'vitest';
 import { lens } from './lens.js';
 import { config } from './config.js';
 
-describe('debugger lens function', () => {
+describe('debug lens function', () => {
   it('should wrap JavaScript code with debugger statements', () => {
     const snippet = { code: 'console.log("test");', lang: 'js', test: false };
     const result = lens(snippet);

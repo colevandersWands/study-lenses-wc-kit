@@ -1,4 +1,4 @@
 /**
- * Debugger Lens Name - Single source of truth for lens identification
+ * Debug Lens Name - Single source of truth for lens identification
  */
-export const name = 'debugger';
+export const name = 'debug';

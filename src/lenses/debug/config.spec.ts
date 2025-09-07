@@ -1,5 +1,5 @@
 /**
- * Debugger Lens Configuration Tests
+ * Debug Lens Configuration Tests
  */
 
 import { describe, it, expect } from 'vitest';

@@ -1,10 +1,10 @@
-# Debugger Lens
+# Debug Lens
 
 A Study Lens that automatically detects programming languages and wraps code with appropriate debugger statements for various development environments.
 
 ## Overview
 
-The Debugger Lens transforms source code by adding debugging breakpoints in language-specific formats, making it easy to step through code execution during development and learning.
+The Debug Lens transforms source code by adding debugging breakpoints in language-specific formats, making it easy to step through code execution during development and learning.
 
 ## Supported Languages
 
@@ -23,40 +23,40 @@ The Debugger Lens transforms source code by adding debugging breakpoints in lang
 
 ```html
 <!-- JavaScript code -->
-<sl-lens-debugger code="console.log('Hello, World!')"></sl-lens-debugger>
+<sl-lens-debug code="console.log('Hello, World!')"></sl-lens-debug>
 
 <!-- Python code -->
-<sl-lens-debugger code="print('Hello, World!')" lang="python"></sl-lens-debugger>
+<sl-lens-debug code="print('Hello, World!')" lang="python"></sl-lens-debug>
 
 <!-- From file -->
-<sl-lens-debugger src="./examples/content/greet.js"></sl-lens-debugger>
+<sl-lens-debug src="./examples/content/greet.js"></sl-lens-debug>
 ```
 
 ### Configuration Options
 
 ```html
 <!-- Disable debugger injection -->
-<sl-lens-debugger 
+<sl-lens-debug 
   code="console.log('no debugging');" 
-  config='{"enabled": false}'></sl-lens-debugger>
+  config='{"enabled": false}'></sl-lens-debug>
 
 <!-- Custom line spacing -->
-<sl-lens-debugger 
+<sl-lens-debug 
   code="function test() { return 42; }" 
-  config='{"lineSpacing": 1}'></sl-lens-debugger>
+  config='{"lineSpacing": 1}'></sl-lens-debug>
 
 <!-- Custom prefix and suffix -->
-<sl-lens-debugger 
+<sl-lens-debug 
   code="console.log('custom');" 
   config='{
     "customPrefix": ">>> DEBUG START <<<", 
     "customSuffix": ">>> DEBUG END <<<"
-  }'></sl-lens-debugger>
+  }'></sl-lens-debug>
 ```
 
 ## Configuration
 
-The debugger lens supports the following configuration options:
+The debug lens supports the following configuration options:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -162,7 +162,7 @@ System.out.println("Hello, World!");
 ### Lens Function
 
 ```typescript
-function lens(snippet: Snippet, config?: DebuggerConfig): LensOutput
+function lens(snippet: Snippet, config?: DebugConfig): LensOutput
 ```
 
 **Parameters:**
@@ -174,7 +174,7 @@ function lens(snippet: Snippet, config?: DebuggerConfig): LensOutput
 ### Configuration Factory
 
 ```typescript
-function config(overrides?: Partial<DebuggerConfig>): DebuggerConfig
+function config(overrides?: Partial<DebugConfig>): DebugConfig
 ```
 
 **Parameters:**
@@ -188,7 +188,7 @@ function config(overrides?: Partial<DebuggerConfig>): DebuggerConfig
 function register(): string
 ```
 
-**Returns:** The registered web component tag name (`sl-lens-debugger`)
+**Returns:** The registered web component tag name (`sl-lens-debug`)
 
 ## Language Detection
 
@@ -223,13 +223,13 @@ import '../path/to/debugger/register.js';
 
 // Use in HTML
 document.body.innerHTML = `
-  <sl-lens-debugger code="function test() { return 42; }"></sl-lens-debugger>
+  <sl-lens-debug code="function test() { return 42; }"></sl-lens-debug>
 `;
 ```
 
 ## Testing
 
-The debugger lens includes comprehensive test coverage:
+The debug lens includes comprehensive test coverage:
 
 - **Unit tests** (`lens.spec.ts`, `config.spec.ts`) - Automated testing of all functionality
 - **Interactive tests** (`wc.test.html`) - Manual browser testing with live examples
@@ -241,4 +241,4 @@ npm test
 
 ## Contributing
 
-See the main [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines on extending the debugger lens or creating new lenses.
+See the main [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines on extending the debug lens or creating new lenses.

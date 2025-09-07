@@ -1,6 +1,6 @@
-# Debugger Lens Developer Guide
+# Debug Lens Developer Guide
 
-A step-by-step guide for using the Debugger Lens in educational and development contexts.
+A step-by-step guide for using the Debug Lens in educational and development contexts.
 
 ## Quick Start
 
@@ -16,15 +16,15 @@ The simplest way to add debugging statements to your code:
 </head>
 <body>
   <!-- JavaScript example -->
-  <sl-lens-debugger code="console.log('Hello, World!')"></sl-lens-debugger>
+  <sl-lens-debug code="console.log('Hello, World!')"></sl-lens-debug>
   
   <!-- Python example -->
-  <sl-lens-debugger 
+  <sl-lens-debug 
     code="print('Hello, World!')" 
-    lang="python"></sl-lens-debugger>
+    lang="python"></sl-lens-debug>
   
   <!-- Load from file -->
-  <sl-lens-debugger src="./my-script.js"></sl-lens-debugger>
+  <sl-lens-debug src="./my-script.js"></sl-lens-debug>
   
   <script type="module">
     // Register the component
@@ -74,14 +74,14 @@ debugger;
   <h3>Learning JavaScript Debugging</h3>
   <p>The browser debugger statement pauses execution:</p>
   
-  <sl-lens-debugger code="
+  <sl-lens-debug code="
 function factorial(n) {
   if (n <= 1) return 1;
   return n * factorial(n - 1);
 }
 
 console.log(factorial(5));
-  "></sl-lens-debugger>
+  "></sl-lens-debug>
   
   <p>Open browser dev tools and run this code to step through execution.</p>
 </div>
@@ -95,23 +95,23 @@ console.log(factorial(5));
 <div class="language-comparison">
   <div class="language-example">
     <h4>JavaScript</h4>
-    <sl-lens-debugger 
+    <sl-lens-debug 
       code="function fibonacci(n) { return n < 2 ? n : fibonacci(n-1) + fibonacci(n-2); }"
-      lang="js"></sl-lens-debugger>
+      lang="js"></sl-lens-debug>
   </div>
   
   <div class="language-example">
     <h4>Python</h4>
-    <sl-lens-debugger 
+    <sl-lens-debug 
       code="def fibonacci(n): return n if n < 2 else fibonacci(n-1) + fibonacci(n-2)"
-      lang="python"></sl-lens-debugger>
+      lang="python"></sl-lens-debug>
   </div>
   
   <div class="language-example">
     <h4>Java</h4>
-    <sl-lens-debugger 
+    <sl-lens-debug 
       code="public static int fibonacci(int n) { return n < 2 ? n : fibonacci(n-1) + fibonacci(n-2); }"
-      lang="java"></sl-lens-debugger>
+      lang="java"></sl-lens-debug>
   </div>
 </div>
 ```
@@ -144,9 +144,9 @@ fs.writeFileSync('./dist/algorithm.debug.js', debuggedCode);
 
 ```html
 <!-- Only add debuggers in development -->
-<sl-lens-debugger 
+<sl-lens-debug 
   code="performanceOptimizedFunction();"
-  config='{"enabled": false}'></sl-lens-debugger>
+  config='{"enabled": false}'></sl-lens-debug>
 ```
 
 ```javascript
@@ -159,35 +159,35 @@ const config = debugger.config({ enabled: isDev });
 
 ```html
 <!-- Use custom markers instead of language defaults -->
-<sl-lens-debugger 
+<sl-lens-debug 
   code="criticalBusinessLogic();"
   config='{
     "customPrefix": "=== CRITICAL SECTION START ===",
     "customSuffix": "=== CRITICAL SECTION END ===",
     "lineSpacing": 2
-  }'></sl-lens-debugger>
+  }'></sl-lens-debug>
 ```
 
 ### 3. Compact Mode
 
 ```html
 <!-- Minimal spacing for code-dense examples -->
-<sl-lens-debugger 
+<sl-lens-debug 
   code="let result = processData(input);"
-  config='{"lineSpacing": 0}'></sl-lens-debugger>
+  config='{"lineSpacing": 0}'></sl-lens-debug>
 ```
 
 ### 4. Documentation Mode
 
 ```html
 <!-- Clear debugging instructions for tutorials -->
-<sl-lens-debugger 
+<sl-lens-debug 
   code="fetchUserData(userId).then(render);"
   config='{
     "customPrefix": "// 👆 Set breakpoint here to inspect network requests",
     "customSuffix": "// 👆 Set breakpoint here to inspect rendering data",
     "lineSpacing": 1
-  }'></sl-lens-debugger>
+  }'></sl-lens-debug>
 ```
 
 ## Language-Specific Guides
@@ -201,13 +201,13 @@ const config = debugger.config({ enabled: isDev });
 - Stepping through closures and scope
 
 ```html
-<sl-lens-debugger code="
+<sl-lens-debug code="
 async function fetchData() {
   const response = await fetch('/api/data');
   const data = await response.json();
   return data.items.map(item => item.value);
 }
-" lang="js"></sl-lens-debugger>
+" lang="js"></sl-lens-debug>
 ```
 
 **Browser Usage:**
@@ -225,7 +225,7 @@ async function fetchData() {
 - Inspecting data structures
 
 ```html
-<sl-lens-debugger code="
+<sl-lens-debug code="
 def quicksort(arr):
     if len(arr) <= 1:
         return arr
@@ -234,7 +234,7 @@ def quicksort(arr):
     middle = [x for x in arr if x == pivot]
     right = [x for x in arr if x > pivot]
     return quicksort(left) + middle + quicksort(right)
-" lang="python"></sl-lens-debugger>
+" lang="python"></sl-lens-debug>
 ```
 
 **Python Debugging:**
@@ -252,7 +252,7 @@ def quicksort(arr):
 - Student lab exercises
 
 ```html
-<sl-lens-debugger code="
+<sl-lens-debug code="
 public class BinarySearch {
     public static int search(int[] arr, int target) {
         int left = 0, right = arr.length - 1;
@@ -265,7 +265,7 @@ public class BinarySearch {
         return -1;
     }
 }
-" lang="java"></sl-lens-debugger>
+" lang="java"></sl-lens-debug>
 ```
 
 **IDE Integration:**
@@ -286,14 +286,14 @@ public class BinarySearch {
     <h3>What are breakpoints?</h3>
     <p>Breakpoints pause program execution so you can inspect the current state.</p>
     
-    <sl-lens-debugger code="
+    <sl-lens-debug code="
 let count = 0;
 for (let i = 0; i < 5; i++) {
   count += i;
   console.log(`Step ${i}: count = ${count}`);
 }
 console.log(`Final count: ${count}`);
-    " lang="js"></sl-lens-debugger>
+    " lang="js"></sl-lens-debug>
   </div>
   
   <div class="exercise">
@@ -315,7 +315,7 @@ console.log(`Final count: ${count}`);
   <h2>Binary Search Step-by-Step</h2>
   
   <!-- Prepare code for step-through -->
-  <sl-lens-debugger 
+  <sl-lens-debug 
     config='{"lineSpacing": 1}'
     code="
 function binarySearch(arr, target) {
@@ -341,7 +341,7 @@ function binarySearch(arr, target) {
 const numbers = [1, 3, 5, 7, 9, 11, 13, 15];
 const result = binarySearch(numbers, 7);
 console.log('Found at index:', result);
-    "></sl-lens-debugger>
+    "></sl-lens-debug>
   
   <div class="debugging-tips">
     <h3>Debugging Strategy:</h3>
@@ -361,7 +361,7 @@ console.log('Found at index:', result);
   <h2>Code Review: Potential Bug Investigation</h2>
   
   <!-- Add debugging to suspicious code -->
-  <sl-lens-debugger 
+  <sl-lens-debug 
     config='{
       "customPrefix": "// 🔍 REVIEW POINT: Check variable state here",
       "customSuffix": "// 🔍 REVIEW POINT: Verify result correctness",
@@ -373,7 +373,7 @@ function calculateDiscount(price, discountPercent) {
   const discount = price * (discountPercent / 100);
   return price - discount;
 }
-    "></sl-lens-debugger>
+    "></sl-lens-debug>
   
   <div class="review-questions">
     <h3>Review Questions:</h3>
@@ -412,7 +412,7 @@ const result = debugger.lens(snippet, debugOnError);
 <div class="test-debugging">
   <h3>Test: User Authentication</h3>
   
-  <sl-lens-debugger 
+  <sl-lens-debug 
     config='{"lineSpacing": 2}'
     code="
 function authenticateUser(username, password) {
@@ -429,14 +429,14 @@ function authenticateUser(username, password) {
 // Failing test case
 const result = authenticateUser('testuser', 'wrongpassword');
 console.log('Test result:', result);
-    " lang="js"></sl-lens-debugger>
+    " lang="js"></sl-lens-debug>
 </div>
 ```
 
 ### 3. Performance Debugging
 
 ```html
-<sl-lens-debugger 
+<sl-lens-debug 
   config='{
     "customPrefix": "console.time(\"performance-check\"); debugger;",
     "customSuffix": "debugger; console.timeEnd(\"performance-check\");",
@@ -449,7 +449,7 @@ function expensiveOperation(data) {
     return processComplexCalculation(item);
   }).filter(result => result !== null);
 }
-  "></sl-lens-debugger>
+  "></sl-lens-debug>
 ```
 
 ## Troubleshooting
@@ -469,17 +469,17 @@ function expensiveOperation(data) {
 **3. Wrong language detection:**
 ```html
 <!-- Force language detection -->
-<sl-lens-debugger 
+<sl-lens-debug 
   code="puts 'Hello, Ruby!'" 
-  lang="ruby"></sl-lens-debugger>
+  lang="ruby"></sl-lens-debug>
 ```
 
 **4. Configuration not applying:**
 ```html
 <!-- Verify JSON syntax -->
-<sl-lens-debugger 
+<sl-lens-debug 
   code="test();"
-  config='{"enabled": true, "lineSpacing": 1}'></sl-lens-debugger>
+  config='{"enabled": true, "lineSpacing": 1}'></sl-lens-debug>
 ```
 
 ### Browser Compatibility
