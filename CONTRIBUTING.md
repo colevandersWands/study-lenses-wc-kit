@@ -15,7 +15,7 @@ Study Lenses V2 simplifies the API while maintaining **functional/procedural pri
 
 ## 🔍 Lens Development Guide
 
-> **Usage Pattern Guidance**: When developing lenses, experiment with both **Pipeline Mode** (sequential processing in `<sl-snippet>`) and **Study Panel Mode** (parallel distribution in `<study-lenses>`) to determine which works best for your lens. Optimal usage patterns are **TBD pending community experimentation** - your findings will help establish best practices.
+> **Usage Pattern Guidance**: When developing lenses, experiment with sequential processing in `<sl-snippet>` to determine which works best for your lens. Optimal usage patterns are **TBD pending community experimentation** - your findings will help establish best practices.
 
 ### Lens Function Signature
 
@@ -771,10 +771,7 @@ Create a `view.test.html` file next to each `view.ts` file for manual component 
 		<!-- Test 5: Integration with other components -->
 		<div class="test-section">
 			<h2>Test 5: Integration Testing</h2>
-			<p>
-				<strong>Expected:</strong> Should work correctly in pipelines
-				and study panels
-			</p>
+			<p><strong>Expected:</strong> Should work correctly in pipelines</p>
 
 			<h3>Pipeline Mode:</h3>
 			<sl-snippet
@@ -782,17 +779,10 @@ Create a `view.test.html` file next to each `view.ts` file for manual component 
 				code="hello world"
 			></sl-snippet>
 
-			<h3>Study Panel Mode:</h3>
-			<study-lenses code="function add(a, b) { return a + b; }">
-				<sl-lens-my-lens></sl-lens-my-lens>
-				<sl-lens-reverse></sl-lens-reverse>
-			</study-lenses>
-
 			<div class="checklist">
 				<strong>Manual Verification Checklist:</strong>
 				<ul>
 					<li>☐ Works correctly in pipeline mode</li>
-					<li>☐ Code is distributed correctly in study panel</li>
 					<li>☐ Plays nicely with other lenses</li>
 					<li>☐ No conflicts or interference</li>
 				</ul>
@@ -872,7 +862,7 @@ Before submitting PRs or committing major changes:
 - ✅ **Unit tests pass** - All automated tests green
 - ✅ **Coverage threshold met** - 80%+ coverage maintained
 - ✅ **Manual HTML tests verified** - All interactive scenarios work
-- ✅ **Integration tests pass** - Pipeline and study panel modes work
+- ✅ **Integration tests pass** - Pipeline works
 - ✅ **Error handling tested** - Edge cases handled gracefully
 - ✅ **TypeScript compilation** - No type errors
 - ✅ **Lint checks pass** - Code style consistent

@@ -171,19 +171,6 @@ Study Lenses provides declarative web components for HTML usage.
 </sl-snippet>
 ```
 
-### Study Panel Mode (Parallel Distribution)
-
-```html
-<!-- Parallel processing - same code to multiple lenses -->
-<study-lenses
-	code="function fibonacci(n) { return n < 2 ? n : fibonacci(n-1) + fibonacci(n-2); }"
->
-	<sl-lens-reverse></sl-lens-reverse>
-	<sl-lens-uppercase></sl-lens-uppercase>
-	<sl-lens-jsx-demo></sl-lens-jsx-demo>
-</study-lenses>
-```
-
 ### Code Discovery Hierarchy
 
 ```html

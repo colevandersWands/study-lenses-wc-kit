@@ -1191,31 +1191,11 @@ const loadFileContent = async (
 	<sl-lens-reverse></sl-lens-reverse>
 	<!-- uses sibling.js, not parent.js -->
 </sl-snippet>
-
-<!-- 5. Sibling snippet in study panel -->
-<study-lenses>
-	<sl-snippet code="./analyze.js"></sl-snippet>
-	<sl-lens-reverse></sl-lens-reverse>
-	<!-- uses analyze.js -->
-</study-lenses>
 ```
 
 ### Pipeline vs Distribution Modes
 
 > **Implementation Note**: The examples below demonstrate the technical capabilities of each mode. Optimal usage patterns and when to choose Pipeline vs Distribution mode are **TBD pending real-world experimentation and user feedback**. The community will help establish best practices through actual usage.
-
-**Distribution Mode** (Study Panel):
-
-```html
-<study-lenses code="shared code">
-	<sl-lens-reverse></sl-lens-reverse>
-	<!-- gets: "shared code" -->
-	<sl-lens-uppercase></sl-lens-uppercase>
-	<!-- gets: "shared code" -->
-	<sl-lens-lowercase></sl-lens-lowercase>
-	<!-- gets: "shared code" -->
-</study-lenses>
-```
 
 **Pipeline Mode** (Sequential Processing):
 

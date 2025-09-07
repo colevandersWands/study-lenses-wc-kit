@@ -36,19 +36,6 @@ This project maintains three specialized documentation files for different audie
 	lang="js"
 >
 </sl-snippet>
-
-<!-- Study panel: multiple views of the same code -->
-<study-lenses code="function add(a, b) { return a + b; }">
-	<sl-lens-reverse></sl-lens-reverse>
-	<sl-lens-uppercase></sl-lens-uppercase>
-	<sl-lens-lowercase></sl-lens-lowercase>
-</study-lenses>
-
-<!-- File loading with src attribute -->
-<study-lenses src="./demo.js">
-	<sl-lens-reverse></sl-lens-reverse>
-	<sl-lens-uppercase></sl-lens-uppercase>
-</study-lenses>
 ```
 
 ## Installation
@@ -333,8 +320,6 @@ import { config as uppercaseConfig } from 'study-lenses-wc-kit/lenses/uppercase/
 
 ## Usage Patterns
 
-> **Note**: Optimal use case patterns for Pipeline Mode vs Study Panel Mode are **TBD pending real-world experimentation and user feedback**. The examples below demonstrate the technical capabilities - best practices will emerge through community usage.
-
 ### Pipeline Mode
 
 Sequential processing with `lenses` attribute (supports spaces and commas):
@@ -350,18 +335,6 @@ Sequential processing with `lenses` attribute (supports spaces and commas):
 	tests
 >
 </sl-snippet>
-```
-
-### Study Panel Mode
-
-Parallel processing with child elements:
-
-```html
-<study-lenses code="function test() { return 42; }">
-	<sl-lens-reverse></sl-lens-reverse>
-	<sl-lens-uppercase></sl-lens-uppercase>
-	<sl-format></sl-format>
-</study-lenses>
 ```
 
 ### Code Sources
