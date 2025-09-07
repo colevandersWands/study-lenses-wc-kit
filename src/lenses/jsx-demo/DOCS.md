@@ -79,11 +79,11 @@ export const lens = async (snippet: Snippet, config = _config()): Promise<LensOu
 
 ```typescript
 const containerStyle = {
-  padding: '16px',
-  border: '2px solid #007acc',
-  borderRadius: '8px',
-  backgroundColor: '#f8f9fa',
-  fontFamily: 'system-ui, sans-serif',
+	padding: '16px',
+	border: '2px solid #007acc',
+	borderRadius: '8px',
+	backgroundColor: '#f8f9fa',
+	fontFamily: 'system-ui, sans-serif',
 };
 ```
 
@@ -115,10 +115,10 @@ export const config = (overrides = {}) => deepMerge(defaultConfig, overrides);
 ```json
 // tsconfig.json requirements
 {
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact"
-  }
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact"
+	}
 }
 ```
 
@@ -131,12 +131,15 @@ export const config = (overrides = {}) => deepMerge(defaultConfig, overrides);
 
 ```typescript
 // Web component rendering (setup-functions.ts)
-const renderView = (container: HTMLElement, view: HTMLElement | ComponentChild): void => {
-  if (view instanceof HTMLElement) {
-    container.appendChild(view); // Regular DOM
-  } else {
-    render(view, container); // JSX with Preact
-  }
+const renderView = (
+	container: HTMLElement,
+	view: HTMLElement | ComponentChild
+): void => {
+	if (view instanceof HTMLElement) {
+		container.appendChild(view); // Regular DOM
+	} else {
+		render(view, container); // JSX with Preact
+	}
 };
 ```
 
@@ -146,21 +149,29 @@ const renderView = (container: HTMLElement, view: HTMLElement | ComponentChild):
 
 ```typescript
 describe('jsx-demo lens', () => {
-  test('analyzes simple code', async () => {
-    const result = await lens({ code: 'hello world', lang: 'js', test: false });
-    expect(result.snippet.code).toBe('hello world'); // Unchanged
-    expect(result.view).toBeTruthy(); // JSX component present
-  });
+	test('analyzes simple code', async () => {
+		const result = await lens({
+			code: 'hello world',
+			lang: 'js',
+			test: false,
+		});
+		expect(result.snippet.code).toBe('hello world'); // Unchanged
+		expect(result.view).toBeTruthy(); // JSX component present
+	});
 
-  test('counts lines correctly', async () => {
-    const result = await lens({ code: 'line1\nline2\nline3', lang: 'js', test: false });
-    // Would need JSX testing utilities to inspect component
-  });
+	test('counts lines correctly', async () => {
+		const result = await lens({
+			code: 'line1\nline2\nline3',
+			lang: 'js',
+			test: false,
+		});
+		// Would need JSX testing utilities to inspect component
+	});
 
-  test('terminates pipeline', async () => {
-    const result = await lens({ code: 'test', lang: 'js', test: false });
-    expect(result.view).not.toBeNull(); // Should terminate
-  });
+	test('terminates pipeline', async () => {
+		const result = await lens({ code: 'test', lang: 'js', test: false });
+		expect(result.view).not.toBeNull(); // Should terminate
+	});
 });
 ```
 
@@ -212,11 +223,11 @@ describe('jsx-demo lens', () => {
 ```typescript
 // Future config structure
 interface JSXDemoConfig {
-  theme: 'light' | 'dark';
-  showAdvancedStats: boolean;
-  syntaxHighlight: boolean;
-  interactive: boolean;
-  customMetrics: string[];
+	theme: 'light' | 'dark';
+	showAdvancedStats: boolean;
+	syntaxHighlight: boolean;
+	interactive: boolean;
+	customMetrics: string[];
 }
 ```
 
@@ -257,23 +268,23 @@ import { render } from '@testing-library/preact';
 import { lens } from './lens.tsx';
 
 test('renders analysis dashboard', async () => {
-  const result = await lens(testSnippet);
-  const { container } = render(result.view);
+	const result = await lens(testSnippet);
+	const { container } = render(result.view);
 
-  expect(container.textContent).toContain('Code Analysis');
-  expect(container.querySelector('h3')).toBeTruthy();
+	expect(container.textContent).toContain('Code Analysis');
+	expect(container.querySelector('h3')).toBeTruthy();
 });
 ```
 
 ## Dependencies
 
 - **External**:
-  - `preact@^10.0.0` - JSX rendering engine
-  - TypeScript with JSX support
+    - `preact@^10.0.0` - JSX rendering engine
+    - TypeScript with JSX support
 - **Internal**:
-  - `../../types.js` - Type definitions
-  - `./config.js` - Configuration factory
-  - `../../utils/deep-merge.js` - Config merging
+    - `../../types.js` - Type definitions
+    - `./config.js` - Configuration factory
+    - `../../utils/deep-merge.js` - Config merging
 
 ## Browser Compatibility
 
@@ -311,13 +322,13 @@ test('renders analysis dashboard', async () => {
 ```tsx
 // Accessible component structure
 <div role="main" aria-label="Code analysis dashboard">
-  <h3 id="analysis-title">Code Analysis</h3>
-  <div role="group" aria-labelledby="analysis-title">
-    <div aria-label={`${lines.length} lines of code`}>
-      <div aria-hidden="true">{lines.length}</div>
-      <div>Lines</div>
-    </div>
-  </div>
+	<h3 id="analysis-title">Code Analysis</h3>
+	<div role="group" aria-labelledby="analysis-title">
+		<div aria-label={`${lines.length} lines of code`}>
+			<div aria-hidden="true">{lines.length}</div>
+			<div>Lines</div>
+		</div>
+	</div>
 </div>
 ```
 

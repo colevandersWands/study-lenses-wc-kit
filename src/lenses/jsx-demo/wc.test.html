@@ -1,128 +1,133 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JSX Demo Lens Component Test</title>
-    <style>
-      body {
-        font-family: system-ui, sans-serif;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-        background: #f5f5f5;
-      }
-      .test-section {
-        margin: 20px 0;
-        padding: 20px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        background: white;
-      }
-      .test-section.pass {
-        border-color: #28a745;
-        background: #f8fff9;
-      }
-      .test-section.fail {
-        border-color: #dc3545;
-        background: #fff8f8;
-      }
-      pre {
-        background: #f5f5f5;
-        padding: 10px;
-        border-radius: 4px;
-        overflow-x: auto;
-      }
-      .checklist {
-        margin: 10px 0;
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 4px;
-      }
-      .checklist li {
-        margin: 5px 0;
-      }
-      .expected {
-        color: #666;
-        font-style: italic;
-        background: #e9ecef;
-        padding: 8px;
-        border-radius: 4px;
-        margin: 10px 0;
-      }
-      h1 {
-        color: #007acc;
-      }
-      h2 {
-        color: #333;
-        margin-top: 0;
-      }
-      .jsx-output {
-        border: 1px solid #ddd;
-        margin: 10px 0;
-        border-radius: 4px;
-        padding: 5px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>🧪 JSX Demo Lens Component Test</h1>
-    <p>
-      Testing the JSX Demo lens component that demonstrates interactive Preact JSX rendering with
-      code analysis.
-    </p>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>JSX Demo Lens Component Test</title>
+		<style>
+			body {
+				font-family: system-ui, sans-serif;
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 20px;
+				background: #f5f5f5;
+			}
+			.test-section {
+				margin: 20px 0;
+				padding: 20px;
+				border: 2px solid #ddd;
+				border-radius: 8px;
+				background: white;
+			}
+			.test-section.pass {
+				border-color: #28a745;
+				background: #f8fff9;
+			}
+			.test-section.fail {
+				border-color: #dc3545;
+				background: #fff8f8;
+			}
+			pre {
+				background: #f5f5f5;
+				padding: 10px;
+				border-radius: 4px;
+				overflow-x: auto;
+			}
+			.checklist {
+				margin: 10px 0;
+				background: #f8f9fa;
+				padding: 15px;
+				border-radius: 4px;
+			}
+			.checklist li {
+				margin: 5px 0;
+			}
+			.expected {
+				color: #666;
+				font-style: italic;
+				background: #e9ecef;
+				padding: 8px;
+				border-radius: 4px;
+				margin: 10px 0;
+			}
+			h1 {
+				color: #007acc;
+			}
+			h2 {
+				color: #333;
+				margin-top: 0;
+			}
+			.jsx-output {
+				border: 1px solid #ddd;
+				margin: 10px 0;
+				border-radius: 4px;
+				padding: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>🧪 JSX Demo Lens Component Test</h1>
+		<p>
+			Testing the JSX Demo lens component that demonstrates interactive
+			Preact JSX rendering with code analysis.
+		</p>
 
-    <!-- Test 1: Basic JSX rendering -->
-    <div class="test-section">
-      <h2>Test 1: Basic JSX Component Rendering</h2>
-      <div class="expected">
-        <strong>Expected:</strong> Should render interactive JSX component with code analysis
-        dashboard
-      </div>
+		<!-- Test 1: Basic JSX rendering -->
+		<div class="test-section">
+			<h2>Test 1: Basic JSX Component Rendering</h2>
+			<div class="expected">
+				<strong>Expected:</strong> Should render interactive JSX
+				component with code analysis dashboard
+			</div>
 
-      <div class="jsx-output">
-        <sl-lens-jsx-demo code="function test() { return 42; }"></sl-lens-jsx-demo>
-      </div>
+			<div class="jsx-output">
+				<sl-lens-jsx-demo
+					code="function test() { return 42; }"
+				></sl-lens-jsx-demo>
+			</div>
 
-      <div class="checklist">
-        <strong>Manual Verification Checklist:</strong>
-        <ul>
-          <li>☐ JSX component renders with proper styling</li>
-          <li>☐ Shows "📊 JSX Code Analysis" header</li>
-          <li>☐ Displays analysis statistics (lines, words, etc.)</li>
-          <li>☐ Has interactive elements (expandable details)</li>
-          <li>☐ Code preview shows in expandable section</li>
-          <li>☐ No console errors or React/Preact warnings</li>
-        </ul>
-      </div>
-    </div>
+			<div class="checklist">
+				<strong>Manual Verification Checklist:</strong>
+				<ul>
+					<li>☐ JSX component renders with proper styling</li>
+					<li>☐ Shows "📊 JSX Code Analysis" header</li>
+					<li>☐ Displays analysis statistics (lines, words, etc.)</li>
+					<li>☐ Has interactive elements (expandable details)</li>
+					<li>☐ Code preview shows in expandable section</li>
+					<li>☐ No console errors or React/Preact warnings</li>
+				</ul>
+			</div>
+		</div>
 
-    <!-- Test 2: Code analysis accuracy -->
-    <div class="test-section">
-      <h2>Test 2: Code Analysis Accuracy</h2>
-      <div class="expected">
-        <strong>Expected:</strong> Should accurately analyze different types of code
-      </div>
+		<!-- Test 2: Code analysis accuracy -->
+		<div class="test-section">
+			<h2>Test 2: Code Analysis Accuracy</h2>
+			<div class="expected">
+				<strong>Expected:</strong> Should accurately analyze different
+				types of code
+			</div>
 
-      <h3>Simple Function (1 line):</h3>
-      <div class="jsx-output">
-        <sl-lens-jsx-demo code="const add = (a, b) => a + b;"></sl-lens-jsx-demo>
-      </div>
+			<h3>Simple Function (1 line):</h3>
+			<div class="jsx-output">
+				<sl-lens-jsx-demo
+					code="const add = (a, b) => a + b;"
+				></sl-lens-jsx-demo>
+			</div>
 
-      <h3>Multi-line Function (4 lines):</h3>
-      <div class="jsx-output">
-        <sl-lens-jsx-demo
-          code="function fibonacci(n) {
+			<h3>Multi-line Function (4 lines):</h3>
+			<div class="jsx-output">
+				<sl-lens-jsx-demo
+					code="function fibonacci(n) {
   if (n <= 1) return n;
   return fibonacci(n - 1) + fibonacci(n - 2);
 }"
-        ></sl-lens-jsx-demo>
-      </div>
+				></sl-lens-jsx-demo>
+			</div>
 
-      <h3>Complex Code with Comments:</h3>
-      <div class="jsx-output">
-        <sl-lens-jsx-demo
-          code="// Calculate factorial
+			<h3>Complex Code with Comments:</h3>
+			<div class="jsx-output">
+				<sl-lens-jsx-demo
+					code="// Calculate factorial
 function factorial(n) {
   let result = 1;
   for (let i = 2; i <= n; i++) {
@@ -132,182 +137,209 @@ function factorial(n) {
 }
 
 console.log(factorial(5));"
-        ></sl-lens-jsx-demo>
-      </div>
+				></sl-lens-jsx-demo>
+			</div>
 
-      <div class="checklist">
-        <strong>Manual Verification Checklist:</strong>
-        <ul>
-          <li>☐ Line count is accurate for each example</li>
-          <li>☐ Word count reflects actual code words</li>
-          <li>☐ Analysis updates correctly for different code types</li>
-          <li>☐ Statistics are displayed clearly in grid layout</li>
-          <li>☐ Code preview shows complete, unmodified code</li>
-        </ul>
-      </div>
-    </div>
+			<div class="checklist">
+				<strong>Manual Verification Checklist:</strong>
+				<ul>
+					<li>☐ Line count is accurate for each example</li>
+					<li>☐ Word count reflects actual code words</li>
+					<li>
+						☐ Analysis updates correctly for different code types
+					</li>
+					<li>☐ Statistics are displayed clearly in grid layout</li>
+					<li>☐ Code preview shows complete, unmodified code</li>
+				</ul>
+			</div>
+		</div>
 
-    <!-- Test 3: Interactive features -->
-    <div class="test-section">
-      <h2>Test 3: Interactive JSX Features</h2>
-      <div class="expected">
-        <strong>Expected:</strong> Should have working interactive elements (details/summary,
-        styling)
-      </div>
+		<!-- Test 3: Interactive features -->
+		<div class="test-section">
+			<h2>Test 3: Interactive JSX Features</h2>
+			<div class="expected">
+				<strong>Expected:</strong> Should have working interactive
+				elements (details/summary, styling)
+			</div>
 
-      <div class="jsx-output">
-        <sl-lens-jsx-demo
-          code="const greeting = 'Hello, Interactive JSX World!';
+			<div class="jsx-output">
+				<sl-lens-jsx-demo
+					code="const greeting = 'Hello, Interactive JSX World!';
 const numbers = [1, 2, 3, 4, 5];
 const doubled = numbers.map(n => n * 2);
 console.log(greeting, doubled);"
-        ></sl-lens-jsx-demo>
-      </div>
+				></sl-lens-jsx-demo>
+			</div>
 
-      <div class="checklist">
-        <strong>Manual Verification Checklist:</strong>
-        <ul>
-          <li>☐ "Show Code" details element can be expanded/collapsed</li>
-          <li>☐ Clicking summary toggles code visibility</li>
-          <li>☐ Styling is applied correctly (borders, colors, padding)</li>
-          <li>☐ Grid layout displays statistics properly</li>
-          <li>☐ Component is visually appealing and well-formatted</li>
-          <li>☐ Text is readable with proper contrast</li>
-        </ul>
-      </div>
-    </div>
+			<div class="checklist">
+				<strong>Manual Verification Checklist:</strong>
+				<ul>
+					<li>
+						☐ "Show Code" details element can be expanded/collapsed
+					</li>
+					<li>☐ Clicking summary toggles code visibility</li>
+					<li>
+						☐ Styling is applied correctly (borders, colors,
+						padding)
+					</li>
+					<li>☐ Grid layout displays statistics properly</li>
+					<li>
+						☐ Component is visually appealing and well-formatted
+					</li>
+					<li>☐ Text is readable with proper contrast</li>
+				</ul>
+			</div>
+		</div>
 
-    <!-- Test 4: Edge cases -->
-    <div class="test-section">
-      <h2>Test 4: Edge Cases and Error Handling</h2>
-      <div class="expected">
-        <strong>Expected:</strong> Should handle edge cases gracefully without breaking
-      </div>
+		<!-- Test 4: Edge cases -->
+		<div class="test-section">
+			<h2>Test 4: Edge Cases and Error Handling</h2>
+			<div class="expected">
+				<strong>Expected:</strong> Should handle edge cases gracefully
+				without breaking
+			</div>
 
-      <h3>Empty Code:</h3>
-      <div class="jsx-output">
-        <sl-lens-jsx-demo code=""></sl-lens-jsx-demo>
-      </div>
+			<h3>Empty Code:</h3>
+			<div class="jsx-output">
+				<sl-lens-jsx-demo code=""></sl-lens-jsx-demo>
+			</div>
 
-      <h3>Single Character:</h3>
-      <div class="jsx-output">
-        <sl-lens-jsx-demo code="x"></sl-lens-jsx-demo>
-      </div>
+			<h3>Single Character:</h3>
+			<div class="jsx-output">
+				<sl-lens-jsx-demo code="x"></sl-lens-jsx-demo>
+			</div>
 
-      <h3>Only Whitespace:</h3>
-      <div class="jsx-output">
-        <sl-lens-jsx-demo
-          code="   
+			<h3>Only Whitespace:</h3>
+			<div class="jsx-output">
+				<sl-lens-jsx-demo
+					code="   
    
    "
-        ></sl-lens-jsx-demo>
-      </div>
+				></sl-lens-jsx-demo>
+			</div>
 
-      <div class="checklist">
-        <strong>Manual Verification Checklist:</strong>
-        <ul>
-          <li>☐ Empty code handled without crashing</li>
-          <li>☐ Shows appropriate statistics (0 or 1 for line/word counts)</li>
-          <li>☐ Single character handled correctly</li>
-          <li>☐ Whitespace-only code doesn't break analysis</li>
-          <li>☐ No JavaScript errors in console for any edge case</li>
-          <li>☐ Component remains visually stable</li>
-        </ul>
-      </div>
-    </div>
+			<div class="checklist">
+				<strong>Manual Verification Checklist:</strong>
+				<ul>
+					<li>☐ Empty code handled without crashing</li>
+					<li>
+						☐ Shows appropriate statistics (0 or 1 for line/word
+						counts)
+					</li>
+					<li>☐ Single character handled correctly</li>
+					<li>☐ Whitespace-only code doesn't break analysis</li>
+					<li>☐ No JavaScript errors in console for any edge case</li>
+					<li>☐ Component remains visually stable</li>
+				</ul>
+			</div>
+		</div>
 
-    <!-- Test 5: File loading -->
-    <div class="test-section">
-      <h2>Test 5: File Path Loading</h2>
-      <div class="expected">
-        <strong>Expected:</strong> Should load and analyze code from external files
-      </div>
+		<!-- Test 5: File loading -->
+		<div class="test-section">
+			<h2>Test 5: File Path Loading</h2>
+			<div class="expected">
+				<strong>Expected:</strong> Should load and analyze code from
+				external files
+			</div>
 
-      <div class="jsx-output">
-        <sl-lens-jsx-demo code="../examples/content/greet.js"></sl-lens-jsx-demo>
-      </div>
+			<div class="jsx-output">
+				<sl-lens-jsx-demo
+					code="../examples/content/greet.js"
+				></sl-lens-jsx-demo>
+			</div>
 
-      <div class="checklist">
-        <strong>Manual Verification Checklist:</strong>
-        <ul>
-          <li>☐ File content loads successfully (or shows error gracefully)</li>
-          <li>☐ Analysis reflects the loaded file content</li>
-          <li>☐ Code preview shows the actual file content</li>
-          <li>☐ Language detection works from file extension</li>
-          <li>☐ Loading state handled appropriately</li>
-        </ul>
-      </div>
-    </div>
+			<div class="checklist">
+				<strong>Manual Verification Checklist:</strong>
+				<ul>
+					<li>
+						☐ File content loads successfully (or shows error
+						gracefully)
+					</li>
+					<li>☐ Analysis reflects the loaded file content</li>
+					<li>☐ Code preview shows the actual file content</li>
+					<li>☐ Language detection works from file extension</li>
+					<li>☐ Loading state handled appropriately</li>
+				</ul>
+			</div>
+		</div>
 
-    <!-- Test 6: Configuration options -->
-    <div class="test-section">
-      <h2>Test 6: Configuration Attributes</h2>
-      <div class="expected">
-        <strong>Expected:</strong> Should accept and apply configuration options
-      </div>
+		<!-- Test 6: Configuration options -->
+		<div class="test-section">
+			<h2>Test 6: Configuration Attributes</h2>
+			<div class="expected">
+				<strong>Expected:</strong> Should accept and apply configuration
+				options
+			</div>
 
-      <h3>Default Configuration:</h3>
-      <div class="jsx-output">
-        <sl-lens-jsx-demo code="const test = 'default config';" enabled="true"></sl-lens-jsx-demo>
-      </div>
+			<h3>Default Configuration:</h3>
+			<div class="jsx-output">
+				<sl-lens-jsx-demo
+					code="const test = 'default config';"
+					enabled="true"
+				></sl-lens-jsx-demo>
+			</div>
 
-      <h3>Custom Theme (if supported):</h3>
-      <div class="jsx-output">
-        <sl-lens-jsx-demo
-          code="const test = 'custom theme';"
-          theme="dark"
-          showDetails="true"
-        ></sl-lens-jsx-demo>
-      </div>
+			<h3>Custom Theme (if supported):</h3>
+			<div class="jsx-output">
+				<sl-lens-jsx-demo
+					code="const test = 'custom theme';"
+					theme="dark"
+					showDetails="true"
+				></sl-lens-jsx-demo>
+			</div>
 
-      <div class="checklist">
-        <strong>Manual Verification Checklist:</strong>
-        <ul>
-          <li>☐ Default config works normally</li>
-          <li>☐ Additional attributes don't break component</li>
-          <li>☐ Configuration parsing is handled gracefully</li>
-          <li>☐ Unknown attributes are ignored safely</li>
-        </ul>
-      </div>
-    </div>
+			<div class="checklist">
+				<strong>Manual Verification Checklist:</strong>
+				<ul>
+					<li>☐ Default config works normally</li>
+					<li>☐ Additional attributes don't break component</li>
+					<li>☐ Configuration parsing is handled gracefully</li>
+					<li>☐ Unknown attributes are ignored safely</li>
+				</ul>
+			</div>
+		</div>
 
-    <!-- Test 7: Integration testing -->
-    <div class="test-section">
-      <h2>Test 7: Integration with Pipeline System</h2>
-      <div class="expected">
-        <strong>Expected:</strong> Should work in study panel mode (JSX lenses typically terminate
-        pipelines)
-      </div>
+		<!-- Test 7: Integration testing -->
+		<div class="test-section">
+			<h2>Test 7: Integration with Pipeline System</h2>
+			<div class="expected">
+				<strong>Expected:</strong> Should work in study panel mode (JSX
+				lenses typically terminate pipelines)
+			</div>
 
-      <h3>Study Panel Mode (Parallel Views):</h3>
-      <study-lenses code="const fibonacci = n => n <= 1 ? n : fibonacci(n-1) + fibonacci(n-2);">
-        <sl-lens-jsx-demo></sl-lens-jsx-demo>
-        <sl-lens-reverse></sl-lens-reverse>
-      </study-lenses>
+			<h3>Study Panel Mode (Parallel Views):</h3>
+			<study-lenses
+				code="const fibonacci = n => n <= 1 ? n : fibonacci(n-1) + fibonacci(n-2);"
+			>
+				<sl-lens-jsx-demo></sl-lens-jsx-demo>
+				<sl-lens-reverse></sl-lens-reverse>
+			</study-lenses>
 
-      <div class="checklist">
-        <strong>Manual Verification Checklist:</strong>
-        <ul>
-          <li>☐ JSX component renders correctly in study panel</li>
-          <li>☐ Other lenses also receive and process the same code</li>
-          <li>☐ No interference between JSX and other components</li>
-          <li>☐ Code distribution works properly</li>
-          <li>☐ Visual layout is maintained</li>
-        </ul>
-      </div>
-    </div>
+			<div class="checklist">
+				<strong>Manual Verification Checklist:</strong>
+				<ul>
+					<li>☐ JSX component renders correctly in study panel</li>
+					<li>
+						☐ Other lenses also receive and process the same code
+					</li>
+					<li>☐ No interference between JSX and other components</li>
+					<li>☐ Code distribution works properly</li>
+					<li>☐ Visual layout is maintained</li>
+				</ul>
+			</div>
+		</div>
 
-    <!-- Test 8: Performance with complex JSX -->
-    <div class="test-section">
-      <h2>Test 8: JSX Performance and Complexity</h2>
-      <div class="expected">
-        <strong>Expected:</strong> Should handle JSX rendering efficiently, even with larger code
-        samples
-      </div>
+		<!-- Test 8: Performance with complex JSX -->
+		<div class="test-section">
+			<h2>Test 8: JSX Performance and Complexity</h2>
+			<div class="expected">
+				<strong>Expected:</strong> Should handle JSX rendering
+				efficiently, even with larger code samples
+			</div>
 
-      <div class="jsx-output">
-        <sl-lens-jsx-demo
-          code="// Complex code analysis test
+			<div class="jsx-output">
+				<sl-lens-jsx-demo
+					code="// Complex code analysis test
 class Calculator {
   constructor() {
     this.history = [];
@@ -339,109 +371,126 @@ const calc = new Calculator();
 const sum = calc.add(5, 3);
 const product = calc.multiply(sum, 2);
 console.log('Results:', {sum, product, history: calc.getHistory()});"
-        ></sl-lens-jsx-demo>
-      </div>
+				></sl-lens-jsx-demo>
+			</div>
 
-      <div class="checklist">
-        <strong>Manual Verification Checklist:</strong>
-        <ul>
-          <li>☐ Complex code renders without performance issues</li>
-          <li>☐ Analysis statistics are accurate for larger code</li>
-          <li>☐ JSX component remains responsive</li>
-          <li>☐ No memory leaks or performance warnings</li>
-          <li>☐ Code preview displays complete code correctly</li>
-          <li>☐ Interactive elements still work smoothly</li>
-        </ul>
-      </div>
-    </div>
+			<div class="checklist">
+				<strong>Manual Verification Checklist:</strong>
+				<ul>
+					<li>☐ Complex code renders without performance issues</li>
+					<li>☐ Analysis statistics are accurate for larger code</li>
+					<li>☐ JSX component remains responsive</li>
+					<li>☐ No memory leaks or performance warnings</li>
+					<li>☐ Code preview displays complete code correctly</li>
+					<li>☐ Interactive elements still work smoothly</li>
+				</ul>
+			</div>
+		</div>
 
-    <!-- Import and register components -->
-    <script type="module">
-      // Register all components needed for testing
-      import './register.js';
-      import '../../reverse/register.js';
-      import '../../study/register.js';
+		<!-- Import and register components -->
+		<script type="module">
+			// Register all components needed for testing
+			import './register.js';
+			import '../../reverse/register.js';
+			import '../../study/register.js';
 
-      console.log('✅ JSX Demo Lens component test loaded successfully');
+			console.log('✅ JSX Demo Lens component test loaded successfully');
 
-      // Add interactive testing helpers
-      window.testJSXDemo = {
-        // Helper function to test lens directly
-        async testFunction(code, config = {}) {
-          const { lens } = await import('./lens.js');
-          const { config: configFactory } = await import('./config.js');
+			// Add interactive testing helpers
+			window.testJSXDemo = {
+				// Helper function to test lens directly
+				async testFunction(code, config = {}) {
+					const { lens } = await import('./lens.js');
+					const { config: configFactory } = await import(
+						'./config.js'
+					);
 
-          const snippet = { code, lang: 'js', test: false };
-          const result = await lens(snippet, configFactory(config));
+					const snippet = { code, lang: 'js', test: false };
+					const result = await lens(snippet, configFactory(config));
 
-          console.log('Direct JSX lens test result:', result);
-          console.log('JSX View object:', result.view);
-          return result;
-        },
+					console.log('Direct JSX lens test result:', result);
+					console.log('JSX View object:', result.view);
+					return result;
+				},
 
-        // Test JSX rendering directly
-        async testJSXRendering(code) {
-          const result = await this.testFunction(code);
+				// Test JSX rendering directly
+				async testJSXRendering(code) {
+					const result = await this.testFunction(code);
 
-          // Create a test container
-          const testDiv = document.createElement('div');
-          testDiv.style.border = '1px solid #ccc';
-          testDiv.style.padding = '10px';
-          testDiv.style.margin = '10px';
-          document.body.appendChild(testDiv);
+					// Create a test container
+					const testDiv = document.createElement('div');
+					testDiv.style.border = '1px solid #ccc';
+					testDiv.style.padding = '10px';
+					testDiv.style.margin = '10px';
+					document.body.appendChild(testDiv);
 
-          // Import Preact render and render the JSX
-          const { render } = await import('preact');
-          render(result.view, testDiv);
+					// Import Preact render and render the JSX
+					const { render } = await import('preact');
+					render(result.view, testDiv);
 
-          console.log('JSX rendered to:', testDiv);
-          return testDiv;
-        },
-      };
+					console.log('JSX rendered to:', testDiv);
+					return testDiv;
+				},
+			};
 
-      // Validate JSX components after page load
-      document.addEventListener('DOMContentLoaded', () => {
-        console.log('🔍 Performing JSX component validation...');
+			// Validate JSX components after page load
+			document.addEventListener('DOMContentLoaded', () => {
+				console.log('🔍 Performing JSX component validation...');
 
-        setTimeout(() => {
-          const jsxElements = document.querySelectorAll('sl-lens-jsx-demo');
-          console.log(`Found ${jsxElements.length} JSX demo components`);
+				setTimeout(() => {
+					const jsxElements =
+						document.querySelectorAll('sl-lens-jsx-demo');
+					console.log(
+						`Found ${jsxElements.length} JSX demo components`
+					);
 
-          let hasInteractiveFeatures = true;
-          jsxElements.forEach((el, i) => {
-            // Check if JSX content is rendered
-            const hasAnalysisHeader =
-              el.textContent.includes('Code Analysis') || el.innerHTML.includes('Code Analysis');
-            if (!hasAnalysisHeader) {
-              console.warn(`⚠️  JSX Component ${i + 1} may not be rendering correctly`);
-              hasInteractiveFeatures = false;
-            }
+					let hasInteractiveFeatures = true;
+					jsxElements.forEach((el, i) => {
+						// Check if JSX content is rendered
+						const hasAnalysisHeader =
+							el.textContent.includes('Code Analysis') ||
+							el.innerHTML.includes('Code Analysis');
+						if (!hasAnalysisHeader) {
+							console.warn(
+								`⚠️  JSX Component ${i + 1} may not be rendering correctly`
+							);
+							hasInteractiveFeatures = false;
+						}
 
-            // Check for details elements (interactive features)
-            const hasDetails = el.querySelector('details') !== null;
-            if (!hasDetails) {
-              console.log(`ℹ️  Component ${i + 1} may not have interactive details`);
-            }
-          });
+						// Check for details elements (interactive features)
+						const hasDetails = el.querySelector('details') !== null;
+						if (!hasDetails) {
+							console.log(
+								`ℹ️  Component ${i + 1} may not have interactive details`
+							);
+						}
+					});
 
-          if (hasInteractiveFeatures) {
-            console.log('✅ JSX components appear to be rendering correctly');
-          } else {
-            console.log('❌ Some JSX components may not be working correctly');
-          }
+					if (hasInteractiveFeatures) {
+						console.log(
+							'✅ JSX components appear to be rendering correctly'
+						);
+					} else {
+						console.log(
+							'❌ Some JSX components may not be working correctly'
+						);
+					}
 
-          // Test that we can import the lens function
-          console.log('🧪 Testing direct lens import...');
-          window.testJSXDemo
-            .testFunction('console.log("hello from test")')
-            .then(() => {
-              console.log('✅ Direct lens function test passed');
-            })
-            .catch((err) => {
-              console.error('❌ Direct lens function test failed:', err);
-            });
-        }, 2000); // Wait longer for JSX rendering
-      });
-    </script>
-  </body>
+					// Test that we can import the lens function
+					console.log('🧪 Testing direct lens import...');
+					window.testJSXDemo
+						.testFunction('console.log("hello from test")')
+						.then(() => {
+							console.log('✅ Direct lens function test passed');
+						})
+						.catch((err) => {
+							console.error(
+								'❌ Direct lens function test failed:',
+								err
+							);
+						});
+				}, 2000); // Wait longer for JSX rendering
+			});
+		</script>
+	</body>
 </html>

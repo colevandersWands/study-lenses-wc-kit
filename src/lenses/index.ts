@@ -17,12 +17,12 @@ import run from './run/index.js';
 // Generate mutable export object using names as keys (compile-time deterministic)
 // Note: Removed 'as const' to allow runtime mutations from study.load()
 export default {
-  [reverse.name]: reverse, // 'reverse': reverseObj
-  [uppercase.name]: uppercase, // 'uppercase': uppercaseObj
-  [lowercase.name]: lowercase, // 'lowercase': lowercaseObj
-  [jsxDemo.name]: jsxDemo, // 'jsx-demo': jsxDemoObj
-  [format.name]: format, // 'format': formatObj
-  [loopGuard.name]: loopGuard, // 'loop-guard': loopGuardObj
-  [debug.name]: debug, // 'debug': debugObj
-  [run.name]: run, // 'run': runObj
+	[reverse.name]: reverse, // 'reverse': reverseObj
+	[uppercase.name]: uppercase, // 'uppercase': uppercaseObj
+	[lowercase.name]: lowercase, // 'lowercase': lowercaseObj
+	[jsxDemo.name]: jsxDemo, // 'jsx-demo': jsxDemoObj
+	[format.name]: format, // 'format': formatObj
+	[loopGuard.name]: loopGuard, // 'loop-guard': loopGuardObj
+	[debug.name]: debug, // 'debug': debugObj
+	[run.name]: run, // 'run': runObj
 };

@@ -19,9 +19,10 @@ The Uppercase lens is a simple transform lens that converts all characters in co
 ```typescript
 import { studyLenses } from 'study-lenses';
 
-const result = await studyLenses.study.pipe({ code: 'hello world', lang: 'js', test: false }, [
-  studyLenses.lenses.uppercase,
-]);
+const result = await sl.study.pipe(
+	{ code: 'hello world', lang: 'js', test: false },
+	[studyLenses.lenses.uppercase]
+);
 
 console.log(result.snippet.code); // "HELLO WORLD"
 ```
@@ -31,10 +32,10 @@ console.log(result.snippet.code); // "HELLO WORLD"
 ```typescript
 import { studyLenses } from 'study-lenses';
 
-const result = await studyLenses.lenses.uppercase.lens({
-  code: 'hello world',
-  lang: 'js',
-  test: false,
+const result = await sl.lenses.uppercase.lens({
+	code: 'hello world',
+	lang: 'js',
+	test: false,
 });
 
 console.log(result.snippet.code); // "HELLO WORLD"
@@ -52,7 +53,7 @@ The Uppercase lens requires no configuration - it uses an empty config object by
 
 ```typescript
 // Default configuration (empty)
-const config = studyLenses.lenses.uppercase.config();
+const config = sl.lenses.uppercase.config();
 console.log(config); // {}
 ```
 
@@ -106,10 +107,10 @@ Output: 'LET COUNT = 0; // INITIALIZE COUNTER';
 ### With Reverse Lens
 
 ```typescript
-const result = await studyLenses.study.pipe({ code: 'hello world', lang: 'js', test: false }, [
-  studyLenses.lenses.reverse,
-  studyLenses.lenses.uppercase,
-]);
+const result = await sl.study.pipe(
+	{ code: 'hello world', lang: 'js', test: false },
+	[studyLenses.lenses.reverse, studyLenses.lenses.uppercase]
+);
 
 console.log(result.snippet.code); // "DLROW OLLEH"
 ```
@@ -117,9 +118,9 @@ console.log(result.snippet.code); // "DLROW OLLEH"
 ### With JSX Demo
 
 ```typescript
-const result = await studyLenses.study.pipe(
-  { code: 'function test() {}', lang: 'js', test: false },
-  [studyLenses.lenses.uppercase, studyLenses.lenses['jsx-demo']]
+const result = await sl.study.pipe(
+	{ code: 'function test() {}', lang: 'js', test: false },
+	[studyLenses.lenses.uppercase, studyLenses.lenses['jsx-demo']]
 );
 // Shows analysis of "FUNCTION TEST() {}" with character counts
 ```
@@ -129,7 +130,7 @@ const result = await studyLenses.study.pipe(
 ```typescript
 // Via main export (recommended)
 import { studyLenses } from 'study-lenses';
-const uppercaseLens = studyLenses.lenses.uppercase;
+const uppercaseLens = sl.lenses.uppercase;
 
 // Direct import
 import uppercaseLens from 'study-lenses/lenses/uppercase/lens.js';

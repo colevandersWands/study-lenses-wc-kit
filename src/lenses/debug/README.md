@@ -9,7 +9,7 @@ The Debug Lens transforms source code by adding debugging breakpoints in languag
 ## Supported Languages
 
 - **JavaScript/TypeScript** (`js`, `mjs`, `ts`, `tsx`) - Uses `debugger;` statements
-- **Python** (`python`, `py`) - Uses `import pdb; pdb.set_trace()` statements  
+- **Python** (`python`, `py`) - Uses `import pdb; pdb.set_trace()` statements
 - **Java** (`java`) - Uses `// Add breakpoint here` comments
 - **C/C++** (`c`, `cpp`, `cxx`) - Uses `// Add breakpoint here` comments
 - **Go** (`go`) - Uses `// Add breakpoint here` comments
@@ -36,56 +36,59 @@ The Debug Lens transforms source code by adding debugging breakpoints in languag
 
 ```html
 <!-- Disable debugger injection -->
-<sl-lens-debug 
-  code="console.log('no debugging');" 
-  config='{"enabled": false}'></sl-lens-debug>
+<sl-lens-debug
+	code="console.log('no debugging');"
+	config='{"enabled": false}'
+></sl-lens-debug>
 
 <!-- Custom line spacing -->
-<sl-lens-debug 
-  code="function test() { return 42; }" 
-  config='{"lineSpacing": 1}'></sl-lens-debug>
+<sl-lens-debug
+	code="function test() { return 42; }"
+	config='{"lineSpacing": 1}'
+></sl-lens-debug>
 
 <!-- Custom prefix and suffix -->
-<sl-lens-debug 
-  code="console.log('custom');" 
-  config='{
+<sl-lens-debug
+	code="console.log('custom');"
+	config='{
     "customPrefix": ">>> DEBUG START <<<", 
     "customSuffix": ">>> DEBUG END <<<"
-  }'></sl-lens-debug>
+  }'
+></sl-lens-debug>
 ```
 
 ## Configuration
 
 The debug lens supports the following configuration options:
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `enabled` | `boolean` | `true` | Enable/disable debugger injection |
-| `customPrefix` | `string \| null` | `null` | Custom prefix instead of language-specific debugger |
-| `customSuffix` | `string \| null` | `null` | Custom suffix instead of language-specific debugger |
-| `lineSpacing` | `number` | `3` | Number of blank lines before and after code |
+| Option         | Type             | Default | Description                                         |
+| -------------- | ---------------- | ------- | --------------------------------------------------- |
+| `enabled`      | `boolean`        | `true`  | Enable/disable debugger injection                   |
+| `customPrefix` | `string \| null` | `null`  | Custom prefix instead of language-specific debugger |
+| `customSuffix` | `string \| null` | `null`  | Custom suffix instead of language-specific debugger |
+| `lineSpacing`  | `number`         | `3`     | Number of blank lines before and after code         |
 
 ### Configuration Examples
 
 ```javascript
 // Default configuration
 const config = {
-  enabled: true,
-  customPrefix: null,
-  customSuffix: null, 
-  lineSpacing: 3
+	enabled: true,
+	customPrefix: null,
+	customSuffix: null,
+	lineSpacing: 3,
 };
 
 // Disabled debugger
 const disabledConfig = {
-  enabled: false
+	enabled: false,
 };
 
 // Custom debugging markers
 const customConfig = {
-  customPrefix: "=== DEBUG START ===",
-  customSuffix: "=== DEBUG END ===",
-  lineSpacing: 1
+	customPrefix: '=== DEBUG START ===',
+	customSuffix: '=== DEBUG END ===',
+	lineSpacing: 1,
 };
 ```
 
@@ -94,20 +97,18 @@ const customConfig = {
 ### JavaScript
 
 **Input:**
+
 ```javascript
 console.log('Hello, World!');
 ```
 
 **Output:**
+
 ```javascript
 /* ----------------------------- */
 debugger;
 
-
-
 console.log('Hello, World!');
-
-
 
 /* ----------------------------- */
 debugger;
@@ -116,11 +117,13 @@ debugger;
 ### Python
 
 **Input:**
+
 ```python
 print('Hello, World!')
 ```
 
 **Output:**
+
 ```python
 # ----------------------------- #
 import pdb; pdb.set_trace()
@@ -138,11 +141,13 @@ import pdb; pdb.set_trace()
 ### Java
 
 **Input:**
+
 ```java
 System.out.println("Hello, World!");
 ```
 
 **Output:**
+
 ```java
 /* ----------------------------- */
 // Add breakpoint here
@@ -162,10 +167,11 @@ System.out.println("Hello, World!");
 ### Lens Function
 
 ```typescript
-function lens(snippet: Snippet, config?: DebugConfig): LensOutput
+function lens(snippet: Snippet, config?: DebugConfig): LensOutput;
 ```
 
 **Parameters:**
+
 - `snippet`: Code snippet with `code`, `lang`, and `test` properties
 - `config`: Optional configuration object
 
@@ -174,10 +180,11 @@ function lens(snippet: Snippet, config?: DebugConfig): LensOutput
 ### Configuration Factory
 
 ```typescript
-function config(overrides?: Partial<DebugConfig>): DebugConfig
+function config(overrides?: Partial<DebugConfig>): DebugConfig;
 ```
 
 **Parameters:**
+
 - `overrides`: Partial configuration to merge with defaults
 
 **Returns:** Complete configuration object
@@ -185,7 +192,7 @@ function config(overrides?: Partial<DebugConfig>): DebugConfig
 ### Web Component Registration
 
 ```typescript
-function register(): string
+function register(): string;
 ```
 
 **Returns:** The registered web component tag name (`sl-lens-debug`)
@@ -235,6 +242,7 @@ The debug lens includes comprehensive test coverage:
 - **Interactive tests** (`wc.test.html`) - Manual browser testing with live examples
 
 Run tests with:
+
 ```bash
 npm test
 ```

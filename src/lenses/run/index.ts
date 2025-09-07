@@ -5,8 +5,8 @@ import config from './config.js';
 
 // Default export only (generic object interface)
 export default {
-  name,
-  lens,
-  register, // Export register, not wc
-  config,
+	name,
+	lens,
+	register, // Export register, not wc
+	config,
 };

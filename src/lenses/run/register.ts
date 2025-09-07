@@ -15,13 +15,13 @@ const RunLensComponent = createLensElement(name, lens);
  * Creates and defines the component only when called
  */
 export const register = () => {
-  const tagName = `sl-lens-${name}`;
-  
-  if (!customElements.get(tagName)) {
-    customElements.define(tagName, RunLensComponent);
-  }
-  
-  return tagName;
+	const tagName = `sl-lens-${name}`;
+
+	if (!customElements.get(tagName)) {
+		customElements.define(tagName, RunLensComponent);
+	}
+
+	return tagName;
 };
 
 // Named and default export - ONLY the register function

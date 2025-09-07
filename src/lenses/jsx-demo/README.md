@@ -19,9 +19,13 @@ The JSX Demo lens demonstrates the power of JSX/Preact components in Study Lense
 ```typescript
 import { studyLenses } from 'study-lenses';
 
-const result = await studyLenses.study.pipe(
-  { code: 'function hello() {\n  return "world";\n}', lang: 'js', test: false },
-  [studyLenses.lenses['jsx-demo']]
+const result = await sl.study.pipe(
+	{
+		code: 'function hello() {\n  return "world";\n}',
+		lang: 'js',
+		test: false,
+	},
+	[sl.lenses['jsx-demo']]
 );
 
 // result.view contains JSX component - pipeline stops here
@@ -33,10 +37,10 @@ console.log(result.view); // JSX component ready for rendering
 ```typescript
 import { studyLenses } from 'study-lenses';
 
-const result = await studyLenses.lenses['jsx-demo'].lens({
-  code: 'const x = 42;',
-  lang: 'js',
-  test: false,
+const result = await sl.lenses['jsx-demo'].lens({
+	code: 'const x = 42;',
+	lang: 'js',
+	test: false,
 });
 
 // Returns JSX dashboard component
@@ -54,11 +58,14 @@ console.log(result.view); // Interactive JSX component
 
 ```typescript
 // Transform first, then visualize
-const result = await studyLenses.study.pipe({ code: 'hello world', lang: 'js', test: false }, [
-  studyLenses.lenses.uppercase, // Transform to "HELLO WORLD"
-  studyLenses.lenses.reverse, // Transform to "DLROW OLLEH"
-  studyLenses.lenses['jsx-demo'], // Visualize final result
-]);
+const result = await sl.study.pipe(
+	{ code: 'hello world', lang: 'js', test: false },
+	[
+		studyLenses.lenses.uppercase, // Transform to "HELLO WORLD"
+		studyLenses.lenses.reverse, // Transform to "DLROW OLLEH"
+		sl.lenses['jsx-demo'], // Visualize final result
+	]
+);
 // Shows analysis dashboard for "DLROW OLLEH"
 ```
 
@@ -68,7 +75,7 @@ The JSX Demo lens requires no configuration - it uses an empty config object by 
 
 ```typescript
 // Default configuration (empty)
-const config = studyLenses.lenses['jsx-demo'].config();
+const config = sl.lenses['jsx-demo'].config();
 console.log(config); // {}
 ```
 
@@ -178,10 +185,10 @@ Output:
 
 ```typescript
 // Future enhancement possibilities
-const customConfig = studyLenses.lenses['jsx-demo'].config({
-  theme: 'dark',
-  showAdvancedStats: true,
-  enableSyntaxHighlight: true,
+const customConfig = sl.lenses['jsx-demo'].config({
+	theme: 'dark',
+	showAdvancedStats: true,
+	enableSyntaxHighlight: true,
 });
 ```
 
@@ -190,7 +197,7 @@ const customConfig = studyLenses.lenses['jsx-demo'].config({
 ```typescript
 // Via main export (recommended)
 import { studyLenses } from 'study-lenses';
-const jsxDemoLens = studyLenses.lenses['jsx-demo'];
+const jsxDemoLens = sl.lenses['jsx-demo'];
 
 // Direct import
 import jsxDemoLens from 'study-lenses/lenses/jsx-demo/lens.js';
@@ -209,10 +216,10 @@ import jsxDemoLens from 'study-lenses/lenses/jsx-demo/lens.js';
 ```json
 // tsconfig.json
 {
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact"
-  }
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact"
+	}
 }
 ```
 

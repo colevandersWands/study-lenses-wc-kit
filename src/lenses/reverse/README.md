@@ -18,9 +18,10 @@ The Reverse lens is a simple transform lens that reverses the entire code string
 ```typescript
 import { studyLenses } from 'study-lenses';
 
-const result = await studyLenses.study.pipe({ code: 'hello world', lang: 'js', test: false }, [
-  studyLenses.lenses.reverse,
-]);
+const result = await sl.study.pipe(
+	{ code: 'hello world', lang: 'js', test: false },
+	[studyLenses.lenses.reverse]
+);
 
 console.log(result.snippet.code); // "dlrow olleh"
 ```
@@ -30,10 +31,10 @@ console.log(result.snippet.code); // "dlrow olleh"
 ```typescript
 import { studyLenses } from 'study-lenses';
 
-const result = await studyLenses.lenses.reverse.lens({
-  code: 'hello world',
-  lang: 'js',
-  test: false,
+const result = await sl.lenses.reverse.lens({
+	code: 'hello world',
+	lang: 'js',
+	test: false,
 });
 
 console.log(result.snippet.code); // "dlrow olleh"
@@ -51,7 +52,7 @@ The Reverse lens requires no configuration - it uses an empty config object by d
 
 ```typescript
 // Default configuration (empty)
-const config = studyLenses.lenses.reverse.config();
+const config = sl.lenses.reverse.config();
 console.log(config); // {}
 ```
 
@@ -97,7 +98,7 @@ Output: '2 enil\n1 enil';
 ```typescript
 // Via main export (recommended)
 import { studyLenses } from 'study-lenses';
-const reverseLens = studyLenses.lenses.reverse;
+const reverseLens = sl.lenses.reverse;
 
 // Direct import
 import reverseLens from 'study-lenses/lenses/reverse/lens.js';

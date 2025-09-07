@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>TraceTable Drag Test</title>
+		<style>
+			body {
+				margin: 0;
+				padding: 20px;
+				font-family: Arial, sans-serif;
+			}
+
+			sl-ui-trace-tables {
+				background: white;
+				border: 2px solid #333;
+				border-radius: 8px;
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			}
+
+			.instructions {
+				background: #f0f0f0;
+				padding: 15px;
+				border-radius: 4px;
+				margin-bottom: 20px;
+			}
+
+			.instructions h3 {
+				margin-top: 0;
+			}
+
+			.instructions ul {
+				margin-bottom: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="instructions">
+			<h3>TraceTable Drag Test</h3>
+			<ul>
+				<li>
+					<strong>Click once</strong> on the table to disable dragging
+				</li>
+				<li>
+					<strong>Double-click</strong> on the table to re-enable
+					dragging
+				</li>
+				<li>
+					<strong>Drag</strong> the table around when enabled (cursor
+					should change)
+				</li>
+				<li><strong>X button</strong> closes the table</li>
+			</ul>
+		</div>
+
+		<sl-ui-trace-tables steps></sl-ui-trace-tables>
+
+		<script type="module">
+			import './index.js';
+
+			console.log('TraceTable test loaded - try dragging the table!');
+
+			// Log drag state changes for debugging
+			const table = document.querySelector('sl-ui-trace-tables');
+			if (table) {
+				table.addEventListener('click', () => {
+					console.log('Table clicked - dragging should be disabled');
+				});
+
+				table.addEventListener('dblclick', () => {
+					console.log(
+						'Table double-clicked - dragging should be enabled'
+					);
+				});
+			}
+		</script>
+	</body>
+</html>

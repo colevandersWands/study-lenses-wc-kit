@@ -19,9 +19,10 @@ The Lowercase lens is a simple transform lens that converts all characters in co
 ```typescript
 import { studyLenses } from 'study-lenses';
 
-const result = await studyLenses.study.pipe({ code: 'HELLO WORLD', lang: 'js', test: false }, [
-  studyLenses.lenses.lowercase,
-]);
+const result = await sl.study.pipe(
+	{ code: 'HELLO WORLD', lang: 'js', test: false },
+	[sl.lenses.lowercase]
+);
 
 console.log(result.snippet.code); // "hello world"
 ```
@@ -31,10 +32,10 @@ console.log(result.snippet.code); // "hello world"
 ```typescript
 import { studyLenses } from 'study-lenses';
 
-const result = await studyLenses.lenses.lowercase.lens({
-  code: 'HELLO WORLD',
-  lang: 'js',
-  test: false,
+const result = await sl.lenses.lowercase.lens({
+	code: 'HELLO WORLD',
+	lang: 'js',
+	test: false,
 });
 
 console.log(result.snippet.code); // "hello world"
@@ -52,7 +53,7 @@ The Lowercase lens requires no configuration - it uses an empty config object by
 
 ```typescript
 // Default configuration (empty)
-const config = studyLenses.lenses.lowercase.config();
+const config = sl.lenses.lowercase.config();
 console.log(config); // {}
 ```
 
@@ -106,10 +107,13 @@ Output: 'let count = 0; // initialize counter';
 ### Uppercase then Lowercase (Normalization)
 
 ```typescript
-const result = await studyLenses.study.pipe({ code: 'MiXeD cAsE cOdE', lang: 'js', test: false }, [
-  studyLenses.lenses.uppercase, // First: normalize to all caps
-  studyLenses.lenses.lowercase, // Then: convert to all lowercase
-]);
+const result = await sl.study.pipe(
+	{ code: 'MiXeD cAsE cOdE', lang: 'js', test: false },
+	[
+		studyLenses.lenses.uppercase, // First: normalize to all caps
+		sl.lenses.lowercase, // Then: convert to all lowercase
+	]
+);
 
 console.log(result.snippet.code); // "mixed case code"
 ```
@@ -117,9 +121,13 @@ console.log(result.snippet.code); // "mixed case code"
 ### With Reverse and JSX Demo
 
 ```typescript
-const result = await studyLenses.study.pipe(
-  { code: 'FUNCTION TEST() {}', lang: 'js', test: false },
-  [studyLenses.lenses.lowercase, studyLenses.lenses.reverse, studyLenses.lenses['jsx-demo']]
+const result = await sl.study.pipe(
+	{ code: 'FUNCTION TEST() {}', lang: 'js', test: false },
+	[
+		sl.lenses.lowercase,
+		studyLenses.lenses.reverse,
+		studyLenses.lenses['jsx-demo'],
+	]
 );
 // Shows analysis of "}{ )(tset noitcnuf" with character counts
 ```
@@ -129,7 +137,7 @@ const result = await studyLenses.study.pipe(
 ```typescript
 // Via main export (recommended)
 import { studyLenses } from 'study-lenses';
-const lowercaseLens = studyLenses.lenses.lowercase;
+const lowercaseLens = sl.lenses.lowercase;
 
 // Direct import
 import lowercaseLens from 'study-lenses/lenses/lowercase/lens.js';

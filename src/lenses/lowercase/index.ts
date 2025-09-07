@@ -9,8 +9,8 @@ import config from './config.js';
 
 // Default export only (generic object interface)
 export default {
-  name,
-  lens,
-  register,
-  config,
+	name,
+	lens,
+	register,
+	config,
 };

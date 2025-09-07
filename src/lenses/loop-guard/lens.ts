@@ -19,20 +19,28 @@ import { insertLoopGuards } from './utils/ast-transform.js';
  * Transforms JavaScript code to include loop guards that prevent infinite loops.
  * Configurable to protect specific loop types and optionally format output.
  */
-export const lens = (snippet: Snippet, config: LoopGuardConfig = _config()): LensOutput => {
-  try {
-    // Insert loop guards based on configuration
-    const guardedCode = insertLoopGuards(snippet.code, config);
+export const lens = (
+	snippet: Snippet,
+	config: LoopGuardConfig = _config()
+): LensOutput => {
+	try {
+		// Insert loop guards based on configuration
+		const guardedCodeOutput = insertLoopGuards(snippet.code, config);
+		// Ensure we get a string (insertLoopGuards returns string when input is string)
+		const guardedCode =
+			typeof guardedCodeOutput === 'string'
+				? guardedCodeOutput
+				: snippet.code;
 
-    return {
-      snippet: { ...snippet, code: guardedCode },
-      ui: null, // Transform lens - no view component
-    };
-  } catch (error) {
-    // Return original snippet on any processing error
-    console.warn('Loop guard lens failed:', error);
-    return { snippet, ui: null };
-  }
+		return {
+			snippet: { ...snippet, code: guardedCode },
+			ui: null, // Transform lens - no view component
+		};
+	} catch (error) {
+		// Return original snippet on any processing error
+		console.warn('Loop guard lens failed:', error);
+		return { snippet, ui: null };
+	}
 };
 
 export default lens;

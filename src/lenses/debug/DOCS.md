@@ -12,20 +12,21 @@ The main transformation logic that detects programming languages and applies app
 
 ```typescript
 export const lens = (snippet: Snippet, config = _config()): LensOutput => {
-  if (!config.enabled) {
-    return { snippet, ui: null };
-  }
+	if (!config.enabled) {
+		return { snippet, ui: null };
+	}
 
-  const wrappedCode = wrapWithDebugger(snippet.code, snippet.lang, config);
-  
-  return {
-    snippet: { ...snippet, code: wrappedCode },
-    ui: null, // Transform-only lens
-  };
+	const wrappedCode = wrapWithDebugger(snippet.code, snippet.lang, config);
+
+	return {
+		snippet: { ...snippet, code: wrappedCode },
+		ui: null, // Transform-only lens
+	};
 };
 ```
 
 **Key Features:**
+
 - **Language Detection**: Case-insensitive matching on `snippet.lang`
 - **Configurable Wrapping**: Supports custom prefix/suffix or language defaults
 - **Immutable Operations**: Returns new snippet object without mutating input
@@ -37,10 +38,10 @@ Factory-based configuration with deep merge support for flexible overrides.
 
 ```typescript
 const defaultConfig = {
-  enabled: true,
-  customPrefix: null,
-  customSuffix: null,
-  lineSpacing: 3,
+	enabled: true,
+	customPrefix: null,
+	customSuffix: null,
+	lineSpacing: 3,
 };
 
 export const config = (overrides = {}) => deepMerge(defaultConfig, overrides);
@@ -48,12 +49,12 @@ export const config = (overrides = {}) => deepMerge(defaultConfig, overrides);
 
 **Configuration Properties:**
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `enabled` | `boolean` | `true` | Master switch for debugger injection |
-| `customPrefix` | `string \| null` | `null` | Override language-specific prefix |
-| `customSuffix` | `string \| null` | `null` | Override language-specific suffix |
-| `lineSpacing` | `number` | `3` | Blank lines before/after code |
+| Property       | Type             | Default | Description                          |
+| -------------- | ---------------- | ------- | ------------------------------------ |
+| `enabled`      | `boolean`        | `true`  | Master switch for debugger injection |
+| `customPrefix` | `string \| null` | `null`  | Override language-specific prefix    |
+| `customSuffix` | `string \| null` | `null`  | Override language-specific suffix    |
+| `lineSpacing`  | `number`         | `3`     | Blank lines before/after code        |
 
 ### 3. Web Component (`wc.ts`)
 
@@ -61,16 +62,17 @@ Minimal wrapper component that parses HTML attributes and delegates to the lens 
 
 ```typescript
 export const register = () => {
-  const tagName = `sl-lens-${name}`;
-  if (!customElements.get(tagName)) {
-    const wc = createLensElement(name, lens);
-    customElements.define(tagName, wc);
-  }
-  return tagName;
+	const tagName = `sl-lens-${name}`;
+	if (!customElements.get(tagName)) {
+		const wc = createLensElement(name, lens);
+		customElements.define(tagName, wc);
+	}
+	return tagName;
 };
 ```
 
 **Supported Attributes:**
+
 - `code` - Inline code or file path
 - `src` - File path to load code from
 - `lang` - Language override (optional, auto-detected from extension)
@@ -82,36 +84,45 @@ export const register = () => {
 
 ```typescript
 const detectLanguage = (lang: string): LanguageInfo => {
-  const normalized = lang.toLowerCase();
-  
-  // JavaScript variants
-  if (['js', 'javascript', 'mjs', 'ts', 'typescript', 'tsx'].includes(normalized)) {
-    return { type: 'javascript', style: 'c-style' };
-  }
-  
-  // Python
-  if (['python', 'py'].includes(normalized)) {
-    return { type: 'python', style: 'python' };
-  }
-  
-  // C-style languages with comments
-  if (['java', 'c', 'cpp', 'cxx', 'c++', 'go', 'rust', 'rs'].includes(normalized)) {
-    return { type: 'c-style', style: 'comment' };
-  }
-  
-  // Ruby
-  if (['ruby', 'rb'].includes(normalized)) {
-    return { type: 'ruby', style: 'hash-comment' };
-  }
-  
-  // Default fallback
-  return { type: 'javascript', style: 'c-style' };
+	const normalized = lang.toLowerCase();
+
+	// JavaScript variants
+	if (
+		['js', 'javascript', 'mjs', 'ts', 'typescript', 'tsx'].includes(
+			normalized
+		)
+	) {
+		return { type: 'javascript', style: 'c-style' };
+	}
+
+	// Python
+	if (['python', 'py'].includes(normalized)) {
+		return { type: 'python', style: 'python' };
+	}
+
+	// C-style languages with comments
+	if (
+		['java', 'c', 'cpp', 'cxx', 'c++', 'go', 'rust', 'rs'].includes(
+			normalized
+		)
+	) {
+		return { type: 'c-style', style: 'comment' };
+	}
+
+	// Ruby
+	if (['ruby', 'rb'].includes(normalized)) {
+		return { type: 'ruby', style: 'hash-comment' };
+	}
+
+	// Default fallback
+	return { type: 'javascript', style: 'c-style' };
 };
 ```
 
 ### Wrapping Strategies
 
 #### JavaScript/TypeScript Style
+
 ```
 /* ----------------------------- */
 debugger;
@@ -123,17 +134,19 @@ debugger;
 ```
 
 #### Python Style
+
 ```
 # ----------------------------- #
 import pdb; pdb.set_trace()
 [spacing]
-[code]  
+[code]
 [spacing]
 # ----------------------------- #
 import pdb; pdb.set_trace()
 ```
 
 #### Comment-Based Languages
+
 ```
 /* ----------------------------- */
 // Add breakpoint here
@@ -145,12 +158,13 @@ import pdb; pdb.set_trace()
 ```
 
 #### Ruby Style
+
 ```
 # ----------------------------- #
 # Add breakpoint here
 [spacing]
 [code]
-[spacing] 
+[spacing]
 # ----------------------------- #
 # Add breakpoint here
 ```
@@ -161,11 +175,11 @@ When `customPrefix` or `customSuffix` is provided in configuration:
 
 ```typescript
 if (config.customPrefix || config.customSuffix) {
-  const prefix = config.customPrefix || '';
-  const suffix = config.customSuffix || '';
-  const spacing = '\n'.repeat(config.lineSpacing);
-  
-  return `${prefix}${spacing}${code}${spacing}${suffix}`;
+	const prefix = config.customPrefix || '';
+	const suffix = config.customSuffix || '';
+	const spacing = '\n'.repeat(config.lineSpacing);
+
+	return `${prefix}${spacing}${code}${spacing}${suffix}`;
 }
 ```
 
@@ -188,24 +202,26 @@ const safeConfig = config(userConfig || {});
 
 // Type-safe property access with defaults
 const enabled = safeConfig.enabled !== false; // Defaults to true
-const lineSpacing = typeof safeConfig.lineSpacing === 'number' 
-  ? safeConfig.lineSpacing 
-  : 3;
+const lineSpacing =
+	typeof safeConfig.lineSpacing === 'number' ? safeConfig.lineSpacing : 3;
 ```
 
 ## Performance Characteristics
 
 ### Computational Complexity
+
 - **Time Complexity**: O(n) where n = code length (single string concatenation)
 - **Space Complexity**: O(n) for output string creation
 - **Language Detection**: O(1) with hash map lookup
 
 ### Memory Usage
+
 - **Input Preservation**: Original snippet object is never mutated
 - **Minimal Allocation**: Only creates new code string and snippet wrapper
 - **Configuration Caching**: Config factory can be called multiple times efficiently
 
 ### Optimization Notes
+
 - **String Operations**: Uses template literals for efficient concatenation
 - **Early Return**: Disabled configuration bypasses all processing
 - **Immutable Updates**: Spread operator for efficient object copying
@@ -243,7 +259,7 @@ const lineSpacing = typeof safeConfig.lineSpacing === 'number'
 await pipe(snippet, [reverse.lens, debugger.lens, uppercase.lens]);
 // Each lens transforms the code sequentially
 
-// Terminal lens in pipeline  
+// Terminal lens in pipeline
 await pipe(snippet, [debugger.lens, jsxDemo]);
 // Pipeline stops at jsxDemo view, debugger transformation is preserved
 ```
@@ -256,12 +272,12 @@ await pipe(snippet, [debugger.lens, jsxDemo]);
 
 <!-- Programmatic usage -->
 <script>
-  import { register } from './debugger/wc.js';
-  const tagName = register(); // Returns 'sl-lens-debug'
-  
-  const element = document.createElement(tagName);
-  element.setAttribute('code', 'console.log("dynamic")');
-  document.body.appendChild(element);
+	import { register } from './debugger/wc.js';
+	const tagName = register(); // Returns 'sl-lens-debug'
+
+	const element = document.createElement(tagName);
+	element.setAttribute('code', 'console.log("dynamic")');
+	document.body.appendChild(element);
 </script>
 ```
 
@@ -275,14 +291,14 @@ import debugger from './lenses/debugger/index.js';
 const result1 = debugger.lens(snippet);
 
 // Configured usage
-const customConfig = debugger.config({ 
+const customConfig = debugger.config({
   lineSpacing: 1,
-  customPrefix: '>>> START DEBUG <<<' 
+  customPrefix: '>>> START DEBUG <<<'
 });
 const result2 = debugger.lens(snippet, customConfig);
 
 // Web component configuration
-document.querySelector('sl-lens-debug').setAttribute('config', 
+document.querySelector('sl-lens-debug').setAttribute('config',
   JSON.stringify({ enabled: false })
 );
 ```
@@ -292,20 +308,23 @@ document.querySelector('sl-lens-debug').setAttribute('config',
 ### Adding New Languages
 
 1. **Extend Language Detection:**
+
 ```typescript
 // Add to detectLanguage function
 if (['kotlin', 'kt'].includes(normalized)) {
-  return { type: 'kotlin', style: 'c-style' };
+	return { type: 'kotlin', style: 'c-style' };
 }
 ```
 
 2. **Add Language-Specific Logic:**
+
 ```typescript
 case 'kotlin':
   return createWrapper(code, '// DEBUG START', '// DEBUG END', config.lineSpacing);
 ```
 
 3. **Update Tests:**
+
 - Add language detection test cases
 - Add formatting verification tests
 - Update interactive HTML examples
@@ -315,12 +334,12 @@ case 'kotlin':
 ```typescript
 // Example: Add conditional debugging
 const conditionalWrapper = (code: string, condition: string) => {
-  return `if (${condition}) { debugger; }\n${code}\nif (${condition}) { debugger; }`;
+	return `if (${condition}) { debugger; }\n${code}\nif (${condition}) { debugger; }`;
 };
 
 // Example: Add logging integration
 const loggingWrapper = (code: string, logLevel: string) => {
-  return `console.${logLevel}('DEBUG START');\n${code}\nconsole.${logLevel}('DEBUG END');`;
+	return `console.${logLevel}('DEBUG START');\n${code}\nconsole.${logLevel}('DEBUG END');`;
 };
 ```
 
@@ -329,28 +348,34 @@ const loggingWrapper = (code: string, logLevel: string) => {
 ```typescript
 // Extended configuration interface
 interface ExtendedDebugConfig extends DebugConfig {
-  logLevel?: 'debug' | 'info' | 'warn';
-  conditional?: string;
-  timestamp?: boolean;
+	logLevel?: 'debug' | 'info' | 'warn';
+	conditional?: string;
+	timestamp?: boolean;
 }
 
 // Enhanced config factory
-const enhancedConfig = (overrides = {}) => deepMerge({
-  ...defaultConfig,
-  logLevel: 'debug',
-  conditional: null,
-  timestamp: false,
-}, overrides);
+const enhancedConfig = (overrides = {}) =>
+	deepMerge(
+		{
+			...defaultConfig,
+			logLevel: 'debug',
+			conditional: null,
+			timestamp: false,
+		},
+		overrides
+	);
 ```
 
 ## Dependencies
 
 ### Internal Dependencies
+
 - `../../utils/deep-merge.js` - Configuration merging
 - `../../types.js` - TypeScript interfaces
 - `../../web-components/create-lens-element.js` - Component factory
 
 ### External Dependencies
+
 None. The debugger lens is completely self-contained with no external library dependencies.
 
 ## Browser Compatibility
@@ -365,14 +390,16 @@ None. The debugger lens is completely self-contained with no external library de
 ### From Manual Debugger Insertion
 
 **Before:**
+
 ```javascript
 // Manual insertion
 debugger;
-console.log('Hello, World!');  
+console.log('Hello, World!');
 debugger;
 ```
 
 **After:**
+
 ```html
 <sl-lens-debug code="console.log('Hello, World!')"></sl-lens-debug>
 ```
@@ -380,6 +407,7 @@ debugger;
 ### From Language-Specific Tools
 
 **Python: From pdb manual insertion:**
+
 ```python
 # Before
 import pdb; pdb.set_trace()
@@ -393,11 +421,13 @@ import pdb; pdb.set_trace()
 ```
 
 **Java: From IDE breakpoints to portable comments:**
+
 ```html
 <!-- Generates portable breakpoint comments -->
-<sl-lens-debug 
-  code="System.out.println('Hello, World!');" 
-  lang="java"></sl-lens-debug>
+<sl-lens-debug
+	code="System.out.println('Hello, World!');"
+	lang="java"
+></sl-lens-debug>
 ```
 
 This documentation provides comprehensive technical details for maintainers, contributors, and advanced users of the Debugger Lens.

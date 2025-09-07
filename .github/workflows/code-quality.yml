@@ -1,189 +1,189 @@
 name: Code Quality
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
-  workflow_dispatch:
-    inputs:
-      node_version:
-        description: 'Node.js version to test (leave empty for all versions)'
-        required: false
-        default: ''
-        type: string
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main, develop]
+    workflow_dispatch:
+        inputs:
+            node_version:
+                description: 'Node.js version to test (leave empty for all versions)'
+                required: false
+                default: ''
+                type: string
 
 jobs:
-  quality-check:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: ${{ github.event.inputs.node_version && fromJson(format('["{0}"]', github.event.inputs.node_version)) || fromJson('[18, 20, 22]') }}
-      fail-fast: false
+    quality-check:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: ${{ github.event.inputs.node_version && fromJson(format('["{0}"]', github.event.inputs.node_version)) || fromJson('[18, 20, 22]') }}
+            fail-fast: false
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+            - name: Setup Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'npm'
 
-    - name: Install dependencies
-      run: npm ci
+            - name: Install dependencies
+              run: npm ci
 
-    - name: TypeScript Build
-      id: build
-      run: |
-        echo "::group::TypeScript Build"
-        if npm run build; then
-          echo "✅ Build successful"
-          echo "build_status=success" >> $GITHUB_OUTPUT
-        else
-          echo "❌ Build failed"
-          echo "build_status=failed" >> $GITHUB_OUTPUT
-        fi
-        echo "::endgroup::"
-      continue-on-error: true
+            - name: TypeScript Build
+              id: build
+              run: |
+                  echo "::group::TypeScript Build"
+                  if npm run build; then
+                    echo "✅ Build successful"
+                    echo "build_status=success" >> $GITHUB_OUTPUT
+                  else
+                    echo "❌ Build failed"
+                    echo "build_status=failed" >> $GITHUB_OUTPUT
+                  fi
+                  echo "::endgroup::"
+              continue-on-error: true
 
-    - name: ESLint Check
-      id: lint
-      run: |
-        echo "::group::ESLint Analysis"
-        if npm run lint; then
-          echo "✅ No linting errors"
-          echo "lint_status=clean" >> $GITHUB_OUTPUT
-        else
-          echo "⚠️ Linting issues found"
-          echo "lint_status=issues" >> $GITHUB_OUTPUT
-        fi
-        echo "::endgroup::"
-      continue-on-error: true
+            - name: ESLint Check
+              id: lint
+              run: |
+                  echo "::group::ESLint Analysis"
+                  if npm run lint; then
+                    echo "✅ No linting errors"
+                    echo "lint_status=clean" >> $GITHUB_OUTPUT
+                  else
+                    echo "⚠️ Linting issues found"
+                    echo "lint_status=issues" >> $GITHUB_OUTPUT
+                  fi
+                  echo "::endgroup::"
+              continue-on-error: true
 
-    - name: Prettier Format Check
-      id: format
-      run: |
-        echo "::group::Format Check"
-        if npm run format:check; then
-          echo "✅ Code properly formatted"
-          echo "format_status=clean" >> $GITHUB_OUTPUT
-        else
-          echo "⚠️ Formatting issues found"
-          echo "format_status=issues" >> $GITHUB_OUTPUT
-        fi
-        echo "::endgroup::"
-      continue-on-error: true
+            - name: Prettier Format Check
+              id: format
+              run: |
+                  echo "::group::Format Check"
+                  if npm run format:check; then
+                    echo "✅ Code properly formatted"
+                    echo "format_status=clean" >> $GITHUB_OUTPUT
+                  else
+                    echo "⚠️ Formatting issues found"
+                    echo "format_status=issues" >> $GITHUB_OUTPUT
+                  fi
+                  echo "::endgroup::"
+              continue-on-error: true
 
-    - name: TypeScript Type Check
-      id: typecheck
-      run: |
-        echo "::group::TypeScript Type Check"
-        if npm run type-check; then
-          echo "✅ No type errors"
-          echo "typecheck_status=clean" >> $GITHUB_OUTPUT
-        else
-          echo "⚠️ Type errors found"
-          echo "typecheck_status=issues" >> $GITHUB_OUTPUT
-        fi
-        echo "::endgroup::"
-      continue-on-error: true
+            - name: TypeScript Type Check
+              id: typecheck
+              run: |
+                  echo "::group::TypeScript Type Check"
+                  if npm run type-check; then
+                    echo "✅ No type errors"
+                    echo "typecheck_status=clean" >> $GITHUB_OUTPUT
+                  else
+                    echo "⚠️ Type errors found"
+                    echo "typecheck_status=issues" >> $GITHUB_OUTPUT
+                  fi
+                  echo "::endgroup::"
+              continue-on-error: true
 
-    - name: Run Tests
-      id: test
-      run: |
-        echo "::group::Test Suite"
-        if npm run test:run; then
-          echo "✅ All tests passed"
-          echo "test_status=passed" >> $GITHUB_OUTPUT
-        else
-          echo "⚠️ Test failures found"
-          echo "test_status=failed" >> $GITHUB_OUTPUT
-        fi
-        echo "::endgroup::"
-      continue-on-error: true
+            - name: Run Tests
+              id: test
+              run: |
+                  echo "::group::Test Suite"
+                  if npm run test:run; then
+                    echo "✅ All tests passed"
+                    echo "test_status=passed" >> $GITHUB_OUTPUT
+                  else
+                    echo "⚠️ Test failures found"
+                    echo "test_status=failed" >> $GITHUB_OUTPUT
+                  fi
+                  echo "::endgroup::"
+              continue-on-error: true
 
-    - name: Upload Test Results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-results-node-${{ matrix.node-version }}
-        path: |
-          html/
-          coverage/
-        retention-days: 7
+            - name: Upload Test Results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: test-results-node-${{ matrix.node-version }}
+                  path: |
+                      html/
+                      coverage/
+                  retention-days: 7
 
-    - name: Quality Summary
-      if: always()
-      run: |
-        echo "## 📊 Code Quality Summary (Node ${{ matrix.node-version }})" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        
-        # Build Status
-        if [[ "${{ steps.build.outputs.build_status }}" == "success" ]]; then
-          echo "✅ **Build**: Successful" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "❌ **Build**: Failed" >> $GITHUB_STEP_SUMMARY
-        fi
-        
-        # Lint Status
-        if [[ "${{ steps.lint.outputs.lint_status }}" == "clean" ]]; then
-          echo "✅ **Linting**: Clean" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "⚠️ **Linting**: Issues found" >> $GITHUB_STEP_SUMMARY
-        fi
-        
-        # Format Status
-        if [[ "${{ steps.format.outputs.format_status }}" == "clean" ]]; then
-          echo "✅ **Formatting**: Clean" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "⚠️ **Formatting**: Issues found" >> $GITHUB_STEP_SUMMARY
-        fi
-        
-        # Type Check Status
-        if [[ "${{ steps.typecheck.outputs.typecheck_status }}" == "clean" ]]; then
-          echo "✅ **Type Check**: Clean" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "⚠️ **Type Check**: Issues found" >> $GITHUB_STEP_SUMMARY
-        fi
-        
-        # Test Status
-        if [[ "${{ steps.test.outputs.test_status }}" == "passed" ]]; then
-          echo "✅ **Tests**: All passed" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "⚠️ **Tests**: Some failures" >> $GITHUB_STEP_SUMMARY
-        fi
-        
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "📋 **Note**: This workflow reports quality issues but does not block development." >> $GITHUB_STEP_SUMMARY
+            - name: Quality Summary
+              if: always()
+              run: |
+                  echo "## 📊 Code Quality Summary (Node ${{ matrix.node-version }})" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
 
-  comment-pr:
-    if: github.event_name == 'pull_request'
-    needs: quality-check
-    runs-on: ubuntu-latest
-    steps:
-    - name: Comment on PR
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const comment = `
-          ## 🔍 Code Quality Report
-          
-          Quality checks completed! This is a summary of the current state:
-          
-          - **Multi-Node Testing**: Tested on Node.js 18, 20, and 22
-          - **Quality Gates**: Build, Lint, Format, Type Check, Tests
-          
-          > **Note**: This workflow monitors code quality but does not block merging. 
-          > Review the "Actions" tab for detailed results and any warnings.
-          
-          **Artifacts**: Test reports and coverage data have been uploaded for review.
-          `;
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: comment
-          });
+                  # Build Status
+                  if [[ "${{ steps.build.outputs.build_status }}" == "success" ]]; then
+                    echo "✅ **Build**: Successful" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "❌ **Build**: Failed" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+                  # Lint Status
+                  if [[ "${{ steps.lint.outputs.lint_status }}" == "clean" ]]; then
+                    echo "✅ **Linting**: Clean" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "⚠️ **Linting**: Issues found" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+                  # Format Status
+                  if [[ "${{ steps.format.outputs.format_status }}" == "clean" ]]; then
+                    echo "✅ **Formatting**: Clean" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "⚠️ **Formatting**: Issues found" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+                  # Type Check Status
+                  if [[ "${{ steps.typecheck.outputs.typecheck_status }}" == "clean" ]]; then
+                    echo "✅ **Type Check**: Clean" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "⚠️ **Type Check**: Issues found" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+                  # Test Status
+                  if [[ "${{ steps.test.outputs.test_status }}" == "passed" ]]; then
+                    echo "✅ **Tests**: All passed" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "⚠️ **Tests**: Some failures" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "📋 **Note**: This workflow reports quality issues but does not block development." >> $GITHUB_STEP_SUMMARY
+
+    comment-pr:
+        if: github.event_name == 'pull_request'
+        needs: quality-check
+        runs-on: ubuntu-latest
+        steps:
+            - name: Comment on PR
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const comment = `
+                      ## 🔍 Code Quality Report
+
+                      Quality checks completed! This is a summary of the current state:
+
+                      - **Multi-Node Testing**: Tested on Node.js 18, 20, and 22
+                      - **Quality Gates**: Build, Lint, Format, Type Check, Tests
+
+                      > **Note**: This workflow monitors code quality but does not block merging. 
+                      > Review the "Actions" tab for detailed results and any warnings.
+
+                      **Artifacts**: Test reports and coverage data have been uploaded for review.
+                      `;
+
+                      github.rest.issues.createComment({
+                        issue_number: context.issue.number,
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        body: comment
+                      });

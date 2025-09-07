@@ -3,7 +3,7 @@ import { name } from './name.js';
 import { register } from './register.js';
 
 export default {
-  component, // Pure function
-  name,
-  register,
+	component, // Pure function
+	name,
+	register,
 };

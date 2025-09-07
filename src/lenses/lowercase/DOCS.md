@@ -26,11 +26,11 @@ lowercase/
 ```typescript
 // lens.ts
 export const lens = (snippet: Snippet, config = _config()): LensOutput => ({
-  snippet: {
-    ...snippet,
-    code: snippet.code.toLowerCase(),
-  },
-  view: null, // Transform lens - no visual output
+	snippet: {
+		...snippet,
+		code: snippet.code.toLowerCase(),
+	},
+	view: null, // Transform lens - no visual output
 });
 ```
 
@@ -75,32 +75,32 @@ Uses the standard lens element factory with automatic:
 ```typescript
 // Test cases to verify
 describe('lowercase lens', () => {
-  test('converts uppercase to lowercase', () => {
-    const result = lens({ code: 'HELLO', lang: 'js', test: false });
-    expect(result.snippet.code).toBe('hello');
-  });
+	test('converts uppercase to lowercase', () => {
+		const result = lens({ code: 'HELLO', lang: 'js', test: false });
+		expect(result.snippet.code).toBe('hello');
+	});
 
-  test('handles mixed case', () => {
-    const result = lens({ code: 'HeLLo WoRLd', lang: 'js', test: false });
-    expect(result.snippet.code).toBe('hello world');
-  });
+	test('handles mixed case', () => {
+		const result = lens({ code: 'HeLLo WoRLd', lang: 'js', test: false });
+		expect(result.snippet.code).toBe('hello world');
+	});
 
-  test('preserves non-alphabetic characters', () => {
-    const result = lens({ code: 'LET X = 42;', lang: 'js', test: false });
-    expect(result.snippet.code).toBe('let x = 42;');
-  });
+	test('preserves non-alphabetic characters', () => {
+		const result = lens({ code: 'LET X = 42;', lang: 'js', test: false });
+		expect(result.snippet.code).toBe('let x = 42;');
+	});
 
-  test('handles unicode characters', () => {
-    const result = lens({ code: 'CAFÉ', lang: 'js', test: false });
-    expect(result.snippet.code).toBe('café');
-  });
+	test('handles unicode characters', () => {
+		const result = lens({ code: 'CAFÉ', lang: 'js', test: false });
+		expect(result.snippet.code).toBe('café');
+	});
 
-  test('preserves metadata', () => {
-    const input = { code: 'TEST', lang: 'python', test: true };
-    const result = lens(input);
-    expect(result.snippet.lang).toBe('python');
-    expect(result.snippet.test).toBe(true);
-  });
+	test('preserves metadata', () => {
+		const input = { code: 'TEST', lang: 'python', test: true };
+		const result = lens(input);
+		expect(result.snippet.lang).toBe('python');
+		expect(result.snippet.test).toBe(true);
+	});
 });
 ```
 
@@ -139,31 +139,31 @@ describe('lowercase lens', () => {
 ### Possible Enhancements
 
 1. **Locale-specific conversion**:
-   - Turkish: I → ı (not i)
-   - Other language-specific rules
-   - Proper locale handling
+    - Turkish: I → ı (not i)
+    - Other language-specific rules
+    - Proper locale handling
 
 2. **Selective conversion**:
-   - Only convert keywords
-   - Preserve string literals
-   - Skip comments
-   - Preserve acronyms/constants
+    - Only convert keywords
+    - Preserve string literals
+    - Skip comments
+    - Preserve acronyms/constants
 
 3. **Configuration options**:
-   - Locale selection
-   - Exclusion patterns
-   - Preserve specific case patterns
+    - Locale selection
+    - Exclusion patterns
+    - Preserve specific case patterns
 
 ### Configuration Extension Example
 
 ```typescript
 // Future config structure
 interface LowercaseConfig {
-  locale?: string; // 'en-US', 'tr-TR', etc.
-  preserveStrings?: boolean;
-  preserveComments?: boolean;
-  preserveConstants?: boolean; // Keep ALL_CAPS words
-  excludePatterns?: RegExp[];
+	locale?: string; // 'en-US', 'tr-TR', etc.
+	preserveStrings?: boolean;
+	preserveComments?: boolean;
+	preserveConstants?: boolean; // Keep ALL_CAPS words
+	excludePatterns?: RegExp[];
 }
 ```
 
@@ -203,9 +203,9 @@ interface LowercaseConfig {
 
 - **External**: None (uses built-in String methods)
 - **Internal**:
-  - `../../types.js` - Type definitions
-  - `./config.js` - Configuration factory
-  - `../../utils/deep-merge.js` - Config merging
+    - `../../types.js` - Type definitions
+    - `./config.js` - Configuration factory
+    - `../../utils/deep-merge.js` - Config merging
 
 ## Browser Compatibility
 
@@ -248,14 +248,14 @@ Currently uses browser default, which is typically appropriate for most use case
 
 ```typescript
 // Normalize mixed-case code for comparison
-configs: [studyLenses.lenses.lowercase];
+configs: [sl.lenses.lowercase];
 ```
 
 ### Style Analysis
 
 ```typescript
 // Convert to lowercase before analyzing naming conventions
-configs: [studyLenses.lenses.lowercase, customAnalysisLens];
+configs: [sl.lenses.lowercase, customAnalysisLens];
 ```
 
 ### Text Processing Chains
@@ -263,8 +263,8 @@ configs: [studyLenses.lenses.lowercase, customAnalysisLens];
 ```typescript
 // Multi-step text transformation
 configs: [
-  studyLenses.lenses.uppercase, // First normalize to all caps
-  studyLenses.lenses.lowercase, // Then to lowercase
-  studyLenses.lenses.reverse, // Finally reverse
+	sl.lenses.uppercase, // First normalize to all caps
+	sl.lenses.lowercase, // Then to lowercase
+	sl.lenses.reverse, // Finally reverse
 ];
 ```

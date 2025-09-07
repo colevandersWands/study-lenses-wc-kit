@@ -5,43 +5,47 @@
 ### Core Function
 
 ```typescript
-function lens(snippet: Snippet, config?: LoopGuardConfig): LensOutput
+function lens(snippet: Snippet, config?: LoopGuardConfig): LensOutput;
 ```
 
 Transforms JavaScript code to include loop guards that prevent infinite loops.
 
 **Parameters:**
+
 - `snippet: Snippet` - Input code with metadata
 - `config: LoopGuardConfig` - Configuration options (optional)
 
 **Returns:** `LensOutput` with transformed code and null view
 
 **Example:**
+
 ```javascript
 const result = lens(
-  { code: 'while (true) { work(); }', lang: 'js', test: false },
-  { max: 100, loops: ['while'] }
+	{ code: 'while (true) { work(); }', lang: 'js', test: false },
+	{ max: 100, loops: ['while'] }
 );
 ```
 
 ### Configuration Factory
 
 ```typescript
-function config(overrides?: Partial<LoopGuardConfig>): LoopGuardConfig
+function config(overrides?: Partial<LoopGuardConfig>): LoopGuardConfig;
 ```
 
 Creates configuration object with deep merge support.
 
 **Parameters:**
+
 - `overrides: Partial<LoopGuardConfig>` - Configuration overrides
 
 **Returns:** Complete configuration object
 
 **Example:**
+
 ```javascript
 const customConfig = config({
-  max: 500,
-  loops: ['for', 'while']
+	max: 500,
+	loops: ['for', 'while'],
 });
 ```
 
@@ -49,27 +53,27 @@ const customConfig = config({
 
 ```typescript
 interface LoopGuardConfig {
-  max: number;              // Maximum iterations before error
-  loops: LoopType[];        // Which loop types to guard
+	max: number; // Maximum iterations before error
+	loops: LoopType[]; // Which loop types to guard
 }
 
-type LoopType = 
-  | 'for'         // C-style for loops
-  | 'while'       // While loops
-  | 'do-while'    // Do-while loops
-  | 'for-of'      // For-of loops
-  | 'for-in'      // For-in loops
-  | 'for-await-of'; // Async for-of loops
+type LoopType =
+	| 'for' // C-style for loops
+	| 'while' // While loops
+	| 'do-while' // Do-while loops
+	| 'for-of' // For-of loops
+	| 'for-in' // For-in loops
+	| 'for-await-of'; // Async for-of loops
 
 interface Snippet {
-  code: string;    // JavaScript source code
-  lang: string;    // Language identifier
-  test: boolean;   // Whether this is test code
+	code: string; // JavaScript source code
+	lang: string; // Language identifier
+	test: boolean; // Whether this is test code
 }
 
 interface LensOutput {
-  snippet: Snippet | null | undefined | false;  // Transformed snippet
-  view: null;                                    // Always null (transform lens)
+	snippet: Snippet | null | undefined | false; // Transformed snippet
+	view: null; // Always null (transform lens)
 }
 ```
 
@@ -78,34 +82,41 @@ interface LensOutput {
 ### AST Transformation Process
 
 1. **Code Parsing**
-   ```javascript
-   const ast = recast.parse(evalCode);
-   ```
 
-2. **AST Traversal**  
-   ```javascript
-   const guardedTree = walk(ast, {
-     enter(node) { /* Skip generated nodes */ },
-     leave(node, parent) { /* Process loop nodes */ }
-   });
-   ```
+    ```javascript
+    const ast = recast.parse(evalCode);
+    ```
+
+2. **AST Traversal**
+
+    ```javascript
+    const guardedTree = walk(ast, {
+    	enter(node) {
+    		/* Skip generated nodes */
+    	},
+    	leave(node, parent) {
+    		/* Process loop nodes */
+    	},
+    });
+    ```
 
 3. **Loop Guard Generation**
-   ```javascript
-   const { variable, check } = generateLoopGuard(id, max);
-   // variable: let loopGuard_N = 0;
-   // check: [loopGuard_N++; if(...) throw ...]
-   ```
+
+    ```javascript
+    const { variable, check } = generateLoopGuard(id, max);
+    // variable: let loopGuard_N = 0;
+    // check: [loopGuard_N++; if(...) throw ...]
+    ```
 
 4. **Code Injection**
-   - Counter variable inserted before loop
-   - Safety checks inserted at loop body start
-   - Single-statement bodies wrapped in blocks
+    - Counter variable inserted before loop
+    - Safety checks inserted at loop body start
+    - Single-statement bodies wrapped in blocks
 
 5. **Code Generation**
-   ```javascript
-   const result = recast.print(guardedTree).code;
-   ```
+    ```javascript
+    const result = recast.print(guardedTree).code;
+    ```
 
 ### Loop Detection Algorithm
 
@@ -128,41 +139,44 @@ function getLoopType(node: Node): LoopType | null {
 Each loop gets a unique guard with three components:
 
 1. **Counter Variable**
-   ```javascript
-   let loopGuard_${id} = 0;
-   ```
+
+    ```javascript
+    let loopGuard_${id} = 0;
+    ```
 
 2. **Increment Statement**
-   ```javascript
-   loopGuard_${id}++;
-   ```
+
+    ```javascript
+    loopGuard_${id}++;
+    ```
 
 3. **Safety Check**
-   ```javascript
-   if (loopGuard_${id} > ${max}) {
-     throw new RangeError("loopGuard_${id} is greater than ${max}");
-   }
-   ```
+    ```javascript
+    if (loopGuard_${id} > ${max}) {
+      throw new RangeError("loopGuard_${id} is greater than ${max}");
+    }
+    ```
 
 ### Block Statement Handling
 
 Single-statement loop bodies are automatically wrapped:
 
 **Input:**
+
 ```javascript
-for (let i = 0; i < 10; i++)
-  console.log(i);
+for (let i = 0; i < 10; i++) console.log(i);
 ```
 
 **Transformation:**
+
 ```javascript
 let loopGuard_1 = 0;
 for (let i = 0; i < 10; i++) {
-  loopGuard_1++;
-  if (loopGuard_1 > 1000) {
-    throw new RangeError("loopGuard_1 is greater than 1000");
-  }
-  console.log(i);
+	loopGuard_1++;
+	if (loopGuard_1 > 1000) {
+		throw new RangeError('loopGuard_1 is greater than 1000');
+	}
+	console.log(i);
 }
 ```
 
@@ -175,22 +189,22 @@ The configuration system supports partial overrides:
 ```javascript
 // Default config
 const defaultConfig = {
-  max: 1000,
-  loops: ['for', 'while', 'do-while', 'for-of', 'for-in', 'for-await-of']
+	max: 1000,
+	loops: ['for', 'while', 'do-while', 'for-of', 'for-in', 'for-await-of'],
 };
 
 // Partial override - only changes max, keeps all loop types
 const config1 = config({ max: 500 });
 
 // Selective loop types - only guards specific loops
-const config2 = config({ 
-  loops: ['for', 'while'] 
+const config2 = config({
+	loops: ['for', 'while'],
 });
 
 // Complete override
 const config3 = config({
-  max: 100,
-  loops: ['for-await-of']
+	max: 100,
+	loops: ['for-await-of'],
 });
 ```
 
@@ -204,8 +218,8 @@ const devConfig = config({ max: 100 });
 
 // Production - higher limits, critical loops only
 const prodConfig = config({
-  max: 10000,
-  loops: ['while', 'do-while'] // Infinite loop prone
+	max: 10000,
+	loops: ['while', 'do-while'], // Infinite loop prone
 });
 
 // Testing - very low limits for quick failure
@@ -218,18 +232,18 @@ const testConfig = config({ max: 10 });
 
 ```javascript
 try {
-  const ast = recast.parse(code);
-  // ... transformation logic
+	const ast = recast.parse(code);
+	// ... transformation logic
 } catch (error) {
-  console.warn('Loop guard parsing failed:', error);
-  return code; // Return original unchanged
+	console.warn('Loop guard parsing failed:', error);
+	return code; // Return original unchanged
 }
 ```
 
 ### Graceful Degradation
 
 - **Syntax errors** → Original code returned
-- **Unsupported features** → Subset of loops protected  
+- **Unsupported features** → Subset of loops protected
 - **for-await-of issues** → Other loops still protected
 - **Malformed AST** → Safe fallback to no protection
 
@@ -238,7 +252,7 @@ try {
 Runtime errors include context for debugging:
 
 ```javascript
-throw new RangeError("loopGuard_1 is greater than 1000");
+throw new RangeError('loopGuard_1 is greater than 1000');
 //                    ^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^
 //                    Guard ID   Configured limit
 ```
@@ -255,13 +269,14 @@ throw new RangeError("loopGuard_1 is greater than 1000");
 ### Loop Detection Efficiency
 
 - **Early termination** - Skips non-configured loop types
-- **Single pass** - All loops processed in one traversal  
+- **Single pass** - All loops processed in one traversal
 - **Minimal branching** - Simple type-based dispatch
 - **No recursion** - Iterative AST walking
 
 ### Runtime Performance Impact
 
 Generated guards add minimal overhead:
+
 - **Counter increment** - Single arithmetic operation per iteration
 - **Boundary check** - Simple comparison per iteration
 - **Error generation** - Only on limit exceeded (exceptional case)
@@ -272,16 +287,10 @@ Generated guards add minimal overhead:
 
 ```javascript
 // Format after adding guards
-await pipe(snippet, [
-  loopGuard.lens,
-  format.lens
-]);
+await pipe(snippet, [loopGuard.lens, format.lens]);
 
 // Or format before (preserves guard formatting)
-await pipe(snippet, [
-  format.lens,
-  loopGuard.lens
-]);
+await pipe(snippet, [format.lens, loopGuard.lens]);
 ```
 
 ### With JSX Demo Lens
@@ -289,8 +298,8 @@ await pipe(snippet, [
 ```javascript
 // Transform then visualize
 await pipe(snippet, [
-  loopGuard.lens,
-  jsxDemo // Shows protected code with visual annotations
+	loopGuard.lens,
+	jsxDemo, // Shows protected code with visual annotations
 ]);
 ```
 
@@ -320,18 +329,20 @@ const result = loopGuard.lens(snippet, guards);
 
 ```javascript
 const testCases = {
-  basicFor: 'for (let i = 0; i < 10; i++) { console.log(i); }',
-  nestedLoops: 'for (let i = 0; i < 3; i++) { for (let j = 0; j < 2; j++) { work(i, j); } }',
-  singleLine: 'while (condition) doWork();',
-  malformed: 'for (let i = 0 i < 10; i++) { work(); }', // Missing semicolon
-  forAwaitOf: 'async function f() { for await (const x of gen()) { process(x); } }'
+	basicFor: 'for (let i = 0; i < 10; i++) { console.log(i); }',
+	nestedLoops:
+		'for (let i = 0; i < 3; i++) { for (let j = 0; j < 2; j++) { work(i, j); } }',
+	singleLine: 'while (condition) doWork();',
+	malformed: 'for (let i = 0 i < 10; i++) { work(); }', // Missing semicolon
+	forAwaitOf:
+		'async function f() { for await (const x of gen()) { process(x); } }',
 };
 ```
 
 ### Assertion Patterns
 
 ```javascript
-// Guard presence verification  
+// Guard presence verification
 expect(result.snippet.code).toContain('loopGuard_1');
 expect(result.snippet.code).toContain('loopGuard_1++');
 expect(result.snippet.code).toContain('if (loopGuard_1 > 1000)');
@@ -351,9 +362,9 @@ expect(result.snippet.lang).toBe(originalSnippet.lang); // Metadata preserved
 Enable verbose logging:
 
 ```javascript
-const config = loopGuard.config({ 
-  debug: true, // If we added this feature
-  max: 100 
+const config = loopGuard.config({
+	debug: true, // If we added this feature
+	max: 100,
 });
 ```
 
@@ -391,7 +402,7 @@ function getLoopType(node: Node): LoopType | null {
     // ... existing cases
     case 'CustomLoopType':
       return 'custom-loop';
-    default: 
+    default:
       return null;
   }
 }

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>UI Trace Tables Component Test</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				padding: 20px;
+			}
+
+			.test-section {
+				background: #f5f5f5;
+				padding: 15px;
+				margin: 10px 0;
+				border-radius: 4px;
+			}
+
+			sl-ui-trace-tables {
+				margin: 10px;
+				padding: 10px;
+				border: 1px solid #ddd;
+				display: inline-block;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>UI Trace Tables Component Test</h1>
+
+		<div class="test-section">
+			<h3>Default Trace Tables Component:</h3>
+			<sl-ui-trace-tables></sl-ui-trace-tables>
+			<p><em>Default values table with code discovery</em></p>
+		</div>
+
+		<div class="test-section">
+			<h3>Direct Trace Tables Components:</h3>
+			<button onclick="createTable('values')">Create Values Table</button>
+			<button onclick="createTable('steps')">Create Steps Table</button>
+			<button onclick="createTable('operators')">
+				Create Operators Table
+			</button>
+			<p><em>These will create tables directly</em></p>
+		</div>
+
+		<div class="test-section">
+			<h3>Instructions:</h3>
+			<ol>
+				<li>Use the dropdown to select different table types</li>
+				<li>Click "table" button to create draggable tables</li>
+				<li>Try dragging the tables around</li>
+				<li>
+					Click once to disable dragging, double-click to re-enable
+				</li>
+				<li>Use the X button to close tables</li>
+				<li>
+					Test adding/removing rows and columns in each table type
+				</li>
+				<li>Check browser console for any errors</li>
+			</ol>
+		</div>
+
+		<script type="module">
+			// Import the components
+			import('./index.js')
+				.then(() => {
+					console.log('TraceTable components loaded successfully');
+
+					// Make createTable function available globally
+					window.createTable = (type) => {
+						// Create the component using the new structure
+						const element =
+							document.createElement('sl-ui-trace-tables');
+						element.setAttribute('type', type);
+						document.body.appendChild(element);
+					};
+				})
+				.catch((error) => {
+					console.error(
+						'Failed to load TraceTable components:',
+						error
+					);
+				});
+		</script>
+	</body>
+</html>

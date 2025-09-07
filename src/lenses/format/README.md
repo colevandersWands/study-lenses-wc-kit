@@ -25,17 +25,17 @@ const result = await sl.lenses.format.lens(snippet);
 
 // Custom configuration
 const modernConfig = sl.lenses.format.config({
-  useTabs: false,
-  tabWidth: 2,
-  singleQuote: true,
-  trailingComma: 'es5'
+	useTabs: false,
+	tabWidth: 2,
+	singleQuote: true,
+	trailingComma: 'es5',
 });
 const result2 = await sl.lenses.format.lens(snippet, modernConfig);
 
 // Pipeline usage
 const result3 = await sl.study.pipe(snippet, [
-  sl.lenses.format,
-  sl.lenses.uppercase
+	sl.lenses.format,
+	sl.lenses.uppercase,
 ]);
 ```
 
@@ -76,20 +76,20 @@ The lens automatically selects the appropriate Prettier parser based on `snippet
 ```typescript
 // Airbnb-style configuration
 const airbnbConfig = sl.lenses.format.config({
-  useTabs: false,
-  tabWidth: 2,
-  singleQuote: true,
-  trailingComma: 'all',
-  arrowParens: 'avoid'
+	useTabs: false,
+	tabWidth: 2,
+	singleQuote: true,
+	trailingComma: 'all',
+	arrowParens: 'avoid',
 });
 
 // Google-style configuration
 const googleConfig = sl.lenses.format.config({
-  useTabs: false,
-  tabWidth: 2,
-  singleQuote: true,
-  trailingComma: 'es5',
-  arrowParens: 'always'
+	useTabs: false,
+	tabWidth: 2,
+	singleQuote: true,
+	trailingComma: 'es5',
+	arrowParens: 'always',
 });
 ```
 
@@ -98,17 +98,17 @@ const googleConfig = sl.lenses.format.config({
 ```typescript
 // Compact style
 const compactConfig = sl.lenses.format.config({
-  printWidth: 120,
-  bracketSpacing: false,
-  semi: false
+	printWidth: 120,
+	bracketSpacing: false,
+	semi: false,
 });
 
 // Legacy codebase style
 const legacyConfig = sl.lenses.format.config({
-  useTabs: true,
-  tabWidth: 8,
-  printWidth: 120,
-  bracketSameLine: true
+	useTabs: true,
+	tabWidth: 8,
+	printWidth: 120,
+	bracketSameLine: true,
 });
 ```
 
@@ -117,7 +117,7 @@ const legacyConfig = sl.lenses.format.config({
 The Format lens includes robust error handling:
 
 1. **Empty Code**: Returns empty code unchanged
-2. **Whitespace-Only**: Returns whitespace unchanged  
+2. **Whitespace-Only**: Returns whitespace unchanged
 3. **Malformed Code**: Returns original code with error comment
 4. **Prettier Errors**: Graceful degradation with console warning
 
@@ -139,11 +139,15 @@ Works seamlessly in lens pipelines:
 ```typescript
 // Sequential formatting and transformation
 await sl.study.pipe(snippet, [
-  sl.lenses.format,        // Format first
-  sl.lenses.reverse,       // Then reverse
-  [sl.lenses.format, {     // Format again with custom config
-    singleQuote: true
-  }]
+	sl.lenses.format, // Format first
+	sl.lenses.reverse, // Then reverse
+	[
+		sl.lenses.format,
+		{
+			// Format again with custom config
+			singleQuote: true,
+		},
+	],
 ]);
 ```
 
@@ -162,9 +166,9 @@ Full TypeScript integration with proper typing:
 import type { Snippet, LensOutput } from 'study-lenses-wc-kit';
 
 const snippet: Snippet = {
-  code: 'interface Test{name:string;}',
-  lang: 'ts',
-  test: false
+	code: 'interface Test{name:string;}',
+	lang: 'ts',
+	test: false,
 };
 
 const result: Promise<LensOutput> = sl.lenses.format.lens(snippet);
@@ -181,15 +185,18 @@ const result: Promise<LensOutput> = sl.lenses.format.lens(snippet);
 ## Troubleshooting
 
 ### Formatting Fails
+
 - Check browser console for Prettier error details
 - Verify code syntax is valid JavaScript/TypeScript
 - Try reducing `printWidth` for complex expressions
 
 ### Wrong Parser Selected
+
 - Ensure `snippet.lang` is set correctly (`'js'`, `'ts'`, etc.)
 - Override parser in config if needed: `config({ parser: 'typescript' })`
 
 ### Unexpected Output
+
 - Review configuration - Format lens uses classic defaults, not Prettier defaults
 - Check for conflicting config options
 - Verify input code is clean (no mixed line endings, etc.)
@@ -197,5 +204,5 @@ const result: Promise<LensOutput> = sl.lenses.format.lens(snippet);
 ## See Also
 
 - [Technical Documentation](./DOCS.md) - Implementation details and architecture
-- [Usage Guide](./GUIDE.md) - Comprehensive examples and patterns  
+- [Usage Guide](./GUIDE.md) - Comprehensive examples and patterns
 - [Contributing Guide](../../CONTRIBUTING.md) - How to extend or modify the lens

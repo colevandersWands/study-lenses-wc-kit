@@ -26,11 +26,11 @@ reverse/
 ```typescript
 // lens.ts
 export const lens = (snippet: Snippet, config = _config()): LensOutput => ({
-  snippet: {
-    ...snippet,
-    code: snippet.code.split('').reverse().join(''),
-  },
-  view: null, // Transform lens - no visual output
+	snippet: {
+		...snippet,
+		code: snippet.code.split('').reverse().join(''),
+	},
+	view: null, // Transform lens - no visual output
 });
 ```
 
@@ -74,22 +74,22 @@ Uses the standard lens element factory with automatic:
 ```typescript
 // Test cases to verify
 describe('reverse lens', () => {
-  test('reverses simple string', () => {
-    const result = lens({ code: 'abc', lang: 'js', test: false });
-    expect(result.snippet.code).toBe('cba');
-  });
+	test('reverses simple string', () => {
+		const result = lens({ code: 'abc', lang: 'js', test: false });
+		expect(result.snippet.code).toBe('cba');
+	});
 
-  test('preserves metadata', () => {
-    const input = { code: 'test', lang: 'python', test: true };
-    const result = lens(input);
-    expect(result.snippet.lang).toBe('python');
-    expect(result.snippet.test).toBe(true);
-  });
+	test('preserves metadata', () => {
+		const input = { code: 'test', lang: 'python', test: true };
+		const result = lens(input);
+		expect(result.snippet.lang).toBe('python');
+		expect(result.snippet.test).toBe(true);
+	});
 
-  test('handles empty string', () => {
-    const result = lens({ code: '', lang: 'js', test: false });
-    expect(result.snippet.code).toBe('');
-  });
+	test('handles empty string', () => {
+		const result = lens({ code: '', lang: 'js', test: false });
+		expect(result.snippet.code).toBe('');
+	});
 });
 ```
 
@@ -119,26 +119,26 @@ describe('reverse lens', () => {
 ### Possible Enhancements
 
 1. **Configurable reversal levels**:
-   - Character level (current)
-   - Word level: "hello world" → "world hello"
-   - Line level: Reverse line order only
+    - Character level (current)
+    - Word level: "hello world" → "world hello"
+    - Line level: Reverse line order only
 
 2. **Preserve formatting**:
-   - Option to maintain indentation
-   - Preserve specific character types (spaces, newlines)
+    - Option to maintain indentation
+    - Preserve specific character types (spaces, newlines)
 
 3. **Performance optimizations**:
-   - Stream processing for very large inputs
-   - Worker thread for heavy processing
+    - Stream processing for very large inputs
+    - Worker thread for heavy processing
 
 ### Configuration Extension Example
 
 ```typescript
 // Future config structure
 interface ReverseConfig {
-  level: 'character' | 'word' | 'line';
-  preserveWhitespace: boolean;
-  excludePatterns: string[];
+	level: 'character' | 'word' | 'line';
+	preserveWhitespace: boolean;
+	excludePatterns: string[];
 }
 ```
 
@@ -177,9 +177,9 @@ interface ReverseConfig {
 
 - **External**: None (uses built-in string methods)
 - **Internal**:
-  - `../../types.js` - Type definitions
-  - `./config.js` - Configuration factory
-  - `../../utils/deep-merge.js` - Config merging
+    - `../../types.js` - Type definitions
+    - `./config.js` - Configuration factory
+    - `../../utils/deep-merge.js` - Config merging
 
 ## Browser Compatibility
 

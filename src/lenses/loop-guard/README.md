@@ -5,7 +5,7 @@ A transform lens that prevents infinite loops by injecting safety counters into 
 ## Features
 
 - **AST-based transformation** - Uses recast and estree-walker for robust loop detection
-- **Six loop types supported** - for, while, do-while, for-of, for-in, for-await-of  
+- **Six loop types supported** - for, while, do-while, for-of, for-in, for-await-of
 - **Configurable protection** - Choose which loop types to guard and iteration limits
 - **Educational safety** - Prevents browser freezing in interactive learning environments
 - **Graceful error handling** - Falls back to original code on parsing failures
@@ -17,12 +17,15 @@ A transform lens that prevents infinite loops by injecting safety counters into 
 
 ```html
 <!-- Basic usage with default configuration -->
-<sl-lens-loop-guard code="for (let i = 0; i < Infinity; i++) { console.log(i); }"></sl-lens-loop-guard>
+<sl-lens-loop-guard
+	code="for (let i = 0; i < Infinity; i++) { console.log(i); }"
+></sl-lens-loop-guard>
 
 <!-- Custom configuration -->
-<sl-lens-loop-guard 
-  code="while (true) { work(); }"
-  config='{"max": 500, "loops": ["while", "for"]}'></sl-lens-loop-guard>
+<sl-lens-loop-guard
+	code="while (true) { work(); }"
+	config='{"max": 500, "loops": ["while", "for"]}'
+></sl-lens-loop-guard>
 
 <!-- File loading -->
 <sl-lens-loop-guard src="./examples/unsafe-loops.js"></sl-lens-loop-guard>
@@ -31,15 +34,15 @@ A transform lens that prevents infinite loops by injecting safety counters into 
 ### As Lens Function
 
 ```javascript
-import studyLenses from 'study-lenses-wc-kit';
+import sl from 'study-lenses-wc-kit';
 
-const loopGuard = studyLenses.lenses['loop-guard'];
+const loopGuard = sl.lenses['loop-guard'];
 
 // Basic usage
 const snippet = {
-  code: 'for (let i = 0; i < Infinity; i++) { console.log(i); }',
-  lang: 'javascript',
-  test: false
+	code: 'for (let i = 0; i < Infinity; i++) { console.log(i); }',
+	lang: 'javascript',
+	test: false,
 };
 
 const result = loopGuard.lens(snippet);
@@ -48,8 +51,8 @@ console.log(result.snippet.code);
 
 // Custom configuration
 const config = loopGuard.config({
-  max: 500,
-  loops: ['for', 'while'] // Only guard these loop types
+	max: 500,
+	loops: ['for', 'while'], // Only guard these loop types
 });
 
 const result = loopGuard.lens(snippet, config);
@@ -61,38 +64,35 @@ const result = loopGuard.lens(snippet, config);
 import { pipe } from 'study-lenses-wc-kit';
 
 // Add loop protection before other transformations
-const result = await pipe(snippet, [
-  loopGuard.lens,
-  otherTransforms.lens
-]);
+const result = await pipe(snippet, [loopGuard.lens, otherTransforms.lens]);
 ```
 
 ## Configuration
 
 ```typescript
 interface LoopGuardConfig {
-  /** Maximum loop iterations before throwing RangeError */
-  max: number;
-  
-  /** Which loop types to guard */
-  loops: LoopType[];
+	/** Maximum loop iterations before throwing RangeError */
+	max: number;
+
+	/** Which loop types to guard */
+	loops: LoopType[];
 }
 
-type LoopType = 
-  | 'for'         // for (let i = 0; i < 10; i++)
-  | 'while'       // while (condition)
-  | 'do-while'    // do { } while (condition)
-  | 'for-of'      // for (const item of array)
-  | 'for-in'      // for (const key in object)
-  | 'for-await-of'; // for await (const item of asyncIterable)
+type LoopType =
+	| 'for' // for (let i = 0; i < 10; i++)
+	| 'while' // while (condition)
+	| 'do-while' // do { } while (condition)
+	| 'for-of' // for (const item of array)
+	| 'for-in' // for (const key in object)
+	| 'for-await-of'; // for await (const item of asyncIterable)
 ```
 
 ### Default Configuration
 
 ```javascript
 const defaultConfig = {
-  max: 1000,
-  loops: ['for', 'while', 'do-while', 'for-of', 'for-in', 'for-await-of']
+	max: 1000,
+	loops: ['for', 'while', 'do-while', 'for-of', 'for-in', 'for-await-of'],
 };
 ```
 
@@ -101,18 +101,18 @@ const defaultConfig = {
 ```javascript
 // Only guard for and while loops with lower limit
 const config = loopGuard.config({
-  max: 100,
-  loops: ['for', 'while']
+	max: 100,
+	loops: ['for', 'while'],
 });
 
 // Guard all loops but with higher limit
 const config = loopGuard.config({
-  max: 5000
+	max: 5000,
 });
 
 // Only guard async loops
 const config = loopGuard.config({
-  loops: ['for-await-of']
+	loops: ['for-await-of'],
 });
 ```
 
@@ -122,15 +122,16 @@ const config = loopGuard.config({
 
 ```javascript
 function fibonacci(n) {
-  let a = 0, b = 1;
-  for (let i = 0; i < n; i++) {
-    [a, b] = [b, a + b];
-  }
-  return a;
+	let a = 0,
+		b = 1;
+	for (let i = 0; i < n; i++) {
+		[a, b] = [b, a + b];
+	}
+	return a;
 }
 
 while (true) {
-  console.log('This would run forever!');
+	console.log('This would run forever!');
 }
 ```
 
@@ -138,38 +139,40 @@ while (true) {
 
 ```javascript
 function fibonacci(n) {
-  let a = 0, b = 1;
-  let loopGuard_1 = 0;
-  for (let i = 0; i < n; i++) {
-    loopGuard_1++;
-    if (loopGuard_1 > 1000) {
-      throw new RangeError("loopGuard_1 is greater than 1000");
-    }
-    [a, b] = [b, a + b];
-  }
-  return a;
+	let a = 0,
+		b = 1;
+	let loopGuard_1 = 0;
+	for (let i = 0; i < n; i++) {
+		loopGuard_1++;
+		if (loopGuard_1 > 1000) {
+			throw new RangeError('loopGuard_1 is greater than 1000');
+		}
+		[a, b] = [b, a + b];
+	}
+	return a;
 }
 
 let loopGuard_2 = 0;
 while (true) {
-  loopGuard_2++;
-  if (loopGuard_2 > 1000) {
-    throw new RangeError("loopGuard_2 is greater than 1000");
-  }
-  console.log('This would run forever!');
+	loopGuard_2++;
+	if (loopGuard_2 > 1000) {
+		throw new RangeError('loopGuard_2 is greater than 1000');
+	}
+	console.log('This would run forever!');
 }
 ```
 
 ## How It Works
 
 1. **AST Parsing** - Code is parsed into an Abstract Syntax Tree using recast
-2. **Loop Detection** - estree-walker traverses the AST to find configured loop types  
+2. **Loop Detection** - estree-walker traverses the AST to find configured loop types
 3. **Guard Injection** - Unique counter variables and safety checks are inserted
 4. **Code Generation** - Modified AST is converted back to JavaScript code
 
 ### Guard Pattern
 
 Each protected loop gets:
+
 - A unique counter variable: `let loopGuard_N = 0;`
 - Increment statement: `loopGuard_N++;`
 - Safety check: `if (loopGuard_N > max) { throw new RangeError(...); }`
@@ -177,8 +180,9 @@ Each protected loop gets:
 ### Loop Type Detection
 
 The lens uses AST node types to identify loops:
+
 - `ForStatement` → 'for'
-- `WhileStatement` → 'while'  
+- `WhileStatement` → 'while'
 - `DoWhileStatement` → 'do-while'
 - `ForInStatement` → 'for-in'
 - `ForOfStatement` → 'for-of' or 'for-await-of' (based on `await` property)

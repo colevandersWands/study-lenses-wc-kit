@@ -10,8 +10,8 @@ import config from './config.js';
 
 // Default export only (generic object interface)
 export default {
-  name,    // Self-describing lens name for pipeline consistency
-  lens,    // Core transform function
-  register,    // Registration function for web component
-  config,  // Configuration factory function
+	name, // Self-describing lens name for pipeline consistency
+	lens, // Core transform function
+	register, // Registration function for web component
+	config, // Configuration factory function
 };

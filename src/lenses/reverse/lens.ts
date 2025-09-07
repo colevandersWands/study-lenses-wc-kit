@@ -10,11 +10,11 @@ import _config from './config.js';
  * Reverses the code string character by character
  */
 export const lens = (snippet: Snippet, config = _config()): LensOutput => ({
-  snippet: {
-    ...snippet,
-    code: snippet.code.split('').reverse().join(''),
-  },
-  ui: null,
+	snippet: {
+		...snippet,
+		code: snippet.code.split('').reverse().join(''),
+	},
+	ui: null,
 });
 
 // Default export for convenience

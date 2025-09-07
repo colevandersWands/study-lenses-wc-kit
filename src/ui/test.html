@@ -1,140 +1,200 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>UI Components - Pure Function Implementation Test</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      line-height: 1.6;
-    }
-    h1 { color: #007acc; }
-    h2 { 
-      color: #333; 
-      border-bottom: 2px solid #007acc; 
-      padding-bottom: 4px;
-      margin-top: 30px;
-    }
-    sl-ui-study-bar {
-      display: block;
-      padding: 16px;
-      margin: 16px 0;
-      border: 2px solid #007acc;
-      border-radius: 8px;
-      background-color: #f8f9fa;
-    }
-    .test-section {
-      margin: 20px 0;
-      padding: 16px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-  </style>
-</head>
-<body>
-  <h1>🎛️ Study Lenses UI Components - Test Page</h1>
-  
-  <p><strong>Note:</strong> Open browser console to see execution output and debug messages.</p>
-  
-  <!-- Test: Basic JavaScript execution -->
-  <div class="test-section">
-    <h2>Basic JavaScript Execution</h2>
-    <p>Test the run button with simple JavaScript code. Check console for output.</p>
-    <sl-ui-study-bar code="console.log('🚀 Hello from UI components!'); console.log('Basic execution working'); alert('Success: Basic execution completed!');">
-      <sl-ui-run></sl-ui-run>
-    </sl-ui-study-bar>
-  </div>
-  
-  <!-- Test: ES Module (.mjs) execution -->
-  <div class="test-section">
-    <h2>ES Module (.mjs) Execution</h2>
-    <p>Test module execution with .mjs language detection.</p>
-    <sl-ui-study-bar code="const message = 'ES Module syntax works!'; console.log('📦', message); console.log('Module type detected and executed');" lang="mjs">
-      <sl-ui-run></sl-ui-run>
-    </sl-ui-study-bar>
-  </div>
-  
-  <!-- Test: Loop guard functionality -->
-  <div class="test-section">
-    <h2>Loop Guard Protection</h2>
-    <p>Test loop guard controls - enable loop guard checkbox and run. Should protect against infinite loops.</p>
-    <sl-ui-study-bar code="console.log('🔄 Starting loop test'); for(let i = 0; i < 5; i++) { console.log('Safe loop iteration:', i); } console.log('✅ Loop completed safely');">
-      <sl-ui-run></sl-ui-run>
-    </sl-ui-study-bar>
-  </div>
-  
-  <!-- Test: Debug mode -->
-  <div class="test-section">
-    <h2>Debug Mode</h2>
-    <p>Test debug checkbox - enable debug mode and run. Should add debugger statements (check dev tools).</p>
-    <sl-ui-study-bar code="console.log('🔍 Debug mode test'); const result = 2 + 2; console.log('Debug result:', result);">
-      <sl-ui-run></sl-ui-run>
-    </sl-ui-study-bar>
-  </div>
-  
-  <!-- Test: Test code detection -->
-  <div class="test-section">
-    <h2>Test Code Detection</h2>
-    <p>Test dynamic test detection from snippet object (has 'test' attribute).</p>
-    <sl-ui-study-bar code="console.log('🧪 This is test code'); console.log('Test mode should be automatically detected');" test>
-      <sl-ui-run></sl-ui-run>
-    </sl-ui-study-bar>
-  </div>
-  
-  <!-- Test: Multiple UI components -->
-  <div class="test-section">
-    <h2>Multiple UI Components in Study Bar</h2>
-    <p>Test multiple UI components sharing the same code context.</p>
-    <sl-ui-study-bar code="console.log('🎯 Shared code context'); console.log('Both components should access this same code');">
-      <sl-ui-run></sl-ui-run>
-      <sl-ui-run></sl-ui-run>
-    </sl-ui-study-bar>
-  </div>
-  
-  <!-- Test: Complex pipeline configuration -->
-  <div class="test-section">
-    <h2>Pipeline Configuration Test</h2>
-    <p>Test different pipeline configurations (Format + Loop Guard + Run, Debug + Run, etc.).</p>
-    <sl-ui-study-bar code="// Complex code for pipeline testing
+	<head>
+		<title>UI Components - Pure Function Implementation Test</title>
+		<style>
+			body {
+				font-family:
+					system-ui,
+					-apple-system,
+					sans-serif;
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 20px;
+				line-height: 1.6;
+			}
+			h1 {
+				color: #007acc;
+			}
+			h2 {
+				color: #333;
+				border-bottom: 2px solid #007acc;
+				padding-bottom: 4px;
+				margin-top: 30px;
+			}
+			sl-ui-study-bar {
+				display: block;
+				padding: 16px;
+				margin: 16px 0;
+				border: 2px solid #007acc;
+				border-radius: 8px;
+				background-color: #f8f9fa;
+			}
+			.test-section {
+				margin: 20px 0;
+				padding: 16px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>🎛️ Study Lenses UI Components - Test Page</h1>
+
+		<p>
+			<strong>Note:</strong> Open browser console to see execution output
+			and debug messages.
+		</p>
+
+		<!-- Test: Basic JavaScript execution -->
+		<div class="test-section">
+			<h2>Basic JavaScript Execution</h2>
+			<p>
+				Test the run button with simple JavaScript code. Check console
+				for output.
+			</p>
+			<sl-ui-study-bar
+				code="console.log('🚀 Hello from UI components!'); console.log('Basic execution working'); alert('Success: Basic execution completed!');"
+			>
+				<sl-ui-run></sl-ui-run>
+			</sl-ui-study-bar>
+		</div>
+
+		<!-- Test: ES Module (.mjs) execution -->
+		<div class="test-section">
+			<h2>ES Module (.mjs) Execution</h2>
+			<p>Test module execution with .mjs language detection.</p>
+			<sl-ui-study-bar
+				code="const message = 'ES Module syntax works!'; console.log('📦', message); console.log('Module type detected and executed');"
+				lang="mjs"
+			>
+				<sl-ui-run></sl-ui-run>
+			</sl-ui-study-bar>
+		</div>
+
+		<!-- Test: Loop guard functionality -->
+		<div class="test-section">
+			<h2>Loop Guard Protection</h2>
+			<p>
+				Test loop guard controls - enable loop guard checkbox and run.
+				Should protect against infinite loops.
+			</p>
+			<sl-ui-study-bar
+				code="console.log('🔄 Starting loop test'); for(let i = 0; i < 5; i++) { console.log('Safe loop iteration:', i); } console.log('✅ Loop completed safely');"
+			>
+				<sl-ui-run></sl-ui-run>
+			</sl-ui-study-bar>
+		</div>
+
+		<!-- Test: Debug mode -->
+		<div class="test-section">
+			<h2>Debug Mode</h2>
+			<p>
+				Test debug checkbox - enable debug mode and run. Should add
+				debugger statements (check dev tools).
+			</p>
+			<sl-ui-study-bar
+				code="console.log('🔍 Debug mode test'); const result = 2 + 2; console.log('Debug result:', result);"
+			>
+				<sl-ui-run></sl-ui-run>
+			</sl-ui-study-bar>
+		</div>
+
+		<!-- Test: Test code detection -->
+		<div class="test-section">
+			<h2>Test Code Detection</h2>
+			<p>
+				Test dynamic test detection from snippet object (has 'test'
+				attribute).
+			</p>
+			<sl-ui-study-bar
+				code="console.log('🧪 This is test code'); console.log('Test mode should be automatically detected');"
+				test
+			>
+				<sl-ui-run></sl-ui-run>
+			</sl-ui-study-bar>
+		</div>
+
+		<!-- Test: Multiple UI components -->
+		<div class="test-section">
+			<h2>Multiple UI Components in Study Bar</h2>
+			<p>Test multiple UI components sharing the same code context.</p>
+			<sl-ui-study-bar
+				code="console.log('🎯 Shared code context'); console.log('Both components should access this same code');"
+			>
+				<sl-ui-run></sl-ui-run>
+				<sl-ui-run></sl-ui-run>
+			</sl-ui-study-bar>
+		</div>
+
+		<!-- Test: Complex pipeline configuration -->
+		<div class="test-section">
+			<h2>Pipeline Configuration Test</h2>
+			<p>
+				Test different pipeline configurations (Format + Loop Guard +
+				Run, Debug + Run, etc.).
+			</p>
+			<sl-ui-study-bar
+				code="// Complex code for pipeline testing
 console.log('🔧 Pipeline configuration test');
 const data = [1, 2, 3, 4, 5];
 for(let item of data) {
   console.log('Processing item:', item);
 }
-console.log('✨ Pipeline processing completed');">
-      <sl-ui-run></sl-ui-run>
-    </sl-ui-study-bar>
-  </div>
-  
-  <!-- Test: File loading via src attribute -->
-  <div class="test-section">
-    <h2>File Loading Test</h2>
-    <p>Test loading code from external file (if available). Will fall back to inline code if file not found.</p>
-    <sl-ui-study-bar src="../examples/content/greet.js" code="console.log('📂 Fallback: File loading not available, using inline code instead');">
-      <sl-ui-run></sl-ui-run>
-    </sl-ui-study-bar>
-  </div>
-  
-  <div class="test-section">
-    <h2>Usage Instructions</h2>
-    <ol>
-      <li><strong>Open Developer Console</strong> - All execution output goes to console</li>
-      <li><strong>Click Run Buttons</strong> - Each section has a run button to test</li>
-      <li><strong>Try Controls</strong> - Toggle debug, loop guard, adjust max values</li>
-      <li><strong>Check Alerts</strong> - Some tests show alert dialogs for confirmation</li>
-      <li><strong>No DOM Feedback</strong> - Run components execute silently (no success/error UI)</li>
-    </ol>
-  </div>
+console.log('✨ Pipeline processing completed');"
+			>
+				<sl-ui-run></sl-ui-run>
+			</sl-ui-study-bar>
+		</div>
 
-  <script type="module">
-    // Import the initialization file to register all web components
-    import '../init.js';
-    
-    console.log('🎛️ UI Components Test Page Loaded');
-    console.log('📋 Available components: sl-ui-study-bar, sl-ui-run');
-    console.log('🔧 Components registered and ready for testing');
-  </script>
-</body>
+		<!-- Test: File loading via src attribute -->
+		<div class="test-section">
+			<h2>File Loading Test</h2>
+			<p>
+				Test loading code from external file (if available). Will fall
+				back to inline code if file not found.
+			</p>
+			<sl-ui-study-bar
+				src="../examples/content/greet.js"
+				code="console.log('📂 Fallback: File loading not available, using inline code instead');"
+			>
+				<sl-ui-run></sl-ui-run>
+			</sl-ui-study-bar>
+		</div>
+
+		<div class="test-section">
+			<h2>Usage Instructions</h2>
+			<ol>
+				<li>
+					<strong>Open Developer Console</strong> - All execution
+					output goes to console
+				</li>
+				<li>
+					<strong>Click Run Buttons</strong> - Each section has a run
+					button to test
+				</li>
+				<li>
+					<strong>Try Controls</strong> - Toggle debug, loop guard,
+					adjust max values
+				</li>
+				<li>
+					<strong>Check Alerts</strong> - Some tests show alert
+					dialogs for confirmation
+				</li>
+				<li>
+					<strong>No DOM Feedback</strong> - Run components execute
+					silently (no success/error UI)
+				</li>
+			</ol>
+		</div>
+
+		<script type="module">
+			// Import the initialization file to register all web components
+			import '../init.js';
+
+			console.log('🎛️ UI Components Test Page Loaded');
+			console.log('📋 Available components: sl-ui-study-bar, sl-ui-run');
+			console.log('🔧 Components registered and ready for testing');
+		</script>
+	</body>
 </html>

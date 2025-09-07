@@ -13,7 +13,7 @@ This file provides technical architecture documentation and implementation detai
 
 **Core Philosophy:**
 
-- **Single main export**: Everything accessible through `studyLenses` object
+- **Single main export**: Everything accessible through `sl` object
 - Pure functions over classes
 - Minimal web components as thin wrappers
 - Universal file loading with `code=""` and `src=""` attributes
@@ -33,7 +33,10 @@ This file provides technical architecture documentation and implementation detai
 Every lens follows this exact signature:
 
 ```typescript
-async function lensName(snippet: Snippet, config: LensConfig = _config()): Promise<LensOutput>;
+async function lensName(
+	snippet: Snippet,
+	config: LensConfig = _config()
+): Promise<LensOutput>;
 ```
 
 ### 3. Smart Pipeline Architecture
@@ -45,51 +48,58 @@ The core innovation of Study Lenses WC-Kit is the smart pipeline that processes 
 **Main Function:** `pipeLenses` (renamed from `pipe`)
 
 ```typescript
-export const pipeLenses = async (snippet: Snippet, lenses: LensSpec[]): Promise<StudyOutput> => {
-  let currentSnippet = { ...snippet };
+export const pipeLenses = async (
+	snippet: Snippet,
+	lenses: LensSpec[]
+): Promise<StudyOutput> => {
+	let currentSnippet = { ...snippet };
 
-  for (const lensSpec of lenses) {
-    const { lens, config } = normalizeLensSpec(lensSpec);
+	for (const lensSpec of lenses) {
+		const { lens, config } = normalizeLensSpec(lensSpec);
 
-    if (!lens) {
-      console.warn(`Lens not found in spec:`, lensSpec);
-      continue;
-    }
+		if (!lens) {
+			console.warn(`Lens not found in spec:`, lensSpec);
+			continue;
+		}
 
-    try {
-      const result = await lens(currentSnippet, config);
+		try {
+			const result = await lens(currentSnippet, config);
 
-      // Terminus condition 1: View returned (visual output)
-      if (result.view) {
-        return {
-          snippet: result.snippet || currentSnippet,
-          view: result.view,
-        };
-      }
+			// Terminus condition 1: View returned (visual output)
+			if (result.view) {
+				return {
+					snippet: result.snippet || currentSnippet,
+					view: result.view,
+				};
+			}
 
-      // Terminus condition 2: Falsey snippet (side effect completed)
-      if (result.snippet === null || result.snippet === undefined || result.snippet === false) {
-        return {
-          snippet: currentSnippet, // Return pre-side-effect snippet
-          view: null,
-        };
-      }
+			// Terminus condition 2: Falsey snippet (side effect completed)
+			if (
+				result.snippet === null ||
+				result.snippet === undefined ||
+				result.snippet === false
+			) {
+				return {
+					snippet: currentSnippet, // Return pre-side-effect snippet
+					view: null,
+				};
+			}
 
-      // Continue pipeline with modified snippet
-      currentSnippet = result.snippet;
-    } catch (error) {
-      console.error(`Pipeline failed at lens:`, lensSpec, error);
-      throw new Error(
-        `Lens failed: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
+			// Continue pipeline with modified snippet
+			currentSnippet = result.snippet;
+		} catch (error) {
+			console.error(`Pipeline failed at lens:`, lensSpec, error);
+			throw new Error(
+				`Lens failed: ${error instanceof Error ? error.message : String(error)}`
+			);
+		}
+	}
 
-  // Pipeline completed without terminus - return final snippet
-  return {
-    snippet: currentSnippet,
-    view: null,
-  };
+	// Pipeline completed without terminus - return final snippet
+	return {
+		snippet: currentSnippet,
+		view: null,
+	};
 };
 ```
 
@@ -98,20 +108,20 @@ export const pipeLenses = async (snippet: Snippet, lenses: LensSpec[]): Promise<
 The pipeline stops processing when:
 
 1. **View Returned** (`result.view` is truthy)
-   - Lens returns an HTMLElement or JSX component for display
-   - Pipeline terminates, view is rendered to user
-   - Example: `flowchart`, `jsx-demo`, `trace-table` lenses
+    - Lens returns an HTMLElement or JSX component for display
+    - Pipeline terminates, view is rendered to user
+    - Example: `flowchart`, `jsx-demo`, `trace-table` lenses
 
 2. **Side Effect Completed** (falsey snippet)
-   - Lens returns `null`, `undefined`, `false` for snippet
-   - Indicates action was performed (file saved, code executed, etc.)
-   - Pipeline terminates, no further processing
-   - Example: `run-it`, `save-file`, `debug-print` lenses
+    - Lens returns `null`, `undefined`, `false` for snippet
+    - Indicates action was performed (file saved, code executed, etc.)
+    - Pipeline terminates, no further processing
+    - Example: `run-it`, `save-file`, `debug-print` lenses
 
 3. **Error Thrown**
-   - Any lens throws an exception
-   - Fail-fast behavior: entire pipeline stops immediately
-   - Error is logged with lens spec and propagated up
+    - Any lens throws an exception
+    - Fail-fast behavior: entire pipeline stops immediately
+    - Error is logged with lens spec and propagated up
 
 #### Pipeline Flow Examples
 
@@ -138,9 +148,9 @@ await pipeLenses(snippet, [[uppercase, { theme: 'dark' }]]);
 
 // Mixed LensSpec patterns in single pipeline
 await pipeLenses(snippet, [
-  reverse.lens,                    // Simple function
-  [uppercase.lens, { loud: true }], // Function + config
-  jsxDemo                          // Lens object (terminus with view)
+	reverse.lens, // Simple function
+	[uppercase.lens, { loud: true }], // Function + config
+	jsxDemo, // Lens object (terminus with view)
 ]);
 // "hello" → "olleh" → "OLLEH" → <JSX component>
 ```
@@ -153,6 +163,147 @@ await pipeLenses(snippet, [
 - **Memory Efficient**: Only one snippet transformation in memory at a time
 - **Error Boundary**: Single lens failure stops entire pipeline
 
+## Core API Architecture
+
+Study Lenses WC-Kit provides essential functionality through `sl.core` - a focused namespace containing the most frequently used functions for building code study interfaces.
+
+### Design Philosophy
+
+- **Essential Functions Only**: Core contains fundamental operations, not every possible utility
+- **Stable API Surface**: Core functions maintain backwards compatibility across versions
+- **Direct Access**: No complex nested imports for primary functionality
+- **Performance Optimized**: Core functions are optimized for frequent use
+
+### Core API Structure
+
+```typescript
+// Main export structure
+export const sl = {
+	core, // Essential functions (pipeLenses, etc.)
+	lenses, // Lens collection
+	snippet, // Snippet utilities
+	ui, // UI components
+};
+
+// Core namespace contains essential functions
+export const core = {
+	pipeLenses: pipeLensesFunction,
+	// Additional essential functions as needed
+};
+```
+
+### Core Functions
+
+#### `sl.core.pipeLenses`
+
+The primary pipeline processing function for chaining lens operations:
+
+```typescript
+import sl from 'study-lenses-wc-kit';
+
+const snippet = { code: 'console.log("hello")', lang: 'js', test: false };
+const result = await sl.core.pipeLenses(snippet, [
+	sl.lenses.reverse.lens,
+	sl.lenses.uppercase.lens,
+]);
+```
+
+**Key Features:**
+
+- Processes lenses sequentially until terminus condition
+- Handles both sync and async lens functions
+- Supports all LensSpec patterns (function, object, with config)
+- Provides detailed error handling and logging
+
+#### `sl.core.load`
+
+Dynamic lens loading utility for runtime lens registration:
+
+```typescript
+import sl from 'study-lenses-wc-kit';
+
+const customLens = {
+	name: 'custom-analyzer', // Required: unique identifier
+	lens: async (snippet) => {
+		// Required: lens function
+		const analyzed = analyze(snippet.code);
+		return { snippet: { ...snippet, code: analyzed }, ui: null };
+	},
+	register: () => 'sl-custom', // Optional: web component tag
+	config: () => ({ depth: 5 }), // Optional: default config factory
+};
+
+// Load lens into runtime registry
+const success = sl.core.load(customLens);
+console.log(success); // true if loaded, false if invalid
+
+// Now available in sl.lenses
+await sl.lenses['custom-analyzer'].lens(snippet);
+```
+
+**Implementation Details:**
+
+- Validates lens object structure (name and lens required)
+- Creates complete lens object with defaults for missing properties
+- Mutates the imported lens registry object directly
+- Returns boolean indicating success/failure
+- Overwrites existing lens if same name is used
+- Console logging for debugging
+
+### Usage Patterns
+
+**Basic Pipeline Processing:**
+
+```typescript
+import sl from 'study-lenses-wc-kit';
+
+// Direct core function usage
+const { pipeLenses } = sl.core;
+const { reverse, uppercase } = sl.lenses;
+
+// Transform chain
+const result = await pipeLenses(snippet, [reverse.lens, uppercase.lens]);
+
+// With configuration
+const result = await pipeLenses(snippet, [
+	[reverse.lens, { enabled: true }],
+	[uppercase, { theme: 'dark' }],
+]);
+```
+
+**UI Component Integration:**
+
+```typescript
+// UI components automatically use core functions
+import sl from 'study-lenses-wc-kit';
+
+// Usage in pure function UI component
+const buildPipeline = (snippet, controls) => {
+	const lenses = [];
+	if (controls.reverse) lenses.push(sl.lenses.reverse);
+	if (controls.uppercase) lenses.push(sl.lenses.uppercase);
+
+	// Uses sl.core.pipeLenses internally
+	return sl.core.pipeLenses(snippet, lenses);
+};
+```
+
+### Future Core Functions
+
+Additional functions may be added to `sl.core` based on usage patterns:
+
+- **`createSnippet`** - Standard snippet creation with metadata
+- **`extractCode`** - Code discovery from elements
+- **`registerLenses`** - Dynamic lens registration
+
+### Benefits of Core Architecture
+
+1. **Simplified Imports**: `sl.core.pipeLenses` vs deep nested imports
+2. **API Stability**: Core functions receive extra attention for backwards compatibility
+3. **Performance**: Core functions are optimized and cached
+4. **Documentation**: Focused documentation on most important functionality
+5. **Bundle Splitting**: Core functions can be separately optimized for size
+
 ## TypeScript Type System
 
 ### Core Types
@@ -160,9 +311,9 @@ await pipeLenses(snippet, [
 ```typescript
 // Snippet data structure
 export interface Snippet {
-  code: string;   // Source code content
-  lang: string;   // Language identifier (js, python, etc.)
-  test: boolean;  // Whether this is test code
+	code: string; // Source code content
+	lang: string; // Language identifier (js, python, etc.)
+	test: boolean; // Whether this is test code
 }
 
 // Flexible configuration - any serializable value
@@ -170,13 +321,19 @@ export type LensConfig = any;
 
 // Output from lens functions
 export interface LensOutput {
-  snippet: Snippet | null | undefined | false; // null/undefined/false for side effects
-  view: HTMLElement | ComponentChild | null;   // Supports both DOM and JSX
+	snippet: Snippet | null | undefined | false; // null/undefined/false for side effects
+	view: HTMLElement | ComponentChild | null; // Supports both DOM and JSX
 }
 
 // Lens function signatures - supports both sync and async
-export type SyncLensFunction = (snippet: Snippet, config?: LensConfig) => LensOutput;
-export type AsyncLensFunction = (snippet: Snippet, config?: LensConfig) => Promise<LensOutput>;
+export type SyncLensFunction = (
+	snippet: Snippet,
+	config?: LensConfig
+) => LensOutput;
+export type AsyncLensFunction = (
+	snippet: Snippet,
+	config?: LensConfig
+) => Promise<LensOutput>;
 export type LensFunction = SyncLensFunction | AsyncLensFunction;
 ```
 
@@ -185,25 +342,31 @@ export type LensFunction = SyncLensFunction | AsyncLensFunction;
 ```typescript
 // Lens object structure with self-describing name
 export interface LensObject {
-  name: string;                                    // Self-describing identifier
-  lens: LensFunction;                             // Core function
-  view: any;                                      // Web component class
-  config: (overrides?: any | null) => LensConfig; // Config factory function
+	name: string; // Self-describing identifier
+	lens: LensFunction; // Core function
+	view: any; // Web component class
+	config: (overrides?: any | null) => LensConfig; // Config factory function
 }
 
 // Flexible lens specification - supports 4 patterns
 export type LensSpec =
-  | LensFunction                    // Simple function
-  | LensObject                      // Library lens object
-  | [LensFunction, LensConfig]      // Function with config
-  | [LensObject, LensConfig];       // Library lens with config override
+	| LensFunction // Simple function
+	| LensObject // Library lens object
+	| [LensFunction, LensConfig] // Function with config
+	| [LensObject, LensConfig]; // Library lens with config override
 
 // Code source tracking for debugging
 export interface CodeSource {
-  code: string;
-  lang: string;
-  test: boolean;
-  source: 'attribute' | 'textContent' | 'child' | 'parent' | 'sibling' | 'file';
+	code: string;
+	lang: string;
+	test: boolean;
+	source:
+		| 'attribute'
+		| 'textContent'
+		| 'child'
+		| 'parent'
+		| 'sibling'
+		| 'file';
 }
 ```
 
@@ -215,8 +378,8 @@ import type { ComponentChild } from 'preact';
 
 // JSX components are supported in LensOutput.view
 export interface LensOutput {
-  snippet: Snippet | null | undefined | false;
-  view: HTMLElement | ComponentChild | null; // ComponentChild enables JSX
+	snippet: Snippet | null | undefined | false;
+	view: HTMLElement | ComponentChild | null; // ComponentChild enables JSX
 }
 ```
 
@@ -225,8 +388,8 @@ export interface LensOutput {
 ```typescript
 // Study pipeline function signature
 export interface StudyOutput {
-  snippet: Snippet | null | undefined | false;
-  view: HTMLElement | ComponentChild | null; // Supports JSX components
+	snippet: Snippet | null | undefined | false;
+	view: HTMLElement | ComponentChild | null; // Supports JSX components
 }
 ```
 
@@ -288,23 +451,23 @@ import { describe, it, expect } from 'vitest';
 import { lens } from './lens.js';
 
 describe('reverse lens', () => {
-  it('should reverse code content', async () => {
-    const snippet = { code: 'hello world', lang: 'js', test: false };
-    const result = await lens(snippet);
-    
-    expect(result.snippet.code).toBe('dlrow olleh');
-    expect(result.snippet.lang).toBe('js');
-    expect(result.snippet.test).toBe(false);
-    expect(result.view).toBeNull();
-  });
+	it('should reverse code content', async () => {
+		const snippet = { code: 'hello world', lang: 'js', test: false };
+		const result = await lens(snippet);
 
-  it('should handle empty code', async () => {
-    const snippet = { code: '', lang: 'js', test: false };
-    const result = await lens(snippet);
-    
-    expect(result.snippet.code).toBe('');
-    expect(result.view).toBeNull();
-  });
+		expect(result.snippet.code).toBe('dlrow olleh');
+		expect(result.snippet.lang).toBe('js');
+		expect(result.snippet.test).toBe(false);
+		expect(result.view).toBeNull();
+	});
+
+	it('should handle empty code', async () => {
+		const snippet = { code: '', lang: 'js', test: false };
+		const result = await lens(snippet);
+
+		expect(result.snippet.code).toBe('');
+		expect(result.view).toBeNull();
+	});
 });
 ```
 
@@ -316,15 +479,15 @@ import { describe, it, expect } from 'vitest';
 import { config } from './config.js';
 
 describe('reverse config', () => {
-  it('should return default config', () => {
-    const result = config();
-    expect(result).toEqual({});
-  });
+	it('should return default config', () => {
+		const result = config();
+		expect(result).toEqual({});
+	});
 
-  it('should merge overrides with defaults', () => {
-    const result = config({ enabled: false });
-    expect(result.enabled).toBe(false);
-  });
+	it('should merge overrides with defaults', () => {
+		const result = config({ enabled: false });
+		expect(result.enabled).toBe(false);
+	});
 });
 ```
 
@@ -338,32 +501,32 @@ import { reverse } from '../lenses/reverse/index.js';
 import { uppercase } from '../lenses/uppercase/index.js';
 
 describe('pipeline processing', () => {
-  const snippet = { code: 'hello world', lang: 'js', test: false };
+	const snippet = { code: 'hello world', lang: 'js', test: false };
 
-  it('should process function lens', async () => {
-    const result = await pipe(snippet, [reverse.lens]);
-    expect(result.snippet.code).toBe('dlrow olleh');
-  });
+	it('should process function lens', async () => {
+		const result = await pipe(snippet, [reverse.lens]);
+		expect(result.snippet.code).toBe('dlrow olleh');
+	});
 
-  it('should process lens object', async () => {
-    const result = await pipe(snippet, [reverse]);
-    expect(result.snippet.code).toBe('dlrow olleh');
-  });
+	it('should process lens object', async () => {
+		const result = await pipe(snippet, [reverse]);
+		expect(result.snippet.code).toBe('dlrow olleh');
+	});
 
-  it('should process function with config', async () => {
-    const result = await pipe(snippet, [[reverse.lens, { enabled: true }]]);
-    expect(result.snippet.code).toBe('dlrow olleh');
-  });
+	it('should process function with config', async () => {
+		const result = await pipe(snippet, [[reverse.lens, { enabled: true }]]);
+		expect(result.snippet.code).toBe('dlrow olleh');
+	});
 
-  it('should process lens object with config override', async () => {
-    const result = await pipe(snippet, [[reverse, { custom: true }]]);
-    expect(result.snippet.code).toBe('dlrow olleh');
-  });
+	it('should process lens object with config override', async () => {
+		const result = await pipe(snippet, [[reverse, { custom: true }]]);
+		expect(result.snippet.code).toBe('dlrow olleh');
+	});
 
-  it('should chain multiple lenses until terminus', async () => {
-    const result = await pipe(snippet, [reverse.lens, uppercase.lens]);
-    expect(result.snippet.code).toBe('DLROW OLLEH');
-  });
+	it('should chain multiple lenses until terminus', async () => {
+		const result = await pipe(snippet, [reverse.lens, uppercase.lens]);
+		expect(result.snippet.code).toBe('DLROW OLLEH');
+	});
 });
 ```
 
@@ -375,19 +538,19 @@ import { describe, it, expect } from 'vitest';
 import { deepMerge } from './deep-merge.js';
 
 describe('deepMerge', () => {
-  it('should merge simple objects', () => {
-    const result = deepMerge({ a: 1 }, { b: 2 });
-    expect(result).toEqual({ a: 1, b: 2 });
-  });
+	it('should merge simple objects', () => {
+		const result = deepMerge({ a: 1 }, { b: 2 });
+		expect(result).toEqual({ a: 1, b: 2 });
+	});
 
-  it('should handle nested objects', () => {
-    const target = { display: { theme: 'light', size: 'medium' } };
-    const source = { display: { theme: 'dark' } };
-    const result = deepMerge(target, source);
-    
-    expect(result.display.theme).toBe('dark');
-    expect(result.display.size).toBe('medium');
-  });
+	it('should handle nested objects', () => {
+		const target = { display: { theme: 'light', size: 'medium' } };
+		const source = { display: { theme: 'dark' } };
+		const result = deepMerge(target, source);
+
+		expect(result.display.theme).toBe('dark');
+		expect(result.display.size).toBe('medium');
+	});
 });
 ```
 
@@ -399,30 +562,33 @@ describe('deepMerge', () => {
 <!-- src/lenses/reverse/view.test.html -->
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Reverse Lens - Interactive Test</title>
-</head>
-<body>
-  <h1>🔄 Reverse Lens - Interactive Test</h1>
-  
-  <!-- Test: Basic usage -->
-  <h2>Basic Usage</h2>
-  <sl-lens-reverse code="hello world"></sl-lens-reverse>
-  
-  <!-- Test: File loading -->
-  <h2>File Loading</h2>
-  <sl-lens-reverse src="../../examples/content/greet.js"></sl-lens-reverse>
-  
-  <!-- Test: Configuration -->
-  <h2>Custom Configuration</h2>
-  <sl-lens-reverse 
-    code="function test() { return 'hello'; }"
-    config='{"enabled": true}'></sl-lens-reverse>
-  
-  <script type="module">
-    import '../../../register.js'; // Register all components
-  </script>
-</body>
+	<head>
+		<title>Reverse Lens - Interactive Test</title>
+	</head>
+	<body>
+		<h1>🔄 Reverse Lens - Interactive Test</h1>
+
+		<!-- Test: Basic usage -->
+		<h2>Basic Usage</h2>
+		<sl-lens-reverse code="hello world"></sl-lens-reverse>
+
+		<!-- Test: File loading -->
+		<h2>File Loading</h2>
+		<sl-lens-reverse
+			src="../../examples/content/greet.js"
+		></sl-lens-reverse>
+
+		<!-- Test: Configuration -->
+		<h2>Custom Configuration</h2>
+		<sl-lens-reverse
+			code="function test() { return 'hello'; }"
+			config='{"enabled": true}'
+		></sl-lens-reverse>
+
+		<script type="module">
+			import '../../../register.js'; // Register all components
+		</script>
+	</body>
 </html>
 ```
 
@@ -432,27 +598,31 @@ describe('deepMerge', () => {
 <!-- src/lenses/jsx-demo/view.test.html -->
 <!DOCTYPE html>
 <html>
-<head>
-  <title>JSX Demo Lens - Interactive Test</title>
-</head>
-<body>
-  <h1>⚛️ JSX Demo Lens - Interactive Test</h1>
-  
-  <!-- Test: JSX rendering -->
-  <h2>JSX Component Rendering</h2>
-  <sl-lens-jsx-demo code="const greeting = 'Hello, world!';"></sl-lens-jsx-demo>
-  
-  <!-- Test: Code analysis -->
-  <h2>Code Statistics</h2>
-  <sl-lens-jsx-demo code="function factorial(n) {
+	<head>
+		<title>JSX Demo Lens - Interactive Test</title>
+	</head>
+	<body>
+		<h1>⚛️ JSX Demo Lens - Interactive Test</h1>
+
+		<!-- Test: JSX rendering -->
+		<h2>JSX Component Rendering</h2>
+		<sl-lens-jsx-demo
+			code="const greeting = 'Hello, world!';"
+		></sl-lens-jsx-demo>
+
+		<!-- Test: Code analysis -->
+		<h2>Code Statistics</h2>
+		<sl-lens-jsx-demo
+			code="function factorial(n) {
   if (n <= 1) return 1;
   return n * factorial(n - 1);
-}"></sl-lens-jsx-demo>
-  
-  <script type="module">
-    import '../../../register.js';
-  </script>
-</body>
+}"
+		></sl-lens-jsx-demo>
+
+		<script type="module">
+			import '../../../register.js';
+		</script>
+	</body>
 </html>
 ```
 
@@ -475,7 +645,7 @@ npm run test:coverage
 ### Coverage Requirements
 
 - **Line Coverage**: 80% minimum
-- **Function Coverage**: 80% minimum  
+- **Function Coverage**: 80% minimum
 - **Branch Coverage**: 80% minimum
 - **Statement Coverage**: 80% minimum
 
@@ -483,16 +653,16 @@ Coverage thresholds are enforced in `vitest.config.ts`:
 
 ```typescript
 export default defineConfig({
-  test: {
-    coverage: {
-      thresholds: {
-        lines: 80,
-        functions: 80, 
-        branches: 80,
-        statements: 80,
-      },
-    },
-  },
+	test: {
+		coverage: {
+			thresholds: {
+				lines: 80,
+				functions: 80,
+				branches: 80,
+				statements: 80,
+			},
+		},
+	},
 });
 ```
 
@@ -519,9 +689,12 @@ export default lens;
 **lens.tsx (for JSX components):**
 
 ```tsx
-export const lens = async (snippet: Snippet, config: LensConfig = _config()): Promise<LensOutput> => ({
-  snippet,
-  view: <div>Interactive JSX component</div>
+export const lens = async (
+	snippet: Snippet,
+	config: LensConfig = _config()
+): Promise<LensOutput> => ({
+	snippet,
+	view: <div>Interactive JSX component</div>,
 });
 export default lens;
 ```
@@ -548,9 +721,9 @@ export const name = 'my-lens'; // Matches usage in pipeline and config
 import { deepMerge } from '../../utils/deep-merge.js';
 
 const defaultConfig = {
-  theme: 'light',
-  enabled: true,
-  // ... lens-specific settings
+	theme: 'light',
+	enabled: true,
+	// ... lens-specific settings
 };
 
 export const config = (overrides = {}) => deepMerge(defaultConfig, overrides);
@@ -567,10 +740,10 @@ import config from './config.js';
 
 // Default export only (generic object interface)
 export default {
-  name, // Self-describing lens name
-  lens,
-  view,
-  config, // Config factory function
+	name, // Self-describing lens name
+	lens,
+	view,
+	config, // Config factory function
 };
 ```
 
@@ -578,7 +751,8 @@ export default {
 
 - **index.ts** - Pure exports, no side effects
 - **register.ts** - Side effects only, no exports
-- **Main usage** - Import from index.ts for functions, import register.ts for web components
+- **Main usage** - Import from index.ts for functions and register.ts for web components
+- **Core functions** - Available through `sl.core` namespace for essential operations
 
 ## Development Workflows
 
@@ -586,34 +760,34 @@ export default {
 
 1. **Create directory structure:**
 
-   ```
-   lenses/my-lens/
-   ├── lens.ts         # Pure lens logic
-   ├── lens.spec.ts    # Unit tests for lens function
-   ├── view.ts         # Web component wrapper
-   ├── view.test.html  # Interactive browser test
-   ├── config.ts       # Configuration factory
-   ├── config.spec.ts  # Configuration tests
-   ├── register.ts     # Browser registration
-   └── index.ts        # Barrel exports
-   ```
+    ```
+    lenses/my-lens/
+    ├── lens.ts         # Pure lens logic
+    ├── lens.spec.ts    # Unit tests for lens function
+    ├── view.ts         # Web component wrapper
+    ├── view.test.html  # Interactive browser test
+    ├── config.ts       # Configuration factory
+    ├── config.spec.ts  # Configuration tests
+    ├── register.ts     # Browser registration
+    └── index.ts        # Barrel exports
+    ```
 
 2. **Follow naming conventions:**
-   - Function: `lens`
-   - Component: `view`  
-   - Config: `config`
+    - Function: `lens`
+    - Component: `view`
+    - Config: `config`
 
 3. **Add to exports:**
-   - Update top-level `functions.ts`
-   - Update top-level `components.ts`
-   - Update top-level `configs.ts`
-   - **Update main `index.ts`** - Add to `studyLenses.lenses` object
+    - Update top-level `functions.ts`
+    - Update top-level `components.ts`
+    - Update top-level `configs.ts`
+    - **Update main `index.ts`** - Add to `studyLenses.lenses` object
 
 4. **Create comprehensive tests:**
-   - Unit tests for all exported functions
-   - Interactive HTML tests for web components
-   - Configuration testing with deep merge scenarios
-   - Pipeline integration testing
+    - Unit tests for all exported functions
+    - Interactive HTML tests for web components
+    - Configuration testing with deep merge scenarios
+    - Pipeline integration testing
 
 ### Testing Strategy
 
@@ -671,13 +845,13 @@ Study Lenses WC-Kit provides full support for creating interactive JSX component
 
 ```json
 {
-  "dependencies": {
-    "preact": "^10.0.0"
-  },
-  "devDependencies": {
-    "@types/preact": "^10.0.0",
-    "@preact/preset-vite": "^2.0.0"
-  }
+	"dependencies": {
+		"preact": "^10.0.0"
+	},
+	"devDependencies": {
+		"@types/preact": "^10.0.0",
+		"@preact/preset-vite": "^2.0.0"
+	}
 }
 ```
 
@@ -685,10 +859,10 @@ Study Lenses WC-Kit provides full support for creating interactive JSX component
 
 ```json
 {
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact"
-  }
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact"
+	}
 }
 ```
 
@@ -706,14 +880,17 @@ The rendering system automatically detects and handles both HTMLElement and JSX 
 import { render } from 'preact';
 import type { ComponentChild } from 'preact';
 
-const renderView = (container: HTMLElement, view: HTMLElement | ComponentChild): void => {
-  if (view instanceof HTMLElement) {
-    // Regular DOM element - append directly
-    container.appendChild(view);
-  } else {
-    // JSX component - use Preact render
-    render(view, container);
-  }
+const renderView = (
+	container: HTMLElement,
+	view: HTMLElement | ComponentChild
+): void => {
+	if (view instanceof HTMLElement) {
+		// Regular DOM element - append directly
+		container.appendChild(view);
+	} else {
+		// JSX component - use Preact render
+		render(view, container);
+	}
 };
 ```
 
@@ -725,94 +902,114 @@ This dual-mode rendering allows seamless mixing of traditional DOM manipulation 
 // lenses/jsx-demo/lens.tsx - Note the .tsx extension
 import type { Snippet, LensConfig, LensOutput } from '../../types.js';
 
-export const lens = async (snippet: Snippet, config: LensConfig = _config()): Promise<LensOutput> => {
-  const stats = analyzeCode(snippet.code);
+export const lens = async (
+	snippet: Snippet,
+	config: LensConfig = _config()
+): Promise<LensOutput> => {
+	const stats = analyzeCode(snippet.code);
 
-  return {
-    snippet, // Pass through unchanged
-    view: (
-      <div
-        style={{
-          padding: '16px',
-          border: '2px solid #007acc',
-          borderRadius: '8px',
-          backgroundColor: '#f8f9fa',
-          fontFamily: 'system-ui, sans-serif',
-        }}
-      >
-        <h3
-          style={{
-            margin: '0 0 12px 0',
-            color: '#007acc',
-            fontSize: '18px',
-          }}
-        >
-          📊 JSX Code Analysis
-        </h3>
+	return {
+		snippet, // Pass through unchanged
+		view: (
+			<div
+				style={{
+					padding: '16px',
+					border: '2px solid #007acc',
+					borderRadius: '8px',
+					backgroundColor: '#f8f9fa',
+					fontFamily: 'system-ui, sans-serif',
+				}}
+			>
+				<h3
+					style={{
+						margin: '0 0 12px 0',
+						color: '#007acc',
+						fontSize: '18px',
+					}}
+				>
+					📊 JSX Code Analysis
+				</h3>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-            gap: '12px',
-            marginBottom: '16px',
-          }}
-        >
-          <div
-            style={{
-              padding: '8px',
-              backgroundColor: '#fff',
-              borderRadius: '4px',
-              textAlign: 'center',
-            }}
-          >
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#28a745' }}>
-              {stats.lines}
-            </div>
-            <div style={{ fontSize: '12px', color: '#666' }}>Lines</div>
-          </div>
+				<div
+					style={{
+						display: 'grid',
+						gridTemplateColumns:
+							'repeat(auto-fit, minmax(120px, 1fr))',
+						gap: '12px',
+						marginBottom: '16px',
+					}}
+				>
+					<div
+						style={{
+							padding: '8px',
+							backgroundColor: '#fff',
+							borderRadius: '4px',
+							textAlign: 'center',
+						}}
+					>
+						<div
+							style={{
+								fontSize: '24px',
+								fontWeight: 'bold',
+								color: '#28a745',
+							}}
+						>
+							{stats.lines}
+						</div>
+						<div style={{ fontSize: '12px', color: '#666' }}>
+							Lines
+						</div>
+					</div>
 
-          <div
-            style={{
-              padding: '8px',
-              backgroundColor: '#fff',
-              borderRadius: '4px',
-              textAlign: 'center',
-            }}
-          >
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffc107' }}>
-              {stats.words}
-            </div>
-            <div style={{ fontSize: '12px', color: '#666' }}>Words</div>
-          </div>
-        </div>
+					<div
+						style={{
+							padding: '8px',
+							backgroundColor: '#fff',
+							borderRadius: '4px',
+							textAlign: 'center',
+						}}
+					>
+						<div
+							style={{
+								fontSize: '24px',
+								fontWeight: 'bold',
+								color: '#ffc107',
+							}}
+						>
+							{stats.words}
+						</div>
+						<div style={{ fontSize: '12px', color: '#666' }}>
+							Words
+						</div>
+					</div>
+				</div>
 
-        <details style={{ marginBottom: '12px' }}>
-          <summary
-            style={{
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              marginBottom: '8px',
-            }}
-          >
-            📝 Code Preview
-          </summary>
-          <pre
-            style={{
-              backgroundColor: '#fff',
-              padding: '12px',
-              borderRadius: '4px',
-              overflow: 'auto',
-              fontSize: '14px',
-              margin: '0',
-            }}
-          >
-            {snippet.code}
-          </pre>
-        </details>
-      </div>
-    ),
-  };
+				<details style={{ marginBottom: '12px' }}>
+					<summary
+						style={{
+							cursor: 'pointer',
+							fontWeight: 'bold',
+							marginBottom: '8px',
+						}}
+					>
+						📝 Code Preview
+					</summary>
+					<pre
+						style={{
+							backgroundColor: '#fff',
+							padding: '12px',
+							borderRadius: '4px',
+							overflow: 'auto',
+							fontSize: '14px',
+							margin: '0',
+						}}
+					>
+						{snippet.code}
+					</pre>
+				</details>
+			</div>
+		),
+	};
 };
 
 export default lens;
@@ -831,8 +1028,8 @@ export default lens;
 ```typescript
 // types.ts - JSX support in LensOutput
 export interface LensOutput {
-  snippet: Snippet | null | undefined | false;
-  view: HTMLElement | ComponentChild | null; // ComponentChild supports JSX
+	snippet: Snippet | null | undefined | false;
+	view: HTMLElement | ComponentChild | null; // ComponentChild supports JSX
 }
 ```
 
@@ -847,70 +1044,80 @@ Study Lenses WC-Kit implements a sophisticated precedence-based code discovery s
 The `utils/extract-code-from-element.ts` implements the complete discovery system:
 
 ```typescript
-export const extractCodeFromElement = async (element: Element): Promise<string> => {
-  // 1. Own code attribute (highest priority)
-  const codeAttr = element.getAttribute('code');
-  if (codeAttr) {
-    if (isFilePath(codeAttr)) {
-      const { code } = await loadFileContent(codeAttr);
-      return code;
-    }
-    // Try base64 decode, fallback to plain text
-    try {
-      return decodeURIComponent(atob(codeAttr));
-    } catch {
-      return codeAttr; // Plain text
-    }
-  }
+export const extractCodeFromElement = async (
+	element: Element
+): Promise<string> => {
+	// 1. Own code attribute (highest priority)
+	const codeAttr = element.getAttribute('code');
+	if (codeAttr) {
+		if (isFilePath(codeAttr)) {
+			const { code } = await loadFileContent(codeAttr);
+			return code;
+		}
+		// Try base64 decode, fallback to plain text
+		try {
+			return decodeURIComponent(atob(codeAttr));
+		} catch {
+			return codeAttr; // Plain text
+		}
+	}
 
-  // 1.5. Own src attribute (fallback from code)
-  const srcAttr = element.getAttribute('src');
-  if (srcAttr) {
-    if (isFilePath(srcAttr)) {
-      const { code } = await loadFileContent(srcAttr);
-      return code;
-    }
-    return srcAttr;
-  }
+	// 1.5. Own src attribute (fallback from code)
+	const srcAttr = element.getAttribute('src');
+	if (srcAttr) {
+		if (isFilePath(srcAttr)) {
+			const { code } = await loadFileContent(srcAttr);
+			return code;
+		}
+		return srcAttr;
+	}
 
-  // 2. textContent
-  const textContent = element.textContent?.trim();
-  if (textContent && !element.querySelector('sl-snippet')) {
-    return textContent;
-  }
+	// 2. textContent
+	const textContent = element.textContent?.trim();
+	if (textContent && !element.querySelector('sl-snippet')) {
+		return textContent;
+	}
 
-  // 3. Child snippet
-  const childSnippet = element.querySelector(':scope > sl-snippet');
-  if (childSnippet) {
-    return extractCodeFromElement(childSnippet);
-  }
+	// 3. Child snippet
+	const childSnippet = element.querySelector(':scope > sl-snippet');
+	if (childSnippet) {
+		return extractCodeFromElement(childSnippet);
+	}
 
-  // 4. Parent context (snippet or study-lenses with code/src)
-  const parentSnippet = element.closest('sl-snippet');
-  const parentStudyLenses = element.closest('study-lenses[code], study-lenses[src]');
+	// 4. Parent context (snippet or study-lenses with code/src)
+	const parentSnippet = element.closest('sl-snippet');
+	const parentStudyLenses = element.closest(
+		'study-lenses[code], study-lenses[src]'
+	);
 
-  if (parentSnippet) {
-    // Special case: check for sibling snippet first
-    const siblingSnippets = Array.from(parentSnippet.querySelectorAll(':scope > sl-snippet'));
-    const siblingSnippet = siblingSnippets.find((s) => s !== element && !s.contains(element));
+	if (parentSnippet) {
+		// Special case: check for sibling snippet first
+		const siblingSnippets = Array.from(
+			parentSnippet.querySelectorAll(':scope > sl-snippet')
+		);
+		const siblingSnippet = siblingSnippets.find(
+			(s) => s !== element && !s.contains(element)
+		);
 
-    if (siblingSnippet) {
-      return extractCodeFromElement(siblingSnippet);
-    }
-    // Otherwise use parent snippet's code
-    // ... (parent code extraction logic)
-  }
+		if (siblingSnippet) {
+			return extractCodeFromElement(siblingSnippet);
+		}
+		// Otherwise use parent snippet's code
+		// ... (parent code extraction logic)
+	}
 
-  // 5. Sibling snippet (in study-lenses)
-  const studyContainer = element.closest('study-lenses');
-  if (studyContainer && studyContainer !== element) {
-    const siblingSnippet = studyContainer.querySelector(':scope > sl-snippet');
-    if (siblingSnippet && siblingSnippet !== element) {
-      return extractCodeFromElement(siblingSnippet);
-    }
-  }
+	// 5. Sibling snippet (in study-lenses)
+	const studyContainer = element.closest('study-lenses');
+	if (studyContainer && studyContainer !== element) {
+		const siblingSnippet = studyContainer.querySelector(
+			':scope > sl-snippet'
+		);
+		if (siblingSnippet && siblingSnippet !== element) {
+			return extractCodeFromElement(siblingSnippet);
+		}
+	}
 
-  return '';
+	return '';
 };
 ```
 
@@ -920,12 +1127,12 @@ export const extractCodeFromElement = async (element: Element): Promise<string> 
 
 ```typescript
 const isFilePath = (value: string): boolean => {
-  return (
-    value.startsWith('./') ||
-    value.startsWith('../') ||
-    value.startsWith('/') ||
-    /\.(js|mjs)$/.test(value)
-  );
+	return (
+		value.startsWith('./') ||
+		value.startsWith('../') ||
+		value.startsWith('/') ||
+		/\.(js|mjs)$/.test(value)
+	);
 };
 ```
 
@@ -933,19 +1140,19 @@ const isFilePath = (value: string): boolean => {
 
 ```typescript
 const loadFileContent = async (
-  path: string
+	path: string
 ): Promise<{ code: string; lang: string; test: boolean }> => {
-  const response = await fetch(path);
-  const code = await response.text();
+	const response = await fetch(path);
+	const code = await response.text();
 
-  // Extract lang from extension
-  const ext = path.split('.').pop() || '';
-  const lang = ext === 'mjs' ? 'js' : ext;
+	// Extract lang from extension
+	const ext = path.split('.').pop() || '';
+	const lang = ext === 'mjs' ? 'js' : ext;
 
-  // Check if test file
-  const test = path.includes('.test.') || path.includes('.spec.');
+	// Check if test file
+	const test = path.includes('.test.') || path.includes('.spec.');
 
-  return { code, lang, test };
+	return { code, lang, test };
 };
 ```
 
@@ -969,27 +1176,27 @@ const loadFileContent = async (
 
 <!-- 3. Child snippet -->
 <sl-lens-lowercase>
-  <sl-snippet code="./examples/content/math.test.js"></sl-snippet>
+	<sl-snippet code="./examples/content/math.test.js"></sl-snippet>
 </sl-lens-lowercase>
 
 <!-- 4. Parent context -->
 <sl-snippet code="./shared.js">
-  <sl-lens-reverse></sl-lens-reverse>
-  <!-- uses shared.js -->
+	<sl-lens-reverse></sl-lens-reverse>
+	<!-- uses shared.js -->
 </sl-snippet>
 
 <!-- 4.1. Sibling snippet precedence -->
 <sl-snippet code="./parent.js">
-  <sl-snippet code="./sibling.js"></sl-snippet>
-  <sl-lens-reverse></sl-lens-reverse>
-  <!-- uses sibling.js, not parent.js -->
+	<sl-snippet code="./sibling.js"></sl-snippet>
+	<sl-lens-reverse></sl-lens-reverse>
+	<!-- uses sibling.js, not parent.js -->
 </sl-snippet>
 
 <!-- 5. Sibling snippet in study panel -->
 <study-lenses>
-  <sl-snippet code="./analyze.js"></sl-snippet>
-  <sl-lens-reverse></sl-lens-reverse>
-  <!-- uses analyze.js -->
+	<sl-snippet code="./analyze.js"></sl-snippet>
+	<sl-lens-reverse></sl-lens-reverse>
+	<!-- uses analyze.js -->
 </study-lenses>
 ```
 
@@ -1001,12 +1208,12 @@ const loadFileContent = async (
 
 ```html
 <study-lenses code="shared code">
-  <sl-lens-reverse></sl-lens-reverse>
-  <!-- gets: "shared code" -->
-  <sl-lens-uppercase></sl-lens-uppercase>
-  <!-- gets: "shared code" -->
-  <sl-lens-lowercase></sl-lens-lowercase>
-  <!-- gets: "shared code" -->
+	<sl-lens-reverse></sl-lens-reverse>
+	<!-- gets: "shared code" -->
+	<sl-lens-uppercase></sl-lens-uppercase>
+	<!-- gets: "shared code" -->
+	<sl-lens-lowercase></sl-lens-lowercase>
+	<!-- gets: "shared code" -->
 </study-lenses>
 ```
 
@@ -1014,12 +1221,12 @@ const loadFileContent = async (
 
 ```html
 <sl-snippet code="initial code">
-  <sl-lens-reverse></sl-lens-reverse>
-  <!-- gets: "initial code" -->
-  <sl-lens-uppercase></sl-lens-uppercase>
-  <!-- gets: reversed code -->
-  <sl-lens-lowercase></sl-lens-lowercase>
-  <!-- gets: reversed+uppercased code -->
+	<sl-lens-reverse></sl-lens-reverse>
+	<!-- gets: "initial code" -->
+	<sl-lens-uppercase></sl-lens-uppercase>
+	<!-- gets: reversed code -->
+	<sl-lens-lowercase></sl-lens-lowercase>
+	<!-- gets: reversed+uppercased code -->
 </sl-snippet>
 ```
 
@@ -1027,10 +1234,16 @@ const loadFileContent = async (
 
 ```typescript
 export interface CodeSource {
-  code: string;
-  lang: string;
-  test: boolean;
-  source: 'attribute' | 'textContent' | 'child' | 'parent' | 'sibling' | 'file';
+	code: string;
+	lang: string;
+	test: boolean;
+	source:
+		| 'attribute'
+		| 'textContent'
+		| 'child'
+		| 'parent'
+		| 'sibling'
+		| 'file';
 }
 ```
 
@@ -1043,7 +1256,7 @@ Study Lenses WC-Kit includes a `/ui` directory containing visual components that
 ### UI Component Philosophy
 
 - **Pure Functions**: UI components are implemented as pure functions that return DOM elements
-- **No DOM Feedback**: Execution components (like run) operate silently with console output only  
+- **No DOM Feedback**: Execution components (like run) operate silently with console output only
 - **Event-Driven Communication**: Components communicate via custom events for code sharing
 - **Pipeline Integration**: UI components use `pipeLenses` function to leverage existing lens ecosystem
 
@@ -1055,12 +1268,13 @@ A flexbox container that manages code distribution to child UI components:
 
 ```html
 <sl-ui-study-bar code="console.log('Shared context');">
-  <sl-ui-run></sl-ui-run>
-  <sl-ui-open-in></sl-ui-open-in>
+	<sl-ui-run></sl-ui-run>
+	<sl-ui-open-in></sl-ui-open-in>
 </sl-ui-study-bar>
 ```
 
 **Key Features:**
+
 - Code discovery using standard 5-level precedence
 - Event delegation for child component communication
 - Responsive flexbox layout with automatic wrapping
@@ -1075,18 +1289,21 @@ Interactive controls for executing JavaScript code through configurable lens pip
 ```
 
 **Controls:**
+
 - **▶️ Run Button** - Executes code through pipeline
 - **Debug Checkbox** - Adds debugger statements to execution
-- **Loop Guard Checkbox** - Enables loop protection with AST transformation  
+- **Loop Guard Checkbox** - Enables loop protection with AST transformation
 - **Loop Guard Max** - Configurable iteration limit (1-10000)
 
 **Pipeline Behavior:**
+
 - Basic: `[run]`
 - Loop Guard: `[loopGuard, run]`
 - Loop Guard + Format: `[loopGuard, format, run]` (formatting applied after loop guard)
 - Debug: `[run]` with debug configuration
 
 **Language Support:**
+
 - JavaScript (`.js`) - executed as script type
 - ES Modules (`.mjs`) - executed as module type
 - Dynamic test detection from snippet.test property
@@ -1098,26 +1315,26 @@ All UI components follow the same implementation pattern:
 ```typescript
 // component.ts - Pure function implementation
 export const component = (snippet: Snippet | null = null): HTMLElement => {
-  const container = document.createElement('div');
-  // Build UI elements
-  // Add event listeners
-  // Return container
+	const container = document.createElement('div');
+	// Build UI elements
+	// Add event listeners
+	// Return container
 };
 
 // register.ts - Web component wrapper
 class UIComponent extends HTMLElement {
-  async connectedCallback() {
-    const snippet = await extractCodeFromElement(this);
-    const result = component(snippet);
-    this.appendChild(result);
-  }
+	async connectedCallback() {
+		const snippet = await extractCodeFromElement(this);
+		const result = component(snippet);
+		this.appendChild(result);
+	}
 }
 
 // index.ts - Standard exports
 export default {
-  component, // Pure function
-  name,      // Base name ('run', 'study-bar')
-  register,  // Registration function
+	component, // Pure function
+	name, // Base name ('run', 'study-bar')
+	register, // Registration function
 };
 ```
 
@@ -1128,21 +1345,21 @@ UI components use custom events for code sharing:
 ```typescript
 // Child component requesting code from parent study-bar
 const event = new CustomEvent('request-code', {
-  detail: { 
-    callback: (snippet: Snippet) => { 
-      // Use snippet data
-    } 
-  },
-  bubbles: true // Must bubble to reach study-bar
+	detail: {
+		callback: (snippet: Snippet) => {
+			// Use snippet data
+		},
+	},
+	bubbles: true, // Must bubble to reach study-bar
 });
 element.dispatchEvent(event);
 
 // Study-bar listens and provides snippet
 container.addEventListener('request-code', (event: CustomEvent) => {
-  event.stopPropagation();
-  if (event.detail?.callback) {
-    event.detail.callback(cachedSnippet);
-  }
+	event.stopPropagation();
+	if (event.detail?.callback) {
+		event.detail.callback(cachedSnippet);
+	}
 });
 ```
 
@@ -1152,11 +1369,11 @@ UI components integrate seamlessly with the existing registration system:
 
 ```typescript
 // Main exports include UI components
-export const studyLenses = {
-  lenses,   // Core lens collection
-  study,    // Pipeline and study functions
-  snippet,  // Snippet utilities
-  ui,       // UI components
+export const sl = {
+	lenses, // Core lens collection
+	study, // Pipeline and study functions
+	snippet, // Snippet utilities
+	ui, // UI components
 };
 
 // Automatic registration via existing system
@@ -1186,62 +1403,74 @@ The UI architecture supports extending with additional components:
 ### Transform-Style Lens (Synchronous)
 
 ```typescript
-export const myTransform = (snippet: Snippet, config: LensConfig = _config()): LensOutput => ({
-  snippet: {
-    ...snippet,
-    code: transformCode(snippet.code, config),
-  },
-  view: null,
+export const myTransform = (
+	snippet: Snippet,
+	config: LensConfig = _config()
+): LensOutput => ({
+	snippet: {
+		...snippet,
+		code: transformCode(snippet.code, config),
+	},
+	view: null,
 });
 ```
 
 ### View-Generating Lens (Synchronous)
 
 ```typescript
-export const myVisual = (snippet: Snippet, config: LensConfig = _config()): LensOutput => {
-  const visualElement = document.createElement('div');
-  visualElement.innerHTML = generateVisualization(snippet.code);
+export const myVisual = (
+	snippet: Snippet,
+	config: LensConfig = _config()
+): LensOutput => {
+	const visualElement = document.createElement('div');
+	visualElement.innerHTML = generateVisualization(snippet.code);
 
-  return {
-    snippet, // Pass through unchanged
-    view: visualElement,
-  };
+	return {
+		snippet, // Pass through unchanged
+		view: visualElement,
+	};
 };
 ```
 
 ### Hybrid Lens (Transform + View - Synchronous)
 
 ```typescript
-export const myHybrid = (snippet: Snippet, config: LensConfig = _config()): LensOutput => {
-  const transformedCode = processCode(snippet.code, config);
-  const visualElement = createVisualization(transformedCode);
+export const myHybrid = (
+	snippet: Snippet,
+	config: LensConfig = _config()
+): LensOutput => {
+	const transformedCode = processCode(snippet.code, config);
+	const visualElement = createVisualization(transformedCode);
 
-  return {
-    snippet: {
-      ...snippet,
-      code: transformedCode,
-    },
-    view: visualElement,
-  };
+	return {
+		snippet: {
+			...snippet,
+			code: transformedCode,
+		},
+		view: visualElement,
+	};
 };
 ```
 
 ### Async Lens (I/O Operations)
 
 ```typescript
-export const myAsyncLens = async (snippet: Snippet, config: LensConfig = _config()): Promise<LensOutput> => {
-  // Real async work: API calls, file I/O, etc.
-  const analysisData = await fetch('/api/analyze', {
-    method: 'POST',
-    body: JSON.stringify({ code: snippet.code }),
-  }).then((r) => r.json());
+export const myAsyncLens = async (
+	snippet: Snippet,
+	config: LensConfig = _config()
+): Promise<LensOutput> => {
+	// Real async work: API calls, file I/O, etc.
+	const analysisData = await fetch('/api/analyze', {
+		method: 'POST',
+		body: JSON.stringify({ code: snippet.code }),
+	}).then((r) => r.json());
 
-  const element = createAnalysisView(analysisData);
+	const element = createAnalysisView(analysisData);
 
-  return {
-    snippet, // Pass through unchanged
-    view: element,
-  };
+	return {
+		snippet, // Pass through unchanged
+		view: element,
+	};
 };
 ```
 
@@ -1249,61 +1478,81 @@ export const myAsyncLens = async (snippet: Snippet, config: LensConfig = _config
 
 ```tsx
 // lens.tsx - Note the .tsx extension for JSX support
-export const myJSXLens = async (snippet: Snippet, config: LensConfig = _config()): Promise<LensOutput> => {
-  const stats = analyzeCode(snippet.code);
+export const myJSXLens = async (
+	snippet: Snippet,
+	config: LensConfig = _config()
+): Promise<LensOutput> => {
+	const stats = analyzeCode(snippet.code);
 
-  return {
-    snippet, // Pass through unchanged
-    view: (
-      <div
-        style={{
-          padding: '16px',
-          border: '2px solid #007acc',
-          borderRadius: '8px',
-          backgroundColor: '#f8f9fa',
-        }}
-      >
-        <h3 style={{ color: '#007acc', marginTop: 0 }}>📊 Interactive Code Analysis</h3>
+	return {
+		snippet, // Pass through unchanged
+		view: (
+			<div
+				style={{
+					padding: '16px',
+					border: '2px solid #007acc',
+					borderRadius: '8px',
+					backgroundColor: '#f8f9fa',
+				}}
+			>
+				<h3 style={{ color: '#007acc', marginTop: 0 }}>
+					📊 Interactive Code Analysis
+				</h3>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
-            gap: '12px',
-            marginBottom: '16px',
-          }}
-        >
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.lines}</div>
-            <div style={{ fontSize: '12px', color: '#666' }}>Lines</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.functions}</div>
-            <div style={{ fontSize: '12px', color: '#666' }}>Functions</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{stats.complexity}</div>
-            <div style={{ fontSize: '12px', color: '#666' }}>Complexity</div>
-          </div>
-        </div>
+				<div
+					style={{
+						display: 'grid',
+						gridTemplateColumns:
+							'repeat(auto-fit, minmax(100px, 1fr))',
+						gap: '12px',
+						marginBottom: '16px',
+					}}
+				>
+					<div style={{ textAlign: 'center' }}>
+						<div style={{ fontSize: '24px', fontWeight: 'bold' }}>
+							{stats.lines}
+						</div>
+						<div style={{ fontSize: '12px', color: '#666' }}>
+							Lines
+						</div>
+					</div>
+					<div style={{ textAlign: 'center' }}>
+						<div style={{ fontSize: '24px', fontWeight: 'bold' }}>
+							{stats.functions}
+						</div>
+						<div style={{ fontSize: '12px', color: '#666' }}>
+							Functions
+						</div>
+					</div>
+					<div style={{ textAlign: 'center' }}>
+						<div style={{ fontSize: '24px', fontWeight: 'bold' }}>
+							{stats.complexity}
+						</div>
+						<div style={{ fontSize: '12px', color: '#666' }}>
+							Complexity
+						</div>
+					</div>
+				</div>
 
-        <details>
-          <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>📝 Source Code</summary>
-          <pre
-            style={{
-              backgroundColor: '#fff',
-              padding: '12px',
-              borderRadius: '4px',
-              overflow: 'auto',
-              fontSize: '14px',
-            }}
-          >
-            {snippet.code}
-          </pre>
-        </details>
-      </div>
-    ),
-  };
+				<details>
+					<summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
+						📝 Source Code
+					</summary>
+					<pre
+						style={{
+							backgroundColor: '#fff',
+							padding: '12px',
+							borderRadius: '4px',
+							overflow: 'auto',
+							fontSize: '14px',
+						}}
+					>
+						{snippet.code}
+					</pre>
+				</details>
+			</div>
+		),
+	};
 };
 ```
 
@@ -1333,20 +1582,31 @@ export const myJSXLens = async (snippet: Snippet, config: LensConfig = _config()
 ### Configuration Patterns
 
 ```typescript
+// Access through main export
+import sl from 'study-lenses-wc-kit';
+
 // Simple config
 export const config = () => ({ enabled: true });
 
 // Complex config with factory pattern
-export const config = (overrides = {}) => deepMerge({
-  display: {
-    theme: 'dark',
-    animations: true,
-  },
-  processing: {
-    timeout: 5000,
-    retries: 3,
-  },
-}, overrides);
+export const config = (overrides = {}) =>
+	deepMerge(
+		{
+			display: {
+				theme: 'dark',
+				animations: true,
+			},
+			processing: {
+				timeout: 5000,
+				retries: 3,
+			},
+		},
+		overrides
+	);
+
+// Usage with sl.lenses
+const defaultConfig = sl.lenses.myLens.config();
+const customConfig = sl.lenses.myLens.config({ theme: 'dark' });
 ```
 
 ## Configuration Management
@@ -1357,19 +1617,19 @@ All lens configurations use a factory pattern with deep merge for flexible overr
 
 ```typescript
 // Get default configuration
-const defaultConfig = studyLenses.lenses.myLens.config();
+const defaultConfig = sl.lenses.myLens.config();
 
 // Override specific settings
-const customConfig = studyLenses.lenses.myLens.config({
-  theme: 'dark',
-  animations: true,
+const customConfig = sl.lenses.myLens.config({
+	theme: 'dark',
+	animations: true,
 });
 
 // Nested overrides supported
-const advancedConfig = studyLenses.lenses.myLens.config({
-  display: {
-    theme: 'dark', // Only overrides theme, keeps other display settings
-  },
+const advancedConfig = sl.lenses.myLens.config({
+	display: {
+		theme: 'dark', // Only overrides theme, keeps other display settings
+	},
 });
 ```
 
@@ -1380,12 +1640,12 @@ const advancedConfig = studyLenses.lenses.myLens.config({
 import { deepMerge } from '../../utils/deep-merge.js';
 
 const defaultConfig = {
-  theme: 'light',
-  showDetails: true,
-  display: {
-    animations: false,
-    compact: true,
-  },
+	theme: 'light',
+	showDetails: true,
+	display: {
+		animations: false,
+		compact: true,
+	},
 };
 
 export const config = (overrides = {}) => deepMerge(defaultConfig, overrides);
@@ -1395,9 +1655,9 @@ export default config;
 import config from './config.js';
 
 export default {
-  lens,
-  view,
-  config,
+	lens,
+	view,
+	config,
 };
 ```
 
@@ -1442,12 +1702,12 @@ export default { lens, view, config }; // Just export the factory function
 
 ```typescript
 // Default usage (same as before)
-const cfg = studyLenses.lenses.reverse.config(); // Gets defaults
+const cfg = sl.lenses.reverse.config(); // Gets defaults
 
 // Override usage (enhanced capability)
-const cfg = studyLenses.lenses.reverse.config({
-  theme: 'dark',
-  advanced: { timeout: 10000 }, // Deep merge preserves other advanced props
+const cfg = sl.lenses.reverse.config({
+	theme: 'dark',
+	advanced: { timeout: 10000 }, // Deep merge preserves other advanced props
 });
 
 // No breaking changes - these both work exactly as before
@@ -1462,6 +1722,226 @@ config1.theme = 'modified'; // Safe - independent objects
 - **No Mutations**: Each call returns fresh object with no side effects
 - **Performance**: No expensive deep cloning, only when config is needed
 - **Type Safety**: Maintains TypeScript inference for configuration options
+
+## Web Component Registration System
+
+Study Lenses WC-Kit provides a comprehensive, type-safe system for automatically registering web components throughout the entire object hierarchy. This system enables seamless auto-discovery and registration of all lens components and UI components from a single import.
+
+### Registration Types
+
+The registration system is built on four core TypeScript interfaces:
+
+```typescript
+// Registration function signature
+export type RegisterFunction = () => string;
+
+// Object that may have a register function
+export interface RegisterableObject {
+	register?: RegisterFunction;
+	[key: string]: any; // Flexible object traversal
+}
+
+// Result of a successful registration
+export interface RegistrationResult {
+	path: string; // "lenses.reverse" or "ui.studyBar"
+	tagName: string; // "sl-lens-reverse" or "sl-ui-study-bar"
+}
+
+// Container that may hold registerable objects
+export type RegisterableContainer = {
+	[key: string]: RegisterableObject | RegisterableContainer | any;
+};
+```
+
+### Core Registration Function
+
+The `registerAllWC` function provides automatic web component registration:
+
+```typescript
+import { registerAllWC } from './utils/register-all-wc.js';
+import type { RegistrationResult } from './types.js';
+
+/**
+ * Recursively traverse an object and call any 'register' functions found
+ *
+ * @param obj - Object to traverse (typically the main Study Lenses export)
+ * @param path - Current path for debugging (internal use)
+ * @returns Array of registration results with path and tag name information
+ */
+export const registerAllWC = (
+	obj: RegisterableContainer,
+	path: string = ''
+): RegistrationResult[] => {
+	// Recursively finds and calls all register() functions
+	// Returns detailed results for debugging and verification
+};
+```
+
+### Automatic Registration Patterns
+
+**Initialization Pattern:**
+
+```typescript
+// src/init.ts - Side-effect only file for auto-registration
+import sl from './index.js';
+import { registerAllWC } from './utils/register-all-wc.js';
+
+// Register all web components on import
+const registered = registerAllWC(sl);
+console.log(`📦 Study Lenses: Registered ${registered.length} web components`);
+
+// Usage in HTML:
+// <script type="module" src="path/to/init.js"></script>
+```
+
+**Manual Registration Pattern:**
+
+```typescript
+// Selective registration with detailed feedback
+import sl from './index.js';
+import { registerAllWC } from './utils/register-all-wc.js';
+import type { RegistrationResult } from './types.js';
+
+const results: RegistrationResult[] = registerAllWC(sl.lenses);
+results.forEach(({ path, tagName }) => {
+	console.log(`✅ ${tagName} registered from ${path}`);
+});
+
+// Register only UI components
+const uiResults: RegistrationResult[] = registerAllWC(sl.ui);
+```
+
+### Registration Architecture
+
+**Hierarchical Discovery:**
+
+```typescript
+// The function traverses this structure:
+const sl = {
+	lenses: {
+		reverse: {
+			register: () => 'sl-lens-reverse', // ← Found and called
+			lens: reverseLensFunction,
+			config: reverseConfigFactory,
+		},
+		uppercase: {
+			register: () => 'sl-lens-uppercase', // ← Found and called
+			lens: uppercaseLensFunction,
+		},
+	},
+	ui: {
+		studyBar: {
+			register: () => 'sl-ui-study-bar', // ← Found and called
+			component: studyBarFunction,
+		},
+		run: {
+			register: () => 'sl-ui-run', // ← Found and called
+			component: runFunction,
+		},
+	},
+	study: {
+		// No register function - skipped
+		pipe: pipeFunction,
+	},
+};
+
+// Results in:
+// [
+//   { path: "lenses.reverse", tagName: "sl-lens-reverse" },
+//   { path: "lenses.uppercase", tagName: "sl-lens-uppercase" },
+//   { path: "ui.studyBar", tagName: "sl-ui-study-bar" },
+//   { path: "ui.run", tagName: "sl-ui-run" },
+// ]
+```
+
+### Error Handling and Debugging
+
+**Comprehensive Error Reporting:**
+
+```typescript
+// The registration system provides detailed logging:
+// ✅ Registered: sl-lens-reverse (lenses.reverse)
+// ✅ Registered: sl-ui-study-bar (ui.studyBar)
+// ❌ Failed to register lenses.broken: TypeError: Cannot read property 'call'
+
+// Type-safe error handling
+try {
+	const results = registerAllWC(sl);
+	console.log(`Successfully registered ${results.length} components`);
+} catch (error) {
+	console.error('Registration failed:', error);
+}
+```
+
+**Development Debugging:**
+
+```typescript
+// Inspect registration results programmatically
+const results = registerAllWC(sl);
+const byCategory = results.reduce(
+	(acc, { path, tagName }) => {
+		const category = path.split('.')[0]; // 'lenses', 'ui', etc.
+		acc[category] = acc[category] || [];
+		acc[category].push(tagName);
+		return acc;
+	},
+	{} as Record<string, string[]>
+);
+
+console.log('Registration by category:', byCategory);
+// Output: { lenses: ['sl-lens-reverse', 'sl-lens-uppercase'], ui: ['sl-ui-run'] }
+```
+
+### Integration with Development Workflow
+
+**Lens Development Pattern:**
+
+```typescript
+// lenses/my-lens/index.ts
+export default {
+	name: 'my-lens',
+	lens: myLensFunction,
+	register: () => 'sl-lens-my-lens', // ← Discovered by registerAllWC
+	config: myConfigFactory,
+};
+
+// Automatically registered when registerAllWC(sl.lenses) is called
+```
+
+**Testing Registration:**
+
+```typescript
+// Test that registration works correctly
+import { registerAllWC } from './utils/register-all-wc.js';
+import myLens from './lenses/my-lens/index.js';
+
+describe('my-lens registration', () => {
+	it('should register with correct tag name', () => {
+		const results = registerAllWC({ myLens });
+		expect(results).toHaveLength(1);
+		expect(results[0].tagName).toBe('sl-lens-my-lens');
+		expect(results[0].path).toBe('myLens');
+	});
+});
+```
+
+### Performance and Security
+
+**Performance Characteristics:**
+
+- **O(n) traversal** where n = total number of object properties
+- **Lazy execution** - only runs when explicitly called
+- **Memory efficient** - no object cloning, direct traversal
+- **Type-safe** - full TypeScript support prevents runtime errors
+
+**Security Considerations:**
+
+- **Pure function** - no side effects beyond calling register functions
+- **Error isolation** - failed registrations don't stop the process
+- **Explicit control** - only calls functions named exactly "register"
+- **Path tracking** - full debugging information for security auditing
+
+The registration system provides a robust, type-safe foundation for automatically managing web component lifecycles while maintaining full developer control and debugging capability.
 
 ## Performance Considerations
 
@@ -1483,9 +1963,11 @@ When preparing for standalone package release:
 
 ## Critical Files to Understand
 
-- `types.ts` - Core type definitions
-- `study/pipe.ts` - Smart pipeline logic with terminus conditions
+- `types.ts` - Core type definitions including web component registration types
+- `core/pipe-lenses.ts` - Core pipeline function with terminus conditions (accessible as `sl.core.pipeLenses`)
+- `core/index.ts` - Essential functions export (the `sl.core` namespace)
 - `utils/extract-code-from-element.ts` - Code discovery with precedence rules
+- `utils/register-all-wc.ts` - Automated web component registration system
 - `web-components/lens-wrapper.ts` - Component factory
 - `register.ts` - Top-level registration
 

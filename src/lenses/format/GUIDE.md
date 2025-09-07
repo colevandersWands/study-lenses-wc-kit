@@ -9,9 +9,9 @@ import sl from 'study-lenses-wc-kit';
 
 // Basic formatting with classic defaults
 const snippet = {
-  code: 'const x=1;if(x>0){console.log("positive");}',
-  lang: 'js',
-  test: false
+	code: 'const x=1;if(x>0){console.log("positive");}',
+	lang: 'js',
+	test: false,
 };
 
 const result = await sl.lenses.format.lens(snippet);
@@ -40,11 +40,11 @@ const classicResult = await sl.lenses.format.lens(snippet);
 
 ```typescript
 const airbnbConfig = sl.lenses.format.config({
-  useTabs: false,
-  tabWidth: 2,
-  singleQuote: true,
-  trailingComma: 'all',
-  arrowParens: 'avoid'
+	useTabs: false,
+	tabWidth: 2,
+	singleQuote: true,
+	trailingComma: 'all',
+	arrowParens: 'avoid',
 });
 
 const airbnbResult = await sl.lenses.format.lens(snippet, airbnbConfig);
@@ -54,10 +54,10 @@ const airbnbResult = await sl.lenses.format.lens(snippet, airbnbConfig);
 
 ```typescript
 const googleConfig = sl.lenses.format.config({
-  useTabs: false,
-  tabWidth: 2,
-  singleQuote: true,
-  trailingComma: 'es5'
+	useTabs: false,
+	tabWidth: 2,
+	singleQuote: true,
+	trailingComma: 'es5',
 });
 
 const googleResult = await sl.lenses.format.lens(snippet, googleConfig);
@@ -67,11 +67,11 @@ const googleResult = await sl.lenses.format.lens(snippet, googleConfig);
 
 ```typescript
 const prettierConfig = sl.lenses.format.config({
-  useTabs: false,
-  tabWidth: 2,
-  trailingComma: 'es5'
-  // singleQuote: false (default)
-  // arrowParens: 'always' (default)
+	useTabs: false,
+	tabWidth: 2,
+	trailingComma: 'es5',
+	// singleQuote: false (default)
+	// arrowParens: 'always' (default)
 });
 
 const prettierResult = await sl.lenses.format.lens(snippet, prettierConfig);
@@ -83,10 +83,10 @@ const prettierResult = await sl.lenses.format.lens(snippet, prettierConfig);
 
 ```typescript
 const compactConfig = sl.lenses.format.config({
-  printWidth: 120,
-  bracketSpacing: false,
-  bracketSameLine: true,
-  arrowParens: 'avoid'
+	printWidth: 120,
+	bracketSpacing: false,
+	bracketSameLine: true,
+	arrowParens: 'avoid',
 });
 
 // Before: const obj = { a: 1, b: 2 };
@@ -97,11 +97,11 @@ const compactConfig = sl.lenses.format.config({
 
 ```typescript
 const legacyConfig = sl.lenses.format.config({
-  useTabs: true,
-  tabWidth: 8,
-  printWidth: 120,
-  semi: false,
-  singleQuote: true
+	useTabs: true,
+	tabWidth: 8,
+	printWidth: 120,
+	semi: false,
+	singleQuote: true,
 });
 
 // Uses 8-space tabs, no semicolons, single quotes
@@ -113,9 +113,9 @@ const legacyConfig = sl.lenses.format.config({
 
 ```typescript
 const jsSnippet = {
-  code: 'function hello(name){return`Hello, ${name}!`;}',
-  lang: 'js',
-  test: false
+	code: 'function hello(name){return`Hello, ${name}!`;}',
+	lang: 'js',
+	test: false,
 };
 
 const jsResult = await sl.lenses.format.lens(jsSnippet);
@@ -128,9 +128,9 @@ const jsResult = await sl.lenses.format.lens(jsSnippet);
 
 ```typescript
 const moduleSnippet = {
-  code: 'import{Component}from"react";export default function App(){return<div>Hello</div>;}',
-  lang: 'mjs',
-  test: false
+	code: 'import{Component}from"react";export default function App(){return<div>Hello</div>;}',
+	lang: 'mjs',
+	test: false,
 };
 
 const moduleResult = await sl.lenses.format.lens(moduleSnippet);
@@ -144,9 +144,9 @@ const moduleResult = await sl.lenses.format.lens(moduleSnippet);
 
 ```typescript
 const tsSnippet = {
-  code: 'interface User{name:string;age?:number;}const user:User={name:"John"};',
-  lang: 'ts',
-  test: false
+	code: 'interface User{name:string;age?:number;}const user:User={name:"John"};',
+	lang: 'ts',
+	test: false,
 };
 
 const tsResult = await sl.lenses.format.lens(tsSnippet);
@@ -161,9 +161,9 @@ const tsResult = await sl.lenses.format.lens(tsSnippet);
 
 ```typescript
 const jsxSnippet = {
-  code: 'const Button=({onClick,children})=><button onClick={onClick} className="btn">{children}</button>;',
-  lang: 'jsx',
-  test: false
+	code: 'const Button=({onClick,children})=><button onClick={onClick} className="btn">{children}</button>;',
+	lang: 'jsx',
+	test: false,
 };
 
 const jsxResult = await sl.lenses.format.lens(jsxSnippet);
@@ -181,12 +181,16 @@ const jsxResult = await sl.lenses.format.lens(jsxSnippet);
 ```typescript
 // Format → transform → format again
 const result = await sl.study.pipe(snippet, [
-  sl.lenses.format,           // Clean up initial formatting
-  sl.lenses.reverse,          // Apply transformation
-  [sl.lenses.format, {        // Reformat with custom style
-    singleQuote: true,
-    trailingComma: 'es5'
-  }]
+	sl.lenses.format, // Clean up initial formatting
+	sl.lenses.reverse, // Apply transformation
+	[
+		sl.lenses.format,
+		{
+			// Reformat with custom style
+			singleQuote: true,
+			trailingComma: 'es5',
+		},
+	],
 ]);
 ```
 
@@ -199,7 +203,12 @@ const formatted = await sl.study.pipe(snippet, [sl.lenses.format]);
 
 console.log('Original:', original);
 console.log('Formatted:', formatted.snippet.code);
-console.log('Improvement:', formatted.snippet.code.length < original.length ? 'More compact' : 'More readable');
+console.log(
+	'Improvement:',
+	formatted.snippet.code.length < original.length
+		? 'More compact'
+		: 'More readable'
+);
 ```
 
 ### Multi-Stage Processing
@@ -207,17 +216,17 @@ console.log('Improvement:', formatted.snippet.code.length < original.length ? 'M
 ```typescript
 // Complex transformation pipeline
 const result = await sl.study.pipe(snippet, [
-  // 1. Initial cleanup
-  sl.lenses.format,
-  
-  // 2. Apply transformations
-  customTransformLens,
-  
-  // 3. Final formatting with team standards
-  [sl.lenses.format, teamConfig],
-  
-  // 4. Optional uppercase for emphasis
-  sl.lenses.uppercase
+	// 1. Initial cleanup
+	sl.lenses.format,
+
+	// 2. Apply transformations
+	customTransformLens,
+
+	// 3. Final formatting with team standards
+	[sl.lenses.format, teamConfig],
+
+	// 4. Optional uppercase for emphasis
+	sl.lenses.uppercase,
 ]);
 ```
 
@@ -227,9 +236,9 @@ const result = await sl.study.pipe(snippet, [
 
 ```typescript
 const malformedSnippet = {
-  code: 'const x = {{{ invalid syntax here',
-  lang: 'js',
-  test: false
+	code: 'const x = {{{ invalid syntax here',
+	lang: 'js',
+	test: false,
 };
 
 const result = await sl.lenses.format.lens(malformedSnippet);
@@ -255,17 +264,17 @@ console.log(whitespaceResult.snippet.code); // '   \n  \t  '
 
 ```typescript
 const robustPipeline = async (snippet) => {
-  try {
-    return await sl.study.pipe(snippet, [
-      sl.lenses.format,
-      someOtherLens,
-      [sl.lenses.format, finalConfig]
-    ]);
-  } catch (error) {
-    console.error('Pipeline failed:', error);
-    // Fallback to just formatting
-    return await sl.lenses.format.lens(snippet);
-  }
+	try {
+		return await sl.study.pipe(snippet, [
+			sl.lenses.format,
+			someOtherLens,
+			[sl.lenses.format, finalConfig],
+		]);
+	} catch (error) {
+		console.error('Pipeline failed:', error);
+		// Fallback to just formatting
+		return await sl.lenses.format.lens(snippet);
+	}
 };
 ```
 
@@ -275,32 +284,32 @@ const robustPipeline = async (snippet) => {
 
 ```typescript
 const getConfigForLanguage = (lang: string) => {
-  const baseConfig = sl.lenses.format.config();
-  
-  switch (lang) {
-    case 'ts':
-    case 'tsx':
-      return sl.lenses.format.config({
-        ...baseConfig,
-        singleQuote: true,
-        trailingComma: 'all'
-      });
-    
-    case 'jsx':
-      return sl.lenses.format.config({
-        ...baseConfig,
-        jsxSingleQuote: true,
-        bracketSameLine: false
-      });
-    
-    default:
-      return baseConfig;
-  }
+	const baseConfig = sl.lenses.format.config();
+
+	switch (lang) {
+		case 'ts':
+		case 'tsx':
+			return sl.lenses.format.config({
+				...baseConfig,
+				singleQuote: true,
+				trailingComma: 'all',
+			});
+
+		case 'jsx':
+			return sl.lenses.format.config({
+				...baseConfig,
+				jsxSingleQuote: true,
+				bracketSameLine: false,
+			});
+
+		default:
+			return baseConfig;
+	}
 };
 
 const adaptiveResult = await sl.lenses.format.lens(
-  snippet, 
-  getConfigForLanguage(snippet.lang)
+	snippet,
+	getConfigForLanguage(snippet.lang)
 );
 ```
 
@@ -308,17 +317,17 @@ const adaptiveResult = await sl.lenses.format.lens(
 
 ```typescript
 const createTeamConfig = (overrides = {}) => {
-  const teamStandards = {
-    useTabs: false,
-    tabWidth: 2,
-    singleQuote: true,
-    trailingComma: 'es5'
-  };
-  
-  return sl.lenses.format.config({
-    ...teamStandards,
-    ...overrides
-  });
+	const teamStandards = {
+		useTabs: false,
+		tabWidth: 2,
+		singleQuote: true,
+		trailingComma: 'es5',
+	};
+
+	return sl.lenses.format.config({
+		...teamStandards,
+		...overrides,
+	});
 };
 
 // Different team preferences
@@ -330,22 +339,22 @@ const backendConfig = createTeamConfig({ printWidth: 120, semi: false });
 
 ```typescript
 const formatIfNeeded = async (snippet, threshold = 100) => {
-  // Only format if code is above length threshold
-  if (snippet.code.length < threshold) {
-    return { snippet, view: null };
-  }
-  
-  return await sl.lenses.format.lens(snippet);
+	// Only format if code is above length threshold
+	if (snippet.code.length < threshold) {
+		return { snippet, view: null };
+	}
+
+	return await sl.lenses.format.lens(snippet);
 };
 
 const smartFormatLens = async (snippet, config) => {
-  const compactConfig = sl.lenses.format.config({
-    ...config,
-    printWidth: 120,
-    bracketSpacing: false
-  });
-  
-  return await sl.lenses.format.lens(snippet, compactConfig);
+	const compactConfig = sl.lenses.format.config({
+		...config,
+		printWidth: 120,
+		bracketSpacing: false,
+	});
+
+	return await sl.lenses.format.lens(snippet, compactConfig);
 };
 ```
 
@@ -356,15 +365,15 @@ const smartFormatLens = async (snippet, config) => {
 ```typescript
 // Test custom configuration
 const testConfig = sl.lenses.format.config({
-  singleQuote: true,
-  useTabs: false,
-  tabWidth: 2
+	singleQuote: true,
+	useTabs: false,
+	tabWidth: 2,
 });
 
 const testSnippet = {
-  code: 'const msg="hello world";',
-  lang: 'js',
-  test: false
+	code: 'const msg="hello world";',
+	lang: 'js',
+	test: false,
 };
 
 const result = await sl.lenses.format.lens(testSnippet, testConfig);
@@ -380,17 +389,17 @@ expect(result.view).toBeNull(); // Transform-only lens
 ```typescript
 // Test in pipeline context
 const pipelineTest = async () => {
-  const input = { code: 'const x=1;const y=2;', lang: 'js', test: false };
-  
-  const result = await sl.study.pipe(input, [
-    sl.lenses.format,
-    customLens,
-    [sl.lenses.format, { printWidth: 40 }]
-  ]);
-  
-  // Verify pipeline completes successfully
-  expect(result.snippet.code).toBeDefined();
-  expect(result.view).toBeDefined(); // Final lens might have view
+	const input = { code: 'const x=1;const y=2;', lang: 'js', test: false };
+
+	const result = await sl.study.pipe(input, [
+		sl.lenses.format,
+		customLens,
+		[sl.lenses.format, { printWidth: 40 }],
+	]);
+
+	// Verify pipeline completes successfully
+	expect(result.snippet.code).toBeDefined();
+	expect(result.view).toBeDefined(); // Final lens might have view
 };
 ```
 
@@ -400,21 +409,17 @@ const pipelineTest = async () => {
 
 ```typescript
 const formatMultipleSnippets = async (snippets, config) => {
-  const results = await Promise.all(
-    snippets.map(snippet => 
-      sl.lenses.format.lens(snippet, config)
-    )
-  );
-  
-  return results;
+	const results = await Promise.all(
+		snippets.map((snippet) => sl.lenses.format.lens(snippet, config))
+	);
+
+	return results;
 };
 
 // Process array of snippets efficiently
-const configs = snippets.map(s => getConfigForLanguage(s.lang));
+const configs = snippets.map((s) => getConfigForLanguage(s.lang));
 const results = await Promise.all(
-  snippets.map((snippet, i) => 
-    sl.lenses.format.lens(snippet, configs[i])
-  )
+	snippets.map((snippet, i) => sl.lenses.format.lens(snippet, configs[i]))
 );
 ```
 
@@ -423,16 +428,16 @@ const results = await Promise.all(
 ```typescript
 // Reuse configuration objects for better performance
 const sharedConfig = sl.lenses.format.config({
-  useTabs: false,
-  singleQuote: true,
-  trailingComma: 'es5'
+	useTabs: false,
+	singleQuote: true,
+	trailingComma: 'es5',
 });
 
 // Use same config for multiple operations
 const results = await Promise.all([
-  sl.lenses.format.lens(snippet1, sharedConfig),
-  sl.lenses.format.lens(snippet2, sharedConfig),
-  sl.lenses.format.lens(snippet3, sharedConfig)
+	sl.lenses.format.lens(snippet1, sharedConfig),
+	sl.lenses.format.lens(snippet2, sharedConfig),
+	sl.lenses.format.lens(snippet3, sharedConfig),
 ]);
 ```
 
@@ -442,14 +447,19 @@ const results = await Promise.all([
 
 ```typescript
 // Problem: TypeScript interface formatted as JavaScript
-const tsSnippet = { code: 'interface User { name: string; }', lang: 'typescript', test: false };
+const tsSnippet = {
+	code: 'interface User { name: string; }',
+	lang: 'typescript',
+	test: false,
+};
 
 // Solution: Ensure correct language identifier
 const correctedSnippet = { ...tsSnippet, lang: 'ts' }; // Use 'ts', not 'typescript'
 
 // Or override parser explicitly
-const result = await sl.lenses.format.lens(tsSnippet, 
-  sl.lenses.format.config({ parser: 'typescript' })
+const result = await sl.lenses.format.lens(
+	tsSnippet,
+	sl.lenses.format.config({ parser: 'typescript' })
 );
 ```
 
@@ -472,7 +482,7 @@ const result = await sl.lenses.format.lens(malformedSnippet);
 
 // Solution: Check for error indicators
 if (result.snippet.code.includes('// Unable to format code')) {
-  console.log('Formatting failed, check original code for syntax errors');
+	console.log('Formatting failed, check original code for syntax errors');
 }
 ```
 

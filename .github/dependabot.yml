@@ -1,55 +1,55 @@
 version: 2
 updates:
-  # Enable version updates for npm
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-    open-pull-requests-limit: 10
-    reviewers:
-      - "@username" # Replace with actual maintainer username
-    assignees:
-      - "@username" # Replace with actual maintainer username
-    commit-message:
-      prefix: "deps"
-      prefix-development: "deps-dev"
-    labels:
-      - "dependencies"
-    # Group minor and patch updates for related packages
-    groups:
-      typescript-ecosystem:
-        patterns:
-          - "typescript"
-          - "@types/*"
-          - "@typescript-eslint/*"
-      testing-ecosystem:
-        patterns:
-          - "vitest"
-          - "@vitest/*"
-          - "jsdom"
-          - "happy-dom"
-          - "@jest/*"
-      eslint-ecosystem:
-        patterns:
-          - "eslint"
-          - "eslint-*"
-          - "@eslint/*"
-      preact-ecosystem:
-        patterns:
-          - "preact"
-          - "@preact/*"
-          - "@types/preact"
+    # Enable version updates for npm
+    - package-ecosystem: 'npm'
+      directory: '/'
+      schedule:
+          interval: 'weekly'
+          day: 'monday'
+          time: '09:00'
+      open-pull-requests-limit: 10
+      reviewers:
+          - '@username' # Replace with actual maintainer username
+      assignees:
+          - '@username' # Replace with actual maintainer username
+      commit-message:
+          prefix: 'deps'
+          prefix-development: 'deps-dev'
+      labels:
+          - 'dependencies'
+      # Group minor and patch updates for related packages
+      groups:
+          typescript-ecosystem:
+              patterns:
+                  - 'typescript'
+                  - '@types/*'
+                  - '@typescript-eslint/*'
+          testing-ecosystem:
+              patterns:
+                  - 'vitest'
+                  - '@vitest/*'
+                  - 'jsdom'
+                  - 'happy-dom'
+                  - '@jest/*'
+          eslint-ecosystem:
+              patterns:
+                  - 'eslint'
+                  - 'eslint-*'
+                  - '@eslint/*'
+          preact-ecosystem:
+              patterns:
+                  - 'preact'
+                  - '@preact/*'
+                  - '@types/preact'
 
-  # Enable version updates for GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-    commit-message:
-      prefix: "ci"
-    labels:
-      - "github-actions"
+    # Enable version updates for GitHub Actions
+    - package-ecosystem: 'github-actions'
+      directory: '/'
+      schedule:
+          interval: 'weekly'
+          day: 'monday'
+          time: '09:00'
+      commit-message:
+          prefix: 'ci'
+      labels:
+          - 'github-actions'

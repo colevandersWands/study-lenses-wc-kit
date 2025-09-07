@@ -26,11 +26,11 @@ uppercase/
 ```typescript
 // lens.ts
 export const lens = (snippet: Snippet, config = _config()): LensOutput => ({
-  snippet: {
-    ...snippet,
-    code: snippet.code.toUpperCase(),
-  },
-  view: null, // Transform lens - no visual output
+	snippet: {
+		...snippet,
+		code: snippet.code.toUpperCase(),
+	},
+	view: null, // Transform lens - no visual output
 });
 ```
 
@@ -75,32 +75,32 @@ Uses the standard lens element factory with automatic:
 ```typescript
 // Test cases to verify
 describe('uppercase lens', () => {
-  test('converts lowercase to uppercase', () => {
-    const result = lens({ code: 'hello', lang: 'js', test: false });
-    expect(result.snippet.code).toBe('HELLO');
-  });
+	test('converts lowercase to uppercase', () => {
+		const result = lens({ code: 'hello', lang: 'js', test: false });
+		expect(result.snippet.code).toBe('HELLO');
+	});
 
-  test('handles mixed case', () => {
-    const result = lens({ code: 'HeLLo WoRLd', lang: 'js', test: false });
-    expect(result.snippet.code).toBe('HELLO WORLD');
-  });
+	test('handles mixed case', () => {
+		const result = lens({ code: 'HeLLo WoRLd', lang: 'js', test: false });
+		expect(result.snippet.code).toBe('HELLO WORLD');
+	});
 
-  test('preserves non-alphabetic characters', () => {
-    const result = lens({ code: 'let x = 42;', lang: 'js', test: false });
-    expect(result.snippet.code).toBe('LET X = 42;');
-  });
+	test('preserves non-alphabetic characters', () => {
+		const result = lens({ code: 'let x = 42;', lang: 'js', test: false });
+		expect(result.snippet.code).toBe('LET X = 42;');
+	});
 
-  test('handles unicode characters', () => {
-    const result = lens({ code: 'café', lang: 'js', test: false });
-    expect(result.snippet.code).toBe('CAFÉ');
-  });
+	test('handles unicode characters', () => {
+		const result = lens({ code: 'café', lang: 'js', test: false });
+		expect(result.snippet.code).toBe('CAFÉ');
+	});
 
-  test('preserves metadata', () => {
-    const input = { code: 'test', lang: 'python', test: true };
-    const result = lens(input);
-    expect(result.snippet.lang).toBe('python');
-    expect(result.snippet.test).toBe(true);
-  });
+	test('preserves metadata', () => {
+		const input = { code: 'test', lang: 'python', test: true };
+		const result = lens(input);
+		expect(result.snippet.lang).toBe('python');
+		expect(result.snippet.test).toBe(true);
+	});
 });
 ```
 
@@ -139,29 +139,29 @@ describe('uppercase lens', () => {
 ### Possible Enhancements
 
 1. **Locale-specific conversion**:
-   - Turkish: i → İ (not I)
-   - German: ß handling
-   - Other language-specific rules
+    - Turkish: i → İ (not I)
+    - German: ß handling
+    - Other language-specific rules
 
 2. **Selective conversion**:
-   - Only convert keywords
-   - Preserve string literals
-   - Skip comments
+    - Only convert keywords
+    - Preserve string literals
+    - Skip comments
 
 3. **Configuration options**:
-   - Locale selection
-   - Exclusion patterns
-   - Preserve specific case patterns
+    - Locale selection
+    - Exclusion patterns
+    - Preserve specific case patterns
 
 ### Configuration Extension Example
 
 ```typescript
 // Future config structure
 interface UppercaseConfig {
-  locale?: string; // 'en-US', 'tr-TR', etc.
-  preserveStrings?: boolean;
-  preserveComments?: boolean;
-  excludePatterns?: RegExp[];
+	locale?: string; // 'en-US', 'tr-TR', etc.
+	preserveStrings?: boolean;
+	preserveComments?: boolean;
+	excludePatterns?: RegExp[];
 }
 ```
 
@@ -201,9 +201,9 @@ interface UppercaseConfig {
 
 - **External**: None (uses built-in String methods)
 - **Internal**:
-  - `../../types.js` - Type definitions
-  - `./config.js` - Configuration factory
-  - `../../utils/deep-merge.js` - Config merging
+    - `../../types.js` - Type definitions
+    - `./config.js` - Configuration factory
+    - `../../utils/deep-merge.js` - Config merging
 
 ## Browser Compatibility
 

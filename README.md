@@ -9,41 +9,45 @@ Study Lenses WC-Kit is a TypeScript library for creating interactive code study 
 This project maintains three specialized documentation files for different audiences:
 
 - **README.md** (this file) - **For developers using Study Lenses in applications**
-  - Installation and setup instructions
-  - Usage patterns and API examples
-  - Configuration options and file loading
-  - Quick start guide for library consumers
+    - Installation and setup instructions
+    - Usage patterns and API examples
+    - Configuration options and file loading
+    - Quick start guide for library consumers
 
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** - **For developers creating new lenses**
-  - Step-by-step lens development tutorials
-  - File templates and copy-paste examples
-  - Testing patterns and development workflow
-  - PR submission process
+    - Step-by-step lens development tutorials
+    - File templates and copy-paste examples
+    - Testing patterns and development workflow
+    - PR submission process
 
 - **[CLAUDE.md](./CLAUDE.md)** - **For maintainers and core contributors**
-  - System architecture and design principles
-  - Pipeline implementation details and terminus logic
-  - Performance characteristics and internal APIs
-  - Technical deep-dive for system understanding
+    - System architecture and design principles
+    - Pipeline implementation details and terminus logic
+    - Performance characteristics and internal APIs
+    - Technical deep-dive for system understanding
 
 ## Quick Start
 
 ```html
 <!-- Basic pipeline: transform code through multiple lenses -->
-<study-lenses lenses="reverse uppercase" code="console.log('hello world');" lang="js">
-</study-lenses>
+<sl-snippet
+	lenses="reverse uppercase"
+	code="console.log('hello world');"
+	lang="js"
+>
+</sl-snippet>
 
 <!-- Study panel: multiple views of the same code -->
 <study-lenses code="function add(a, b) { return a + b; }">
-  <sl-lens-reverse></sl-lens-reverse>
-  <sl-lens-uppercase></sl-lens-uppercase>
-  <sl-lens-lowercase></sl-lens-lowercase>
+	<sl-lens-reverse></sl-lens-reverse>
+	<sl-lens-uppercase></sl-lens-uppercase>
+	<sl-lens-lowercase></sl-lens-lowercase>
 </study-lenses>
 
 <!-- File loading with src attribute -->
 <study-lenses src="./demo.js">
-  <sl-lens-reverse></sl-lens-reverse>
-  <sl-lens-uppercase></sl-lens-uppercase>
+	<sl-lens-reverse></sl-lens-reverse>
+	<sl-lens-uppercase></sl-lens-uppercase>
 </study-lenses>
 ```
 
@@ -69,8 +73,8 @@ import sl from 'study-lenses-wc-kit';
 
 // Use lens functions directly (separate arguments)
 const result = await sl.lenses.reverse.lens(
-  { code: 'hello', lang: 'js', test: false }, // snippet
-  {} // config (optional)
+	{ code: 'hello', lang: 'js', test: false }, // snippet
+	{} // config (optional)
 );
 console.log(result.snippet.code); // "olleh"
 
@@ -79,46 +83,54 @@ const snippet = await sl.snippet.parse('./demo.js');
 console.log(snippet); // { code: '...', lang: 'js', test: false }
 ```
 
-### 3. Build Pipelines (Flexible LensSpec Arrays)
+### 3. Build Pipelines (Core API)
 
 ```typescript
 import sl from 'study-lenses-wc-kit';
 
+// Use the core pipeLenses function for all pipeline processing
+const { pipeLenses } = sl.core;
+
 // Pattern 1: Simple functions (custom lenses)
 const myCustomLens = async (snippet) => ({
-  snippet: { ...snippet, code: snippet.code + ' // custom' },
-  view: null,
+	snippet: { ...snippet, code: snippet.code + ' // custom' },
+	view: null,
 });
 
-const result1 = await sl.study.pipe({ code: 'hello world', lang: 'js', test: false }, [
-  myCustomLens,
-]);
+const result1 = await pipeLenses(
+	{ code: 'hello world', lang: 'js', test: false },
+	[myCustomLens]
+);
 
 // Pattern 2: Built-in lens objects (gets name + default config)
-const result2 = await sl.study.pipe({ code: 'hello world', lang: 'js', test: false }, [
-  sl.lenses.reverse,
-  sl.lenses.uppercase,
-]);
+const result2 = await pipeLenses(
+	{ code: 'hello world', lang: 'js', test: false },
+	[sl.lenses.reverse, sl.lenses.uppercase]
+);
 console.log(result2.snippet.code); // "DLROW OLLEH"
 
 // Pattern 3: Function with custom config
-const result3 = await sl.study.pipe({ code: 'hello world', lang: 'js', test: false }, [
-  [myCustomLens, { theme: 'dark' }],
-]);
+const result3 = await pipeLenses(
+	{ code: 'hello world', lang: 'js', test: false },
+	[[myCustomLens, { theme: 'dark' }]]
+);
 
 // Pattern 4: Built-in lens with config override (deep merged)
-const result4 = await sl.study.pipe({ code: 'hello world', lang: 'js', test: false }, [
-  [sl.lenses.reverse, { preserveSpaces: true }],
-  sl.lenses.uppercase,
-]);
+const result4 = await pipeLenses(
+	{ code: 'hello world', lang: 'js', test: false },
+	[[sl.lenses.reverse, { preserveSpaces: true }], sl.lenses.uppercase]
+);
 
 // Mixed pipeline: custom + built-in lenses
-const result5 = await sl.study.pipe({ code: 'hello world', lang: 'js', test: false }, [
-  myCustomLens, // Pattern 1: Simple function
-  sl.lenses.reverse, // Pattern 2: Library lens
-  [anotherCustom, { setting: true }], // Pattern 3: Function + config
-  [sl.lenses.uppercase, { theme: 'dark' }], // Pattern 4: Library + config
-]);
+const result5 = await pipeLenses(
+	{ code: 'hello world', lang: 'js', test: false },
+	[
+		myCustomLens, // Pattern 1: Simple function
+		sl.lenses.reverse, // Pattern 2: Library lens
+		[anotherCustom, { setting: true }], // Pattern 3: Function + config
+		[sl.lenses.uppercase, { theme: 'dark' }], // Pattern 4: Library + config
+	]
+);
 ```
 
 ## Core Concepts
@@ -128,7 +140,10 @@ const result5 = await sl.study.pipe({ code: 'hello world', lang: 'js', test: fal
 Every lens follows the same signature:
 
 ```typescript
-async function lensName(snippet: Snippet, config?: LensConfig): Promise<LensOutput>;
+async function lensName(
+	snippet: Snippet,
+	config?: LensConfig
+): Promise<LensOutput>;
 ```
 
 **Lens Naming System:**
@@ -145,8 +160,8 @@ Study Lenses V2 supports 4 flexible patterns for maximum developer flexibility:
 
 ```typescript
 const customLens = async (snippet, config = {}) => ({
-  snippet: { ...snippet, code: snippet.code + ' // modified' },
-  view: null,
+	snippet: { ...snippet, code: snippet.code + ' // modified' },
+	view: null,
 });
 
 configs: [customLens]; // Uses function defaults
@@ -195,6 +210,51 @@ Smart precedence-based code discovery:
 4. **Parent `<sl-snippet>`** or `<study-lenses code="">`
 5. **Sibling `<sl-snippet>`**
 
+### Dynamic Lens Loading
+
+Add custom lenses at runtime using `sl.core.load`:
+
+```typescript
+import sl from 'study-lenses-wc-kit';
+
+// Define a custom lens object
+const customLens = {
+	name: 'my-analyzer', // Required: unique identifier
+	lens: async (snippet, config = {}) => {
+		// Required: lens function
+		const analyzed = analyzeCode(snippet.code);
+		return {
+			snippet: { ...snippet, code: analyzed },
+			ui: null,
+		};
+	},
+	register: () => 'sl-my-analyzer', // Optional: web component tag
+	config: () => ({ mode: 'basic' }), // Optional: default configuration
+};
+
+// Load into the runtime registry
+const success = sl.core.load(customLens);
+if (success) {
+	// Lens is now available in sl.lenses
+	const result = await sl.lenses['my-analyzer'].lens(snippet);
+
+	// Can also use in pipelines
+	await sl.core.pipeLenses(snippet, [
+		sl.lenses.reverse,
+		sl.lenses['my-analyzer'], // Your custom lens
+		sl.lenses.uppercase,
+	]);
+}
+```
+
+**Load Function Details:**
+
+- Returns `true` if successfully loaded, `false` if invalid
+- Validates lens object structure (name and lens function required)
+- Adds defaults for missing optional properties (register, config)
+- Overwrites existing lens if same name is used
+- Logs success/warning messages to console
+
 ## Import Styles
 
 Study Lenses V2 uses a unified export structure:
@@ -204,11 +264,11 @@ Study Lenses V2 uses a unified export structure:
 ```typescript
 import sl from 'study-lenses-wc-kit';
 
-// Flexible pipeline with LensSpec arrays
-const result = await sl.study.pipe(mySnippet, [
-  sl.lenses.reverse, // Library lens
-  [customFunction, { theme: 'dark' }], // Custom lens + config
-  [sl.lenses.uppercase, { fast: true }], // Library + override
+// Core API: Essential functions through sl.core
+const result = await sl.core.pipeLenses(mySnippet, [
+	sl.lenses.reverse, // Library lens
+	[customFunction, { theme: 'dark' }], // Custom lens + config
+	[sl.lenses.uppercase, { fast: true }], // Library + override
 ]);
 
 // Access individual lens functions (separate arguments)
@@ -224,6 +284,18 @@ const customConfig = sl.lenses.reverse.config({ theme: 'dark' });
 // Snippet utilities
 const snippetObj = await sl.snippet.parse('./file.js');
 const SnippetElement = sl.snippet.view;
+
+// Dynamic lens loading
+const myLens = {
+	name: 'my-custom-lens',
+	lens: (snippet) => ({
+		snippet: { ...snippet, code: snippet.code + ' // custom' },
+		ui: null,
+	}),
+	register: () => 'sl-my-custom', // optional
+	config: () => ({ enabled: true }), // optional
+};
+const loaded = sl.core.load(myLens); // Returns true if successful
 ```
 
 ### Alternative Direct Imports
@@ -268,10 +340,16 @@ import { config as uppercaseConfig } from 'study-lenses-wc-kit/lenses/uppercase/
 Sequential processing with `lenses` attribute (supports spaces and commas):
 
 ```html
-<study-lenses lenses="reverse uppercase" code="hello world" lang="js"> </study-lenses>
+<sl-snippet lenses="reverse uppercase" code="hello world" lang="js">
+</sl-snippet>
 
-<study-lenses lenses="reverse, uppercase, lowercase" code="hello world" lang="mjs" tests>
-</study-lenses>
+<sl-snippet
+	lenses="reverse, uppercase, lowercase"
+	code="hello world"
+	lang="mjs"
+	tests
+>
+</sl-snippet>
 ```
 
 ### Study Panel Mode
@@ -280,9 +358,9 @@ Parallel processing with child elements:
 
 ```html
 <study-lenses code="function test() { return 42; }">
-  <sl-lens-reverse></sl-lens-reverse>
-  <sl-lens-uppercase></sl-lens-uppercase>
-  <sl-format></sl-format>
+	<sl-lens-reverse></sl-lens-reverse>
+	<sl-lens-uppercase></sl-lens-uppercase>
+	<sl-format></sl-format>
 </study-lenses>
 ```
 
@@ -317,12 +395,12 @@ Lenses inside `<sl-snippet>` process sequentially:
 
 ```html
 <sl-snippet code="hello world">
-  <sl-lens-reverse></sl-lens-reverse>
-  <!-- "dlrow olleh" -->
-  <sl-lens-uppercase></sl-lens-uppercase>
-  <!-- "DLROW OLLEH" -->
-  <sl-format></sl-format>
-  <!-- formatted version -->
+	<sl-lens-reverse></sl-lens-reverse>
+	<!-- "dlrow olleh" -->
+	<sl-lens-uppercase></sl-lens-uppercase>
+	<!-- "DLROW OLLEH" -->
+	<sl-format></sl-format>
+	<!-- formatted version -->
 </sl-snippet>
 ```
 
@@ -337,13 +415,16 @@ Lenses inside `<sl-snippet>` process sequentially:
 const snippet = await sl.snippet.parse('./demo.js');
 console.log(snippet); // { code: '...', lang: 'js', test: false }
 
-// Use in pipeline
-const result = await sl.study.pipe(snippet, [sl.lenses.reverse, sl.lenses.uppercase]);
+// Use in core pipeline
+const result = await sl.core.pipeLenses(snippet, [
+	sl.lenses.reverse,
+	sl.lenses.uppercase,
+]);
 
 // Access individual lens
 const reversed = await sl.lenses.reverse.lens(
-  { code: 'hello', lang: 'js', test: false }, // snippet
-  {} // config
+	{ code: 'hello', lang: 'js', test: false }, // snippet
+	{} // config
 );
 ```
 
@@ -351,13 +432,13 @@ const reversed = await sl.lenses.reverse.lens(
 
 ```typescript
 export const myVisual = async (snippet, config) => {
-  const div = document.createElement('div');
-  div.innerHTML = `<h3>Code Analysis</h3><pre>${snippet.code}</pre>`;
+	const div = document.createElement('div');
+	div.innerHTML = `<h3>Code Analysis</h3><pre>${snippet.code}</pre>`;
 
-  return {
-    snippet, // Pass through unchanged
-    view: div,
-  };
+	return {
+		snippet, // Pass through unchanged
+		view: div,
+	};
 };
 ```
 
@@ -370,30 +451,35 @@ Create rich interactive components with JSX:
 import type { Snippet, LensOutput } from 'study-lenses-wc-kit';
 import _config from './config.js';
 
-export const lens = async (snippet: Snippet, config = _config()): Promise<LensOutput> => {
-  const lines = snippet.code.split('\n');
-  const wordCount = snippet.code.split(/\s+/).filter((w) => w.length > 0).length;
+export const lens = async (
+	snippet: Snippet,
+	config = _config()
+): Promise<LensOutput> => {
+	const lines = snippet.code.split('\n');
+	const wordCount = snippet.code
+		.split(/\s+/)
+		.filter((w) => w.length > 0).length;
 
-  return {
-    snippet, // Pass through unchanged
-    view: (
-      <div style={{ padding: '16px', border: '2px solid #007acc' }}>
-        <h3>📊 Code Analysis</h3>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <div>
-            Lines: <strong>{lines.length}</strong>
-          </div>
-          <div>
-            Words: <strong>{wordCount}</strong>
-          </div>
-        </div>
-        <details>
-          <summary>Show Code</summary>
-          <pre>{snippet.code}</pre>
-        </details>
-      </div>
-    ),
-  };
+	return {
+		snippet, // Pass through unchanged
+		view: (
+			<div style={{ padding: '16px', border: '2px solid #007acc' }}>
+				<h3>📊 Code Analysis</h3>
+				<div style={{ display: 'flex', gap: '16px' }}>
+					<div>
+						Lines: <strong>{lines.length}</strong>
+					</div>
+					<div>
+						Words: <strong>{wordCount}</strong>
+					</div>
+				</div>
+				<details>
+					<summary>Show Code</summary>
+					<pre>{snippet.code}</pre>
+				</details>
+			</div>
+		),
+	};
 };
 ```
 
@@ -430,15 +516,15 @@ const defaultConfig = sl.lenses.reverse.config();
 
 // Override specific settings
 const customConfig = sl.lenses.reverse.config({
-  theme: 'dark',
-  enabled: true,
+	theme: 'dark',
+	enabled: true,
 });
 
 // Nested overrides supported
 const advancedConfig = sl.lenses.myLens.config({
-  display: {
-    theme: 'dark', // Only overrides theme, keeps other display settings
-  },
+	display: {
+		theme: 'dark', // Only overrides theme, keeps other display settings
+	},
 });
 
 // Each call returns independent object
@@ -459,20 +545,20 @@ const config2 = sl.lenses.myLens.config({ theme: 'light' });
 ```typescript
 // Simple configuration
 export const config = {
-  enabled: true,
-  timeout: 5000,
+	enabled: true,
+	timeout: 5000,
 };
 
 // Complex nested configuration
 export const config = {
-  display: {
-    theme: 'light',
-    showLineNumbers: true,
-  },
-  processing: {
-    maxLines: 1000,
-    stripComments: false,
-  },
+	display: {
+		theme: 'light',
+		showLineNumbers: true,
+	},
+	processing: {
+		maxLines: 1000,
+		stripComments: false,
+	},
 };
 ```
 
@@ -483,55 +569,64 @@ export const config = {
 ```typescript
 // Core data structures
 interface Snippet {
-  code: string;
-  lang: string;
-  test: boolean;
+	code: string;
+	lang: string;
+	test: boolean;
 }
 
 interface SnippetOptions {
-  lang?: string;
-  test?: boolean;
+	lang?: string;
+	test?: boolean;
 }
 
 // Lens function signatures
 type LensConfig = any; // Lens decides configuration shape
 type SyncLensFunction = (snippet: Snippet, config?: LensConfig) => LensOutput;
-type AsyncLensFunction = (snippet: Snippet, config?: LensConfig) => Promise<LensOutput>;
+type AsyncLensFunction = (
+	snippet: Snippet,
+	config?: LensConfig
+) => Promise<LensOutput>;
 type LensFunction = SyncLensFunction | AsyncLensFunction;
 
 // Lens output structure
 interface LensOutput {
-  snippet: Snippet | null | undefined | false; // null/false for side effects
-  view: HTMLElement | ComponentChild | null; // Supports JSX components
+	snippet: Snippet | null | undefined | false; // null/false for side effects
+	view: HTMLElement | ComponentChild | null; // Supports JSX components
 }
 
 // Complete lens object (from library)
 interface LensObject {
-  name: string;
-  lens: LensFunction;
-  view: any; // Web component class
-  config: (overrides?: any) => LensConfig; // Config factory
+	name: string;
+	lens: LensFunction;
+	view: any; // Web component class
+	config: (overrides?: any) => LensConfig; // Config factory
 }
 
 // Flexible pipeline specifications (4 patterns)
 type LensSpec =
-  | LensFunction // Simple function
-  | LensObject // Library lens object
-  | [LensFunction, LensConfig] // Function with config
-  | [LensObject, LensConfig]; // Library lens with config override
+	| LensFunction // Simple function
+	| LensObject // Library lens object
+	| [LensFunction, LensConfig] // Function with config
+	| [LensObject, LensConfig]; // Library lens with config override
 
 // Pipeline output
 interface StudyOutput {
-  snippet: Snippet | null | undefined | false;
-  view: HTMLElement | ComponentChild | null;
+	snippet: Snippet | null | undefined | false;
+	view: HTMLElement | ComponentChild | null;
 }
 
 // Code source tracking for debugging
 interface CodeSource {
-  code: string;
-  lang: string;
-  test: boolean;
-  source: 'attribute' | 'textContent' | 'child' | 'parent' | 'sibling' | 'file';
+	code: string;
+	lang: string;
+	test: boolean;
+	source:
+		| 'attribute'
+		| 'textContent'
+		| 'child'
+		| 'parent'
+		| 'sibling'
+		| 'file';
 }
 ```
 
@@ -566,7 +661,8 @@ export const myJSXLens = async (snippet: Snippet, config?: LensConfig): Promise<
 
 ### Core Functions
 
-- `sl.study.pipe(snippet, lenses)` - Run pipeline of lenses
+- `sl.core.pipeLenses(snippet, lenses)` - Primary pipeline processing function
+- `sl.core.load(lensObj)` - Dynamically load lens objects into the runtime registry
 - `sl.snippet.parse(pathOrCode, options?)` - Create snippet from file/code
 - `sl.lenses.*.lens(input)` - Individual lens functions
 
@@ -611,8 +707,8 @@ import sl from 'study-lenses-wc-kit';
 
 // Test your custom lens function
 const myCustomLens = async (snippet, config = {}) => ({
-  snippet: { ...snippet, code: snippet.code.toUpperCase() },
-  view: null,
+	snippet: { ...snippet, code: snippet.code.toUpperCase() },
+	view: null,
 });
 
 // Validate it works correctly
@@ -622,7 +718,10 @@ const result = await myCustomLens(testSnippet);
 console.log(result.snippet.code); // Should output: "HELLO WORLD"
 
 // Test in pipeline with other lenses
-const pipelineResult = await sl.study.pipe(testSnippet, [myCustomLens, sl.lenses.reverse]);
+const pipelineResult = await sl.core.pipeLenses(testSnippet, [
+	myCustomLens,
+	sl.lenses.reverse,
+]);
 
 console.log(pipelineResult.snippet.code); // Should output: "DLROW OLLEH"
 ```

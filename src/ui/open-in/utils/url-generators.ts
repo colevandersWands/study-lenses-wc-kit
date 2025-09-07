@@ -10,12 +10,12 @@ import LZString from 'lz-string';
 import type { URLGenerator } from './types.js';
 
 export const URLGenerators = {
-  jsTutor,
-  jsViz,
-  jsv9000,
-  promisees,
-  loupe,
-  esprima,
+	jsTutor,
+	jsViz,
+	jsv9000,
+	promisees,
+	loupe,
+	esprima,
 };
 
 /**
@@ -23,17 +23,17 @@ export const URLGenerators = {
  * Encodes and sanitizes code for iframe embedding
  */
 var jsTutor: URLGenerator = (code: string): string => {
-  const encodedJST = encodeURIComponent(code);
-  const sanitizedJST = encodedJST
-    .replace(/\(/g, '%28')
-    .replace(/\)/g, '%29')
-    .replace(/%09/g, '%20%20');
-  const jsTutorURL =
-    // 'http://www.pythontutor.com/visualize.html#code=' +
-    'http://www.pythontutor.com/iframe-embed.html#code=' +
-    sanitizedJST +
-    '&cumulative=false&curInstr=0&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=js&rawInputLstJSON=%5B%5D&textReferences=false';
-  return jsTutorURL;
+	const encodedJST = encodeURIComponent(code);
+	const sanitizedJST = encodedJST
+		.replace(/\(/g, '%28')
+		.replace(/\)/g, '%29')
+		.replace(/%09/g, '%20%20');
+	const jsTutorURL =
+		// 'http://www.pythontutor.com/visualize.html#code=' +
+		'http://www.pythontutor.com/iframe-embed.html#code=' +
+		sanitizedJST +
+		'&cumulative=false&curInstr=0&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=js&rawInputLstJSON=%5B%5D&textReferences=false';
+	return jsTutorURL;
 };
 
 /**
@@ -41,9 +41,9 @@ var jsTutor: URLGenerator = (code: string): string => {
  * Uses LZ-string compression for code parameter
  */
 var jsViz: URLGenerator = (code: string): string => {
-  const encoded = LZString.compressToEncodedURIComponent(code);
-  const url = `https://jsviz.klve.nl/#?code=${encoded}`;
-  return url;
+	const encoded = LZString.compressToEncodedURIComponent(code);
+	const url = `https://jsviz.klve.nl/#?code=${encoded}`;
+	return url;
 };
 
 /**
@@ -51,9 +51,9 @@ var jsViz: URLGenerator = (code: string): string => {
  * Uses base64 encoding for code parameter
  */
 var jsv9000: URLGenerator = (code: string): string => {
-  const encoded = encodeURIComponent(btoa(code));
-  const jsv9000Url = 'https://www.jsv9000.app/?code=' + encoded;
-  return jsv9000Url;
+	const encoded = encodeURIComponent(btoa(code));
+	const jsv9000Url = 'https://www.jsv9000.app/?code=' + encoded;
+	return jsv9000Url;
 };
 
 /**
@@ -61,9 +61,9 @@ var jsv9000: URLGenerator = (code: string): string => {
  * Specialized for Promise chains and async/await
  */
 var promisees: URLGenerator = (code: string): string => {
-  const encoded = encodeURIComponent(code).replace(/%20/g, '+');
-  const URL = 'https://bevacqua.github.io/promisees/#code=' + encoded;
-  return URL;
+	const encoded = encodeURIComponent(code).replace(/%20/g, '+');
+	const URL = 'https://bevacqua.github.io/promisees/#code=' + encoded;
+	return URL;
 };
 
 /**
@@ -71,9 +71,9 @@ var promisees: URLGenerator = (code: string): string => {
  * Best for understanding async JavaScript execution
  */
 var loupe: URLGenerator = (code: string): string => {
-  const encoded = encodeURIComponent(btoa(code));
-  const loupeURL = 'http://latentflip.com/loupe/?code=' + encoded + '!!!';
-  return loupeURL;
+	const encoded = encodeURIComponent(btoa(code));
+	const loupeURL = 'http://latentflip.com/loupe/?code=' + encoded + '!!!';
+	return loupeURL;
 };
 
 /**
@@ -81,7 +81,7 @@ var loupe: URLGenerator = (code: string): string => {
  * Shows abstract syntax tree representation
  */
 var esprima: URLGenerator = (code: string): string => {
-  const encoded = encodeURIComponent(code);
-  const URL = 'https://esprima.org/demo/parse.html?code=' + encoded;
-  return URL;
+	const encoded = encodeURIComponent(code);
+	const URL = 'https://esprima.org/demo/parse.html?code=' + encoded;
+	return URL;
 };

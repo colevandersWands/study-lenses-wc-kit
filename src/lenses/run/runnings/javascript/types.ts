@@ -1,0 +1,173 @@
+/**
+ * Type Definitions for JavaScript Execution Module
+ *
+ * Documents all TypeScript interfaces and types for the run-javascript module.
+ * Only includes types that are actually used in the existing code.
+ *
+ * Module Structure:
+ * - index.ts: Main JavaScript execution engine
+ * - describe-it/: Testing framework implementations (async/sync)
+ * - insert-loop-guards.ts: Loop safety system
+ * - format-code.ts: Code formatting utilities
+ */
+
+import type { Node } from 'estree';
+
+// =============================================================================
+// JavaScript Execution Types (from index.ts)
+// =============================================================================
+
+/**
+ * Loop guard configuration to prevent infinite loops
+ */
+export interface LoopGuardConfig {
+	/** Whether loop guards should be active */
+	active: boolean;
+	/** Maximum allowed loop iterations before throwing RangeError */
+	max: number;
+}
+
+/**
+ * Run lens configuration for JavaScript execution
+ */
+export interface RunLensConfig {
+	/** Enable debugging breakpoints before and after code execution */
+	debug: boolean;
+	/** Loop guard configuration to prevent infinite loops */
+	loopGuard: LoopGuardConfig;
+}
+
+/**
+ * Extended configuration options for JavaScript execution in sandboxed iframe
+ * Extends RunLensConfig with execution-specific options
+ */
+export interface ExecutionConfig extends RunLensConfig {
+	/** Script execution mode - 'script' for regular JS, 'module' for ES modules */
+	type?: 'script' | 'module';
+	/** Enable testing framework integration (describe, it, expect) */
+	test?: boolean;
+	/** Global variables to inject into execution context */
+	globals?: Record<string, unknown>;
+}
+
+// =============================================================================
+// Testing Framework Types (from describe-it/types.ts)
+// =============================================================================
+
+/**
+ * Console call captured during test execution
+ */
+export interface ConsoleCall {
+	method: string;
+	args: unknown[];
+}
+
+/**
+ * Window-like object with console interface for test isolation
+ */
+export interface WindowLike {
+	console: Console;
+}
+
+/**
+ * Report structure for individual test cases
+ */
+export interface TestReport {
+	type: 'it' | 'describe';
+	description: string;
+	testFunction: Function;
+	children?: TestReport[];
+	consoleCalls: ConsoleCall[];
+	error: Error | null;
+	ms?: number | null;
+}
+
+/**
+ * Async test framework interface (describe-it/async.ts)
+ */
+export interface TestFramework {
+	describe: (description: string, testFunction: () => void) => Promise<void>;
+	it: (
+		description: string,
+		testFunction: () => void | Promise<void>
+	) => Promise<void>;
+	beforeEach: (callback: () => void) => void;
+	suite: (description: string, testFunction: () => void) => Promise<void>;
+	test: (
+		description: string,
+		testFunction: () => void | Promise<void>
+	) => Promise<void>;
+}
+
+/**
+ * Synchronous test framework interface (describe-it/sync.ts)
+ */
+export interface SyncTestFramework {
+	describe: (
+		description: string,
+		testFunction: () => void,
+		collapsed?: boolean
+	) => void;
+	it: (description: string, testFunction: () => void) => void;
+	beforeEach: (callback: () => void) => void;
+	afterEach: (callback: () => void) => void;
+	suite: (
+		description: string,
+		testFunction: () => void,
+		collapsed?: boolean
+	) => void;
+	test: (description: string, testFunction: () => void) => void;
+}
+
+/**
+ * Factory function type for creating async test framework instances
+ */
+export type TestFrameworkFactory = (window?: WindowLike) => TestFramework;
+
+/**
+ * Factory function type for creating sync test framework instances
+ */
+export type SyncTestFrameworkFactory = (
+	window?: WindowLike
+) => SyncTestFramework;
+
+/**
+ * Jest expect function type for test assertions
+ */
+export type ExpectFunction = any; // Using any for expect function to avoid import issues
+
+// =============================================================================
+// Loop Guard System Types (from insert-loop-guards.ts)
+// =============================================================================
+
+/**
+ * Input type for loop guard insertion - accepts either raw code string or parsed AST
+ */
+export type CodeInput = string | Node;
+
+/**
+ * Output type for loop guard insertion - returns either processed code string or modified AST
+ */
+export type CodeOutput = string | Node;
+
+/**
+ * Generated loop guard components containing variable declaration and check statements
+ */
+export interface LoopGuardComponents {
+	/** Variable declaration statement for loop counter (e.g., `let loopGuard_1 = 0;`) */
+	variable: Node;
+	/** Array of check statements to insert at loop start */
+	check: Node[];
+}
+
+/**
+ * Extended AST node with additional properties for tracking processing state
+ */
+export interface ExtendedNode extends Omit<Node, 'type'> {
+	/** Node type identifier */
+	type: string;
+	/** Marks nodes as generated by loop guard system to prevent double-processing */
+	generated?: boolean;
+	/** Marks nodes as already visited during AST traversal */
+	visited?: boolean;
+}
