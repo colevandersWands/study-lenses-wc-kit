@@ -378,6 +378,220 @@ export default {
 - **Refactoring Safe**: Rename a lens by only changing its `name.ts` file
 - **Hyphenated Names**: Supports complex names like `jsx-demo` seamlessly
 
+## 📚 Comprehensive Lens Development Examples
+
+This section provides detailed examples for creating custom lenses with various interaction patterns and complexity levels.
+
+### Simple Transform Lens Example
+
+A lens that adds semicolons to JavaScript statements:
+
+```typescript
+// custom-lenses/add-semicolons.ts
+import type { Snippet, LensOutput, LensConfig } from 'study-lenses-wc-kit/types';
+
+const defaultConfig = {
+	force: false, // Add semicolons even if already present
+	skipStrings: true, // Don't add semicolons inside string literals
+};
+
+export const addSemicolons = async (
+	snippet: Snippet,
+	config: LensConfig = defaultConfig
+): Promise<LensOutput> => {
+	const lines = snippet.code.split('\n');
+
+	const processedLines = lines.map((line) => {
+		const trimmed = line.trim();
+
+		// Skip empty lines and comments
+		if (!trimmed || trimmed.startsWith('//')) {
+			return line;
+		}
+
+		// Skip if already has semicolon (unless force is true)
+		if (trimmed.endsWith(';') && !config.force) {
+			return line;
+		}
+
+		// Add semicolon to statements
+		if (trimmed.match(/^(let|const|var|return|throw|break|continue)\s/)) {
+			return line + (trimmed.endsWith(';') ? '' : ';');
+		}
+
+		return line;
+	});
+
+	return {
+		snippet: {
+			...snippet,
+			code: processedLines.join('\n'),
+		},
+		view: null, // Transform lens - continues pipeline
+	};
+};
+```
+
+### Interactive Visual Lens Example
+
+A lens that creates a code metrics dashboard:
+
+```typescript
+// custom-lenses/code-metrics.ts
+import type { Snippet, LensOutput, LensConfig } from 'study-lenses-wc-kit/types';
+
+const defaultConfig = {
+	showComplexity: true,
+	showMetrics: ['lines', 'functions', 'classes'],
+	theme: 'light',
+};
+
+export const codeMetrics = async (
+	snippet: Snippet,
+	config: LensConfig = defaultConfig
+): Promise<LensOutput> => {
+	// Analyze code
+	const analysis = {
+		lines: snippet.code.split('\n').length,
+		functions: (snippet.code.match(/function\s+\w+/g) || []).length,
+		classes: (snippet.code.match(/class\s+\w+/g) || []).length,
+	};
+
+	// Create interactive UI
+	const container = document.createElement('div');
+	container.className = `metrics-container theme-${config.theme}`;
+
+	// Create metrics cards
+	const metricsGrid = document.createElement('div');
+	metricsGrid.className = 'metrics-grid';
+
+	if (config.showMetrics.includes('lines')) {
+		metricsGrid.appendChild(createMetricCard('Lines', analysis.lines));
+	}
+
+	if (config.showMetrics.includes('functions')) {
+		metricsGrid.appendChild(createMetricCard('Functions', analysis.functions));
+	}
+
+	container.appendChild(metricsGrid);
+
+	return {
+		snippet, // Pass through unchanged
+		view: container, // Terminates pipeline with visual output
+	};
+};
+
+function createMetricCard(label: string, value: number): HTMLElement {
+	const card = document.createElement('div');
+	card.className = 'metric-card';
+	card.innerHTML = `
+		<div class="metric-value">${value}</div>
+		<div class="metric-label">${label}</div>
+	`;
+	return card;
+}
+```
+
+### JSX Interactive Component Example
+
+A lens using Preact/JSX for rich interactivity:
+
+```tsx
+// custom-lenses/interactive-editor.tsx
+import type { Snippet, LensOutput, LensConfig } from 'study-lenses-wc-kit/types';
+import { useState } from 'preact/hooks';
+
+const defaultConfig = {
+	readOnly: false,
+	theme: 'light',
+	showLineNumbers: true,
+};
+
+export const interactiveEditor = async (
+	snippet: Snippet,
+	config: LensConfig = defaultConfig
+): Promise<LensOutput> => {
+	const EditorComponent = () => {
+		const [code, setCode] = useState(snippet.code);
+		const [isEditing, setIsEditing] = useState(!config.readOnly);
+
+		const handleRun = () => {
+			try {
+				const result = new Function('return ' + code)();
+				console.log('Execution result:', result);
+			} catch (error) {
+				console.error('Execution failed:', error);
+			}
+		};
+
+		return (
+			<div
+				style={{
+					border: '2px solid #ddd',
+					borderRadius: '8px',
+					padding: '16px',
+					backgroundColor: config.theme === 'dark' ? '#2d3748' : '#ffffff',
+					fontFamily: 'Monaco, Consolas, monospace',
+				}}
+			>
+				<div style={{ marginBottom: '12px', display: 'flex', gap: '8px' }}>
+					<button onClick={() => setIsEditing(!isEditing)}>
+						{isEditing ? '📝 Stop Editing' : '✏️ Edit Code'}
+					</button>
+					<button onClick={handleRun}>▶️ Run</button>
+				</div>
+
+				{isEditing ? (
+					<textarea
+						value={code}
+						onChange={(e) => setCode(e.target.value)}
+						style={{
+							width: '100%',
+							minHeight: '200px',
+							fontFamily: 'inherit',
+							fontSize: '14px',
+						}}
+					/>
+				) : (
+					<pre style={{ margin: 0 }}>
+						{config.showLineNumbers && (
+							<code style={{ color: '#6c757d', marginRight: '12px' }}>
+								{code.split('\n').map((_, i) => `${i + 1}`).join('\n')}
+							</code>
+						)}
+						<code>{code}</code>
+					</pre>
+				)}
+			</div>
+		);
+	};
+
+	return {
+		snippet, // Pass through unchanged
+		view: <EditorComponent />, // JSX component terminates pipeline
+	};
+};
+```
+
+These examples demonstrate:
+- **Transform lenses** that modify code and continue pipeline
+- **Visual lenses** that create DOM elements and terminate pipeline
+- **JSX lenses** that return Preact components for rich interactivity
+- **Configuration patterns** for customizable behavior
+
+Usage in pipelines:
+
+```typescript
+import sl from 'study-lenses-wc-kit';
+
+// Mix custom and library lenses
+const result = await sl.core.pipeLenses(snippet, [
+	[addSemicolons, { force: true }],
+	sl.lenses.uppercase,
+	[codeMetrics, { theme: 'dark' }], // Terminates with visual
+]);
+```
+
 ## 🧪 Testing Your Lens
 
 Study Lenses uses a comprehensive testing approach with both **automated unit tests** and **interactive browser tests** to ensure lens quality and functionality.

@@ -1925,10 +1925,213 @@ The registration system provides a robust, type-safe foundation for automaticall
 
 ## Performance Considerations
 
+### Pipeline Performance Optimization
+
+The smart pipeline architecture allows for strategic optimization using terminus conditions:
+
+```typescript
+// Use terminus conditions strategically
+const optimizedPipeline = async (snippet: Snippet, showVisual: boolean) => {
+	if (showVisual) {
+		// Visual lens terminates early - no unnecessary processing
+		return await sl.core.pipeLenses(snippet, [
+			sl.lenses.codeMetrics, // Terminates with visual output
+			// These won't run:
+			// sl.lenses.expensiveAnalysis,
+			// sl.lenses.heavyTransform,
+		]);
+	} else {
+		// Transform-only pipeline for better performance
+		return await sl.core.pipeLenses(snippet, [
+			sl.lenses.reverse.lens, // Just the function
+			sl.lenses.uppercase.lens, // Just the function
+		]);
+	}
+};
+```
+
+**Performance Characteristics:**
+
+- **Sequential Processing**: O(n) where n = number of lenses until terminus
+- **Early Termination**: Stops immediately on first terminus condition  
 - **Pure functions are fast** - no object creation overhead
 - **Components are cached** - createLensElement returns singleton-like behavior
 - **Configuration uses factory pattern** - prevents accidental mutations
 - **Error handling is fail-fast** - stops pipeline on first error
+
+### Memory Management for Large Codebases
+
+When processing multiple files, use batching to avoid memory issues:
+
+```typescript
+const processLargeCodebase = async (files: string[]) => {
+	const results = [];
+
+	// Process files in batches to avoid memory issues
+	const batchSize = 10;
+	for (let i = 0; i < files.length; i += batchSize) {
+		const batch = files.slice(i, i + batchSize);
+
+		const batchResults = await Promise.all(
+			batch.map(async (code) => {
+				const snippet = { code, lang: 'js', test: false };
+
+				// Use lightweight transform-only lenses
+				return await sl.core.pipeLenses(snippet, [
+					sl.lenses.codeMetrics.lens, // Extract function only
+				]);
+			})
+		);
+
+		results.push(...batchResults);
+
+		// Allow garbage collection between batches
+		if (typeof global !== 'undefined' && global.gc) {
+			global.gc();
+		}
+	}
+
+	return results;
+};
+```
+
+**Memory Efficiency Guidelines:**
+
+- **Process in batches** for large datasets
+- **Use function extracts** (`.lens`) instead of full objects when possible
+- **Prefer transform-only pipelines** when visual output isn't needed
+- **Allow GC between batches** for long-running processes
+
+## Configuration Management Patterns
+
+### Deep Configuration Merging
+
+Study Lenses supports sophisticated configuration with deep merge capabilities:
+
+```typescript
+import sl from 'study-lenses-wc-kit';
+
+// Complex configuration example
+const complexConfig = {
+	display: {
+		theme: 'dark',
+		syntax: {
+			highlighting: true,
+			colorScheme: 'monokai',
+		},
+		layout: {
+			compact: false,
+			showMinimap: true,
+		},
+	},
+	processing: {
+		timeout: 10000,
+		retries: 3,
+		validation: {
+			strict: true,
+			allowJS: true,
+		},
+	},
+};
+
+// Get default config
+const defaultConfig = sl.lenses.jsxDemo.config();
+
+// Partial override with deep merge
+const customConfig = sl.lenses.jsxDemo.config({
+	display: {
+		theme: 'light', // Only changes theme
+		// syntax and layout remain at defaults
+	},
+	processing: {
+		timeout: 5000, // Only changes timeout
+		// retries and validation remain at defaults
+	},
+});
+
+// Use in pipeline
+const result = await sl.core.pipeLenses(snippet, [
+	[sl.lenses.jsxDemo, customConfig],
+]);
+```
+
+### Configuration Factory Patterns
+
+Create reusable configuration factories for common scenarios:
+
+```typescript
+// Create reusable configuration factories
+const createDarkThemeConfig = (overrides = {}) =>
+	sl.lenses.jsxDemo.config({
+		display: { theme: 'dark' },
+		...overrides,
+	});
+
+const createProductionConfig = (overrides = {}) =>
+	sl.lenses.jsxDemo.config({
+		processing: { strict: true, timeout: 30000 },
+		display: { compact: true },
+		...overrides,
+	});
+
+// Use configuration factories
+const darkConfig = createDarkThemeConfig({ processing: { timeout: 15000 } });
+const prodConfig = createProductionConfig({ display: { theme: 'dark' } });
+
+// Multiple lenses with different configs
+const result = await sl.core.pipeLenses(snippet, [
+	[sl.lenses.reverse, darkConfig],
+	[sl.lenses.uppercase, prodConfig],
+]);
+```
+
+### Environment-Specific Configuration
+
+Dynamic configuration based on runtime environment:
+
+```typescript
+// Environment-specific configuration
+const environments = {
+	development: {
+		debug: true,
+		timeout: 60000,
+		showErrors: true,
+	},
+	production: {
+		debug: false,
+		timeout: 10000,
+		showErrors: false,
+	},
+	testing: {
+		debug: false,
+		timeout: 5000,
+		showErrors: true,
+	},
+};
+
+// Dynamic configuration based on environment
+const getEnvironmentConfig = (env: string = 'development') => {
+	const baseConfig = environments[env] || environments.development;
+
+	return sl.lenses.jsxDemo.config({
+		...baseConfig,
+		display: {
+			theme: env === 'development' ? 'light' : 'dark',
+		},
+	});
+};
+
+// Usage
+const config = getEnvironmentConfig(process.env.NODE_ENV);
+const result = await sl.core.pipeLenses(snippet, [[sl.lenses.jsxDemo, config]]);
+```
+
+**Configuration Best Practices:**
+
+- **Use factory pattern** for reusable configurations
+- **Deep merge capabilities** allow partial overrides
+- **Environment-aware configs** for different deployment contexts
+- **Type safety** maintained through config factory functions
 
 ## Package Preparation
 

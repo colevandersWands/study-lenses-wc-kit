@@ -199,6 +199,122 @@ Smart precedence-based code discovery:
 
 ### Dynamic Lens Loading
 
+Load custom lens objects at runtime for extensibility:
+
+```typescript
+import sl from 'study-lenses-wc-kit';
+
+// Custom lens object matching LensObject interface
+const customAnalyzer = {
+  name: 'my-analyzer',
+  lens: async (snippet, config = {}) => ({
+    snippet: { ...snippet, code: analyzeCode(snippet.code) },
+    view: null
+  }),
+  register: () => '', // Optional: Web component registration
+  config: (overrides = {}) => ({ ...defaultConfig, ...overrides })
+};
+
+// Load the lens into runtime registry
+const success = sl.core.load(customAnalyzer);
+
+if (success) {
+  // Now available by name in pipelines
+  const result = await sl.core.pipeLenses(snippet, [
+    sl.lenses.reverse,
+    sl.lenses['my-analyzer'], // Available after loading
+    sl.lenses.uppercase
+  ]);
+}
+```
+
+### Mixed Pipeline Examples
+
+Combine different lens patterns in a single pipeline:
+
+```typescript
+import sl from 'study-lenses-wc-kit';
+
+// Custom lens function
+const addComment = async (snippet, config = {}) => ({
+  snippet: {
+    ...snippet,
+    code: `// ${config.comment || 'Processed'}\n${snippet.code}`,
+  },
+  view: null,
+});
+
+// Mixed pipeline demonstrating all 4 patterns
+const result = await sl.core.pipeLenses(snippet, [
+  // Pattern 1: Custom function with config
+  [addComment, { comment: 'Code analysis begins' }],
+  
+  // Pattern 2: Library lens object
+  sl.lenses.reverse,
+  
+  // Pattern 3: Library lens with config override
+  [sl.lenses.uppercase, { preserveSpaces: true }],
+  
+  // Pattern 4: Simple function
+  async (snippet) => ({
+    snippet,
+    view: createVisualization(snippet.code) // Terminates pipeline
+  })
+]);
+```
+
+### Terminus Conditions Example
+
+Understanding pipeline termination:
+
+```typescript
+// Visual lens that terminates pipeline
+const codeAnalysis = async (snippet) => {
+  const div = document.createElement('div');
+  div.innerHTML = `
+    <h3>Code Analysis</h3>
+    <pre>${snippet.code}</pre>
+    <p>Lines: ${snippet.code.split('\n').length}</p>
+  `;
+  
+  return {
+    snippet, // Pass through unchanged
+    view: div, // Terminates pipeline with visual output
+  };
+};
+
+// Pipeline stops at first visual output
+const result = await sl.core.pipeLenses(snippet, [
+  sl.lenses.reverse.lens,      // Runs: transforms code
+  codeAnalysis,                 // Runs: returns view (terminates)
+  sl.lenses.uppercase.lens,     // Never runs: pipeline stopped
+]);
+
+console.log(result.view); // Contains the analysis HTML element
+```
+
+### File Loading with Core API
+
+Load and process files directly:
+
+```typescript
+import sl from 'study-lenses-wc-kit';
+
+// Load snippet from file (detects language and test status)
+const snippet = await sl.snippet.parse('./examples/demo.js');
+// Returns: { code: "...", lang: "js", test: false }
+
+// Process with pipeline
+const result = await sl.core.pipeLenses(snippet, [
+  sl.lenses.uppercase,
+  sl.lenses.reverse,
+]);
+
+console.log(result.snippet.code); // Transformed file content
+```
+
+### Dynamic Lens Loading
+
 Add custom lenses at runtime using `sl.core.load`:
 
 ```typescript
