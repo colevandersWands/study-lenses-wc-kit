@@ -4,7 +4,7 @@
  */
 
 import parse from './parse.js';
-import view from './view.js';
+import register from './wc.js';
 
 // Re-export types for TypeScript users
 export type { SnippetOptions } from './parse.js';
@@ -12,5 +12,5 @@ export type { SnippetOptions } from './parse.js';
 // Default export only (generic object interface)
 export default {
   parse,
-  view,
+  register,
 };

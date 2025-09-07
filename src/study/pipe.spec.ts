@@ -11,12 +11,12 @@ describe('study pipe function', () => {
   // Helper test lenses
   const reverseTransform: LensFunction = (snippet) => ({
     snippet: { ...snippet, code: snippet.code.split('').reverse().join('') },
-    view: null,
+    ui: null,
   });
 
   const uppercaseTransform: LensFunction = (snippet) => ({
     snippet: { ...snippet, code: snippet.code.toUpperCase() },
-    view: null,
+    ui: null,
   });
 
   const viewLens: LensFunction = (snippet) => {
@@ -24,19 +24,19 @@ describe('study pipe function', () => {
     div.textContent = `View: ${snippet.code}`;
     return {
       snippet,
-      view: div,
+      ui: div,
     };
   };
 
   const sideEffectLens: LensFunction = (snippet) => ({
     snippet: null, // Side effect - returns falsey
-    view: null,
+    ui: null,
   });
 
   const mockLensObject: LensObject = {
     name: 'mock-lens',
     lens: reverseTransform,
-    view: class MockView {},
+    ui: class MockView {},
     config: (overrides = {}) => ({ ...{ default: true }, ...overrides }),
   };
 
@@ -47,14 +47,14 @@ describe('study pipe function', () => {
       const result = await pipe(testSnippet, [reverseTransform]);
 
       expect(result.snippet.code).toBe('olleh');
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
     });
 
     it('should process multiple function lenses sequentially', async () => {
       const result = await pipe(testSnippet, [reverseTransform, uppercaseTransform]);
 
       expect(result.snippet.code).toBe('OLLEH');
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
     });
   });
 
@@ -63,7 +63,7 @@ describe('study pipe function', () => {
       const result = await pipe(testSnippet, [mockLensObject]);
 
       expect(result.snippet.code).toBe('olleh');
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
     });
 
     it('should use lens object config factory', async () => {
@@ -86,7 +86,7 @@ describe('study pipe function', () => {
           ...snippet,
           code: config?.prefix ? `${config.prefix}${snippet.code}` : snippet.code,
         },
-        view: null,
+        ui: null,
       });
 
       const result = await pipe(testSnippet, [[configAwareLens, { prefix: 'TEST:' }]]);
@@ -104,9 +104,9 @@ describe('study pipe function', () => {
             ...snippet,
             code: `${snippet.code}-${config?.suffix || 'default'}`,
           },
-          view: null,
+          ui: null,
         }),
-        view: class ConfigMergeView {},
+        ui: class ConfigMergeView {},
         config: (overrides = {}) => ({ suffix: 'base', ...overrides }),
       };
 
@@ -120,7 +120,7 @@ describe('study pipe function', () => {
     it('should handle all 4 patterns in same pipeline', async () => {
       const customLens: LensFunction = (snippet) => ({
         snippet: { ...snippet, code: snippet.code + '1' },
-        view: null,
+        ui: null,
       });
 
       const result = await pipe(testSnippet, [
@@ -144,15 +144,15 @@ describe('study pipe function', () => {
       ]);
 
       expect(result.snippet.code).toBe('olleh');
-      expect(result.view).not.toBeNull();
-      expect(result.view).toBeInstanceOf(HTMLElement);
+      expect(result.ui).not.toBeNull();
+      expect(result.ui).toBeInstanceOf(HTMLElement);
     });
 
     it('should return the view element', async () => {
       const result = await pipe(testSnippet, [viewLens]);
 
-      expect(result.view).toBeInstanceOf(HTMLElement);
-      expect((result.view as HTMLElement).textContent).toBe('View: hello');
+      expect(result.ui).toBeInstanceOf(HTMLElement);
+      expect((result.ui as HTMLElement).textContent).toBe('View: hello');
     });
   });
 
@@ -166,13 +166,13 @@ describe('study pipe function', () => {
 
       // Should return pre-side-effect snippet
       expect(result.snippet.code).toBe('olleh');
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
     });
 
     it('should handle various falsey values', async () => {
-      const nullLens: LensFunction = () => ({ snippet: null, view: null });
-      const undefinedLens: LensFunction = () => ({ snippet: undefined, view: null });
-      const falseLens: LensFunction = () => ({ snippet: false, view: null });
+      const nullLens: LensFunction = () => ({ snippet: null, ui: null });
+      const undefinedLens: LensFunction = () => ({ snippet: undefined, ui: null });
+      const falseLens: LensFunction = () => ({ snippet: false, ui: null });
 
       const result1 = await pipe(testSnippet, [nullLens]);
       const result2 = await pipe(testSnippet, [undefinedLens]);
@@ -189,14 +189,14 @@ describe('study pipe function', () => {
       const result = await pipe(testSnippet, [reverseTransform, uppercaseTransform]);
 
       expect(result.snippet.code).toBe('OLLEH');
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
     });
 
     it('should handle empty lens array', async () => {
       const result = await pipe(testSnippet, []);
 
       expect(result.snippet).toEqual(testSnippet);
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
     });
   });
 
@@ -227,7 +227,7 @@ describe('study pipe function', () => {
         lens: () => {
           throw new Error('Object error');
         },
-        view: class ErrorView {},
+        ui: class ErrorView {},
         config: () => ({}),
       };
 
@@ -255,7 +255,7 @@ describe('study pipe function', () => {
         await new Promise((resolve) => setTimeout(resolve, 1)); // Small delay
         return {
           snippet: { ...snippet, code: snippet.code + '-async' },
-          view: null,
+          ui: null,
         };
       };
 
@@ -268,11 +268,11 @@ describe('study pipe function', () => {
 
 describe('validatePipelineInput', () => {
   const testSnippet: Snippet = { code: 'test', lang: 'js', test: false };
-  const validLens: LensFunction = (snippet) => ({ snippet, view: null });
+  const validLens: LensFunction = (snippet) => ({ snippet, ui: null });
   const validLensObject: LensObject = {
     name: 'valid',
     lens: validLens,
-    view: class ValidView {},
+    ui: class ValidView {},
     config: () => ({}),
   };
 

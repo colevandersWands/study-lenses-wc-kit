@@ -26,12 +26,12 @@ export const lens = (snippet: Snippet, config: LoopGuardConfig = _config()): Len
 
     return {
       snippet: { ...snippet, code: guardedCode },
-      view: null, // Transform lens - no view component
+      ui: null, // Transform lens - no view component
     };
   } catch (error) {
     // Return original snippet on any processing error
     console.warn('Loop guard lens failed:', error);
-    return { snippet, view: null };
+    return { snippet, ui: null };
   }
 };
 

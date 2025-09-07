@@ -15,7 +15,7 @@ describe('uppercase lens function', () => {
     expect(result.snippet.code).toBe('HELLO WORLD');
     expect(result.snippet.lang).toBe('js');
     expect(result.snippet.test).toBe(false);
-    expect(result.view).toBeNull();
+    expect(result.ui).toBeNull();
   });
 
   it('should handle mixed case code', () => {
@@ -38,7 +38,7 @@ describe('uppercase lens function', () => {
 
     expect(result.snippet.code).toBe('');
     expect(result.snippet.lang).toBe('js');
-    expect(result.view).toBeNull();
+    expect(result.ui).toBeNull();
   });
 
   it('should handle code with numbers and symbols', () => {
@@ -76,7 +76,7 @@ describe('uppercase lens function', () => {
     const result = lens(snippet, customConfig);
 
     expect(result.snippet.code).toBe('HELLO CONFIG');
-    expect(result.view).toBeNull();
+    expect(result.ui).toBeNull();
   });
 
   it('should handle unicode characters', () => {
@@ -90,7 +90,7 @@ describe('uppercase lens function', () => {
     const snippet = { code: 'any code', lang: 'js', test: false };
     const result = lens(snippet);
 
-    expect(result.view).toBeNull();
+    expect(result.ui).toBeNull();
   });
 
   describe('config integration', () => {

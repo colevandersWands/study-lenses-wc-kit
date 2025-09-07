@@ -20,7 +20,7 @@ describe('reverse lens', () => {
     expect(result.snippet.code).toBe('} ;24 nruter { )(tset noitcnuf');
     expect(result.snippet.lang).toBe('js');
     expect(result.snippet.test).toBe(false);
-    expect(result.view).toBeNull(); // Transform lens
+    expect(result.ui).toBeNull(); // Transform lens
   });
 
   it('should handle empty code', () => {
@@ -28,7 +28,7 @@ describe('reverse lens', () => {
     const result = lens(emptySnippet, config());
 
     expect(result.snippet.code).toBe('');
-    expect(result.view).toBeNull();
+    expect(result.ui).toBeNull();
   });
 
   it('should handle single character', () => {
@@ -36,7 +36,7 @@ describe('reverse lens', () => {
     const result = lens(singleChar, config());
 
     expect(result.snippet.code).toBe('x');
-    expect(result.view).toBeNull();
+    expect(result.ui).toBeNull();
   });
 
   it('should preserve snippet metadata', () => {
@@ -72,7 +72,7 @@ describe('reverse lens', () => {
     const result = lens(testSnippet, customConfig);
 
     expect(result.snippet.code).toBe('} ;24 nruter { )(tset noitcnuf');
-    expect(result.view).toBeNull();
+    expect(result.ui).toBeNull();
   });
 
   it('should handle whitespace and tabs', () => {

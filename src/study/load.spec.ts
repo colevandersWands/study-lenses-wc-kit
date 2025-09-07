@@ -11,13 +11,13 @@ describe('study load', () => {
   // Mock lens for testing
   const mockLens = async (snippet: any, config = {}) => ({
     snippet: { ...snippet, code: snippet.code + ' // loaded' },
-    view: null,
+    ui: null,
   });
 
   const validLensObject = {
     name: 'test-lens',
     lens: mockLens,
-    view: null,
+    ui: null,
     config: () => ({ enabled: true }),
   };
 
@@ -122,19 +122,19 @@ describe('study load', () => {
     const lensWithView = {
       name: 'view-lens',
       lens: mockLens,
-      view: mockView,
+      ui: mockView,
     };
 
     const result = load(lensWithView);
 
     expect(result).toBe(true);
-    expect((lensRegistry as any)['view-lens'].view).toBe(mockView);
+    expect((lensRegistry as any)['view-lens'].register).toBe(mockView);
   });
 
   it('should overwrite existing lens if same name is used', () => {
     const lens1 = {
       name: 'duplicate-lens',
-      lens: async (snippet: any) => ({ snippet, view: null }),
+      lens: async (snippet: any) => ({ snippet, ui: null }),
     };
 
     const lens2 = {

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Debugger Lens - Interactive Test</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .test-section {
+      margin: 30px 0;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    sl-lens-debugger {
+      display: block;
+      margin: 10px 0;
+    }
+    pre {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .language-label {
+      font-weight: bold;
+      color: #666;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐛 Debugger Lens - Interactive Test</h1>
+  
+  <div class="test-section">
+    <h2>JavaScript Code</h2>
+    <div class="language-label">JavaScript (js)</div>
+    <sl-lens-debugger code="function test() { return 42; }"></sl-lens-debugger>
+    
+    <div class="language-label">JavaScript ES6 (mjs)</div>
+    <sl-lens-debugger code="const greet = (name) => console.log(`Hello, ${name}`);" lang="mjs"></sl-lens-debugger>
+  </div>
+
+  <div class="test-section">
+    <h2>TypeScript Code</h2>
+    <div class="language-label">TypeScript (ts)</div>
+    <sl-lens-debugger code="const greet = (name: string): void => console.log(name);" lang="ts"></sl-lens-debugger>
+    
+    <div class="language-label">TypeScript React (tsx)</div>
+    <sl-lens-debugger code="const Component: React.FC = () => <div>Hello</div>;" lang="tsx"></sl-lens-debugger>
+  </div>
+
+  <div class="test-section">
+    <h2>Python Code</h2>
+    <div class="language-label">Python (py)</div>
+    <sl-lens-debugger code="def hello(): print('world')" lang="python"></sl-lens-debugger>
+    
+    <div class="language-label">Python Class</div>
+    <sl-lens-debugger code="class Calculator:
+    def add(self, a, b):
+        return a + b" lang="py"></sl-lens-debugger>
+  </div>
+
+  <div class="test-section">
+    <h2>Java Code</h2>
+    <div class="language-label">Java</div>
+    <sl-lens-debugger code="public class Test { 
+    public static void main(String[] args) { 
+        System.out.println(&quot;Hello&quot;); 
+    } 
+}" lang="java"></sl-lens-debugger>
+  </div>
+
+  <div class="test-section">
+    <h2>C/C++ Code</h2>
+    <div class="language-label">C</div>
+    <sl-lens-debugger code="#include <stdio.h>
+int main() {
+    printf(&quot;Hello, World!&quot;);
+    return 0;
+}" lang="c"></sl-lens-debugger>
+    
+    <div class="language-label">C++</div>
+    <sl-lens-debugger code="#include <iostream>
+int main() {
+    std::cout << &quot;Hello, World!&quot; << std::endl;
+    return 0;
+}" lang="cpp"></sl-lens-debugger>
+  </div>
+
+  <div class="test-section">
+    <h2>Other Languages</h2>
+    <div class="language-label">Go</div>
+    <sl-lens-debugger code="package main
+import &quot;fmt&quot;
+func main() {
+    fmt.Println(&quot;Hello, World!&quot;)
+}" lang="go"></sl-lens-debugger>
+    
+    <div class="language-label">Rust</div>
+    <sl-lens-debugger code="fn main() {
+    println!(&quot;Hello, World!&quot;);
+}" lang="rust"></sl-lens-debugger>
+    
+    <div class="language-label">Ruby</div>
+    <sl-lens-debugger code="class Greeter
+  def hello
+    puts 'Hello, World!'
+  end
+end" lang="ruby"></sl-lens-debugger>
+  </div>
+
+  <div class="test-section">
+    <h2>Configuration Examples</h2>
+    <div class="language-label">Disabled Configuration</div>
+    <sl-lens-debugger code="console.log('no debugging');" config='{"enabled": false}'></sl-lens-debugger>
+    
+    <div class="language-label">Custom Line Spacing (1 line)</div>
+    <sl-lens-debugger code="compact code" config='{"lineSpacing": 1}'></sl-lens-debugger>
+    
+    <div class="language-label">Custom Line Spacing (5 lines)</div>
+    <sl-lens-debugger code="spacious code" config='{"lineSpacing": 5}'></sl-lens-debugger>
+    
+    <div class="language-label">Custom Prefix/Suffix</div>
+    <sl-lens-debugger code="custom debugging" config='{"customPrefix": ">>> DEBUG START <<<", "customSuffix": ">>> DEBUG END <<<"}'></sl-lens-debugger>
+  </div>
+
+  <div class="test-section">
+    <h2>Edge Cases</h2>
+    <div class="language-label">Empty Code</div>
+    <sl-lens-debugger code=""></sl-lens-debugger>
+    
+    <div class="language-label">Unknown Language (defaults to JS)</div>
+    <sl-lens-debugger code="unknown_language_code();" lang="unknown"></sl-lens-debugger>
+    
+    <div class="language-label">Code with Existing Debugger</div>
+    <sl-lens-debugger code="debugger; console.log('already has debugger');" lang="js"></sl-lens-debugger>
+    
+    <div class="language-label">Multiline Code</div>
+    <sl-lens-debugger code="function complex() {
+    const x = 1;
+    const y = 2;
+    console.log(x + y);
+    return x * y;
+}" lang="js"></sl-lens-debugger>
+    
+    <div class="language-label">Code with Special Characters</div>
+    <sl-lens-debugger code="const emoji = '🐛'; // Debug emoji console.log(emoji);" lang="js"></sl-lens-debugger>
+  </div>
+
+  <div class="test-section">
+    <h2>File Loading Test</h2>
+    <div class="language-label">Load from File (if available)</div>
+    <sl-lens-debugger src="../../examples/content/greet.js"></sl-lens-debugger>
+  </div>
+
+  <script type="module">
+    import '../../../register.js'; // Register all components
+  </script>
+</body>
+</html>

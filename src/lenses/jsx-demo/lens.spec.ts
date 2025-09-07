@@ -13,8 +13,8 @@ describe('jsx-demo lens function', () => {
     const result = await lens(snippet);
 
     expect(result.snippet).toEqual(snippet); // Pass through unchanged
-    expect(result.view).not.toBeNull();
-    expect(typeof result.view).toBe('object'); // JSX component
+    expect(result.ui).not.toBeNull();
+    expect(typeof result.ui).toBe('object'); // JSX component
   });
 
   it('should count lines correctly', async () => {
@@ -26,7 +26,7 @@ describe('jsx-demo lens function', () => {
     const result = await lens(snippet);
 
     // JSX view should be created (can't easily test JSX content in unit test)
-    expect(result.view).not.toBeNull();
+    expect(result.ui).not.toBeNull();
     expect(result.snippet).toEqual(snippet);
   });
 
@@ -38,7 +38,7 @@ describe('jsx-demo lens function', () => {
     };
     const result = await lens(snippet);
 
-    expect(result.view).not.toBeNull();
+    expect(result.ui).not.toBeNull();
     expect(result.snippet).toEqual(snippet);
   });
 
@@ -46,7 +46,7 @@ describe('jsx-demo lens function', () => {
     const snippet = { code: '', lang: 'js', test: false };
     const result = await lens(snippet);
 
-    expect(result.view).not.toBeNull();
+    expect(result.ui).not.toBeNull();
     expect(result.snippet).toEqual(snippet);
   });
 
@@ -63,7 +63,7 @@ console.log(fibonacci(10));`,
     };
     const result = await lens(snippet);
 
-    expect(result.view).not.toBeNull();
+    expect(result.ui).not.toBeNull();
     expect(result.snippet).toEqual(snippet);
   });
 
@@ -85,7 +85,7 @@ console.log(fibonacci(10));`,
     });
     const result = await lens(snippet, customConfig);
 
-    expect(result.view).not.toBeNull();
+    expect(result.ui).not.toBeNull();
     expect(result.snippet).toEqual(snippet);
   });
 
@@ -97,7 +97,7 @@ console.log(fibonacci(10));`,
     };
     const result = await lens(snippet);
 
-    expect(result.view).not.toBeNull();
+    expect(result.ui).not.toBeNull();
     expect(result.snippet).toEqual(snippet);
   });
 
@@ -106,7 +106,7 @@ console.log(fibonacci(10));`,
     const snippet = { code: longCode, lang: 'js', test: false };
     const result = await lens(snippet);
 
-    expect(result.view).not.toBeNull();
+    expect(result.ui).not.toBeNull();
     expect(result.snippet).toEqual(snippet);
   });
 
@@ -115,7 +115,7 @@ console.log(fibonacci(10));`,
       const snippet = { code: 'default config', lang: 'js', test: false };
       const result = await lens(snippet, config());
 
-      expect(result.view).not.toBeNull();
+      expect(result.ui).not.toBeNull();
       expect(result.snippet).toEqual(snippet);
     });
 
@@ -123,7 +123,7 @@ console.log(fibonacci(10));`,
       const snippet = { code: 'no details', lang: 'js', test: false };
       const result = await lens(snippet, config({ showDetails: false }));
 
-      expect(result.view).not.toBeNull();
+      expect(result.ui).not.toBeNull();
       expect(result.snippet).toEqual(snippet);
     });
 
@@ -131,7 +131,7 @@ console.log(fibonacci(10));`,
       const snippet = { code: 'no stats', lang: 'js', test: false };
       const result = await lens(snippet, config({ showStats: false }));
 
-      expect(result.view).not.toBeNull();
+      expect(result.ui).not.toBeNull();
       expect(result.snippet).toEqual(snippet);
     });
 
@@ -139,7 +139,7 @@ console.log(fibonacci(10));`,
       const snippet = { code: 'dark theme', lang: 'js', test: false };
       const result = await lens(snippet, config({ theme: 'dark' }));
 
-      expect(result.view).not.toBeNull();
+      expect(result.ui).not.toBeNull();
       expect(result.snippet).toEqual(snippet);
     });
   });
@@ -149,7 +149,7 @@ console.log(fibonacci(10));`,
       const snippet = { code: '   \n\t  \r\n  ', lang: 'js', test: false };
       const result = await lens(snippet);
 
-      expect(result.view).not.toBeNull();
+      expect(result.ui).not.toBeNull();
       expect(result.snippet).toEqual(snippet);
     });
 
@@ -157,7 +157,7 @@ console.log(fibonacci(10));`,
       const snippet = { code: 'x', lang: 'js', test: false };
       const result = await lens(snippet);
 
-      expect(result.view).not.toBeNull();
+      expect(result.ui).not.toBeNull();
       expect(result.snippet).toEqual(snippet);
     });
 
@@ -165,7 +165,7 @@ console.log(fibonacci(10));`,
       const snippet = { code: '(){}[];,.-+*/', lang: 'js', test: false };
       const result = await lens(snippet);
 
-      expect(result.view).not.toBeNull();
+      expect(result.ui).not.toBeNull();
       expect(result.snippet).toEqual(snippet);
     });
 
@@ -185,8 +185,8 @@ console.log(fibonacci(10));`,
       const snippet = { code: 'any code', lang: 'js', test: false };
       const result = await lens(snippet);
 
-      expect(result.view).not.toBeNull();
-      expect(result.view).toBeDefined();
+      expect(result.ui).not.toBeNull();
+      expect(result.ui).toBeDefined();
     });
 
     it('should be async function', () => {
@@ -210,7 +210,7 @@ console.log(fibonacci(10));`,
       };
       const result = await lens(snippet);
 
-      expect(result.view).not.toBeNull();
+      expect(result.ui).not.toBeNull();
       expect(result.snippet).toEqual(snippet);
     });
 
@@ -232,7 +232,7 @@ console.log(fibonacci(10));`,
       };
       const result = await lens(snippet);
 
-      expect(result.view).not.toBeNull();
+      expect(result.ui).not.toBeNull();
       expect(result.snippet).toEqual(snippet);
     });
 
@@ -248,7 +248,7 @@ console.log(fibonacci(10));`,
       };
       const result = await lens(snippet);
 
-      expect(result.view).not.toBeNull();
+      expect(result.ui).not.toBeNull();
       expect(result.snippet.test).toBe(true);
     });
   });

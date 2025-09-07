@@ -32,7 +32,7 @@ export const setupPipelineMode = async (
         // Return a dummy function that warns
         return async () => ({
           snippet: { code, lang, test },
-          view: null,
+          ui: null,
         });
       }
       return lensObj; // Return the full lens object (Pattern 2)
@@ -123,15 +123,15 @@ export const setupLensComponent = async (
 // Pure rendering functions
 
 /**
- * Render a view (HTMLElement or JSX component) into a container
+ * Render a ui (HTMLElement or JSX component) into a container
  */
-const renderView = (container: HTMLElement, view: HTMLElement | ComponentChild): void => {
-  if (view instanceof HTMLElement) {
+const renderUI = (container: HTMLElement, ui: HTMLElement | ComponentChild): void => {
+  if (ui instanceof HTMLElement) {
     // Regular DOM element - append directly
-    container.appendChild(view);
+    container.appendChild(ui);
   } else {
     // JSX component - use Preact render
-    render(view, container);
+    render(ui, container);
   }
 };
 
@@ -141,9 +141,9 @@ const renderView = (container: HTMLElement, view: HTMLElement | ComponentChild):
 const renderPipelineResult = (element: HTMLElement, result: StudyOutput): void => {
   element.innerHTML = '';
 
-  if (result.view) {
+  if (result.ui) {
     // Pipeline produced a view - render it (supports both HTMLElement and JSX)
-    renderView(element, result.view);
+    renderUI(element, result.ui);
   } else if (result.snippet.code) {
     // Pipeline produced transformed code - show it
     const pre = document.createElement('pre');
@@ -166,9 +166,9 @@ const renderLensResult = (element: HTMLElement, result: LensOutput, lensName: st
 
   element.innerHTML = '';
 
-  if (result.view) {
+  if (result.ui) {
     // Lens produced a view - render it (supports both HTMLElement and JSX)
-    renderView(element, result.view);
+    renderUI(element, result.ui);
   } else if (result.snippet.code) {
     // Lens transformed code - show the result
     const pre = document.createElement('pre');

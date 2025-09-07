@@ -298,8 +298,8 @@ describe('snippet parse function', () => {
       }
     });
 
-    it('should maintain consistency with snippet.view component', async () => {
-      // This function should have same signature and behavior as used by snippet.view
+    it('should maintain consistency with snippet.wc component', async () => {
+      // This function should have same signature and behavior as used by snippet.wc
       const pathResult = await parse('./example.js', { lang: 'typescript' });
       const inlineResult = await parse('inline code', { test: true });
 

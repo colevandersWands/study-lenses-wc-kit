@@ -34,7 +34,7 @@ export const load = (lensObj: any): boolean => {
     const completeLensObj: LensObject = {
       name: lensObj.name,
       lens: lensObj.lens as LensFunction,
-      view: lensObj.view || null, // Optional - lens doesn't need web component
+      register: lensObj.register || (() => ''), // Optional - lens doesn't need web component
       config: lensObj.config || (() => ({})), // Default empty config factory
     };
 

@@ -31,7 +31,7 @@ describe('loop-guard lens', () => {
       expect(result.snippet.code).toContain('loopGuard_1++');
       expect(result.snippet.code).toContain('if (loopGuard_1 > 1000)');
       expect(result.snippet.code).toContain('throw new RangeError');
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
     });
 
     it('should handle single-line for loop body', async () => {
@@ -278,7 +278,7 @@ describe('loop-guard lens', () => {
       const result = await lens(snippet);
       
       expect(result.snippet.code).toBe('');
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
     });
 
     it('should handle code without loops', async () => {
@@ -309,7 +309,7 @@ describe('loop-guard lens', () => {
       
       // Should return original code if parsing fails
       expect(result.snippet.code).toEqual(snippet.code);
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
     });
 
     it('should preserve snippet metadata', async () => {
@@ -395,7 +395,7 @@ describe('loop-guard lens', () => {
       
       const result = await lens(snippet);
       
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
       expect(result.snippet).toBeDefined();
     });
 

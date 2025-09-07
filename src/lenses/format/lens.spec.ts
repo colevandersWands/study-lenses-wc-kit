@@ -34,12 +34,12 @@ describe('format lens', () => {
       expect(snippet.code).toContain('console.log(x)');
       expect(snippet.lang).toBe('js');
       expect(snippet.test).toBe(false);
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
     });
 
     it('should return null view (transform-only lens)', async () => {
       const result = await lens(basicSnippet, config());
-      expect(result.view).toBeNull();
+      expect(result.ui).toBeNull();
     });
 
     it('should preserve snippet metadata', async () => {

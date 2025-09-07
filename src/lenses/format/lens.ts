@@ -25,7 +25,7 @@ export const lens = async (snippet: Snippet, config = _config()): Promise<LensOu
   if (!canFormat(snippet.code)) {
     return {
       snippet,
-      view: null,
+      ui: null,
     };
   }
 
@@ -45,7 +45,7 @@ export const lens = async (snippet: Snippet, config = _config()): Promise<LensOu
         ...snippet,
         code: formattedCode,
       },
-      view: null, // Transform-only lens - no visual output
+      ui: null, // Transform-only lens - no visual output
     };
   } catch (error) {
     // This should be rare since formatJavaScript handles its own errors,
@@ -59,7 +59,7 @@ export const lens = async (snippet: Snippet, config = _config()): Promise<LensOu
         ...snippet,
         code: snippet.code + '\n// Format lens: Unexpected formatting error occurred',
       },
-      view: null,
+      ui: null,
     };
   }
 };

@@ -17,7 +17,7 @@ export type LensConfig = any;
 
 export interface LensOutput {
   snippet: Snippet | null | undefined | false; // null/undefined/false for side effects
-  view: HTMLElement | ComponentChild | null; // Now supports JSX components
+  ui: HTMLElement | ComponentChild | null; // Now supports JSX components
 }
 
 // Lens function signatures - supports both sync and async lenses
@@ -29,7 +29,7 @@ export type LensFunction = SyncLensFunction | AsyncLensFunction;
 export interface LensObject {
   name: string;
   lens: LensFunction;
-  view: any; // Web component class
+  register: () => string; // Register function that returns tag name
   config: (overrides?: any | null) => LensConfig; // Config factory function
 }
 
@@ -51,5 +51,5 @@ export interface CodeSource {
 // Study pipeline types - pipe(snippet, lenses) signature
 export interface StudyOutput {
   snippet: Snippet | null | undefined | false; // null/undefined/false for side effects
-  view: HTMLElement | ComponentChild | null; // Supports JSX components
+  ui: HTMLElement | ComponentChild | null; // Supports JSX components
 }

@@ -16,7 +16,7 @@ export const lens = async (snippet: Snippet, config = _config()): Promise<LensOu
 
   return {
     snippet, // Pass through unchanged
-    view: (
+    ui: (
       <div
         style={{
           padding: '16px',

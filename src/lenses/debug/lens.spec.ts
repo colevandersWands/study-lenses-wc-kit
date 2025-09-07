@@ -1,0 +1,259 @@
+/**
+ * Debugger Lens Function Tests
+ */
+
+import { describe, it, expect } from 'vitest';
+import { lens } from './lens.js';
+import { config } from './config.js';
+
+describe('debugger lens function', () => {
+  it('should wrap JavaScript code with debugger statements', () => {
+    const snippet = { code: 'console.log("test");', lang: 'js', test: false };
+    const result = lens(snippet);
+    
+    expect(result.snippet.code).toContain('debugger;');
+    expect(result.snippet.code).toContain('console.log("test");');
+    expect(result.snippet.code.split('debugger;')).toHaveLength(3); // 2 debuggers + split
+    expect(result.ui).toBeNull();
+  });
+
+  it('should wrap TypeScript code with debugger statements', () => {
+    const snippet = { code: 'const x: number = 42;', lang: 'ts', test: false };
+    const result = lens(snippet);
+    
+    expect(result.snippet.code).toContain('debugger;');
+    expect(result.snippet.code).toContain('const x: number = 42;');
+    expect(result.ui).toBeNull();
+  });
+
+  it('should wrap Python code with pdb statements', () => {
+    const snippet = { code: 'print("test")', lang: 'python', test: false };
+    const result = lens(snippet);
+    
+    expect(result.snippet.code).toContain('import pdb; pdb.set_trace()');
+    expect(result.snippet.code).toContain('print("test")');
+    expect(result.snippet.code.split('pdb.set_trace()')).toHaveLength(3); // 2 pdb calls + split
+    expect(result.ui).toBeNull();
+  });
+
+  it('should handle Java code with comments', () => {
+    const snippet = { code: 'System.out.println("test");', lang: 'java', test: false };
+    const result = lens(snippet);
+    
+    expect(result.snippet.code).toContain('// Add breakpoint here');
+    expect(result.snippet.code).toContain('System.out.println("test");');
+    expect(result.snippet.code.split('Add breakpoint here')).toHaveLength(3); // 2 comments + split
+    expect(result.ui).toBeNull();
+  });
+
+  it('should handle C++ code with comments', () => {
+    const snippet = { code: '#include <iostream>\nint main() { return 0; }', lang: 'cpp', test: false };
+    const result = lens(snippet);
+    
+    expect(result.snippet.code).toContain('// Add breakpoint here');
+    expect(result.snippet.code).toContain('#include <iostream>');
+    expect(result.ui).toBeNull();
+  });
+
+  it('should handle Go code with comments', () => {
+    const snippet = { code: 'fmt.Println("Hello, World!")', lang: 'go', test: false };
+    const result = lens(snippet);
+    
+    expect(result.snippet.code).toContain('// Add breakpoint here');
+    expect(result.snippet.code).toContain('fmt.Println("Hello, World!")');
+    expect(result.ui).toBeNull();
+  });
+
+  it('should handle Rust code with comments', () => {
+    const snippet = { code: 'println!("Hello, World!");', lang: 'rust', test: false };
+    const result = lens(snippet);
+    
+    expect(result.snippet.code).toContain('// Add breakpoint here');
+    expect(result.snippet.code).toContain('println!("Hello, World!");');
+    expect(result.ui).toBeNull();
+  });
+
+  it('should handle Ruby code with hash comments', () => {
+    const snippet = { code: 'puts "Hello, World!"', lang: 'ruby', test: false };
+    const result = lens(snippet);
+    
+    expect(result.snippet.code).toContain('# Add breakpoint here');
+    expect(result.snippet.code).toContain('puts "Hello, World!"');
+    expect(result.ui).toBeNull();
+  });
+
+  it('should default to JavaScript style for unknown languages', () => {
+    const snippet = { code: 'unknown code', lang: 'unknown', test: false };
+    const result = lens(snippet);
+    
+    expect(result.snippet.code).toContain('debugger;');
+    expect(result.snippet.code).toContain('unknown code');
+    expect(result.ui).toBeNull();
+  });
+
+  it('should handle case-insensitive language detection', () => {
+    const snippet = { code: 'print("test")', lang: 'PYTHON', test: false };
+    const result = lens(snippet);
+    
+    expect(result.snippet.code).toContain('import pdb; pdb.set_trace()');
+    expect(result.snippet.code).toContain('print("test")');
+    expect(result.ui).toBeNull();
+  });
+
+  it('should preserve snippet metadata', () => {
+    const snippet = { code: 'test code', lang: 'python', test: true };
+    const result = lens(snippet);
+    
+    expect(result.snippet.lang).toBe('python');
+    expect(result.snippet.test).toBe(true);
+    expect(result.snippet.code).toContain('test code');
+    expect(result.ui).toBeNull();
+  });
+
+  describe('configuration options', () => {
+    it('should respect enabled: false config', () => {
+      const snippet = { code: 'test code', lang: 'js', test: false };
+      const result = lens(snippet, config({ enabled: false }));
+      
+      expect(result.snippet.code).toBe('test code'); // Unchanged
+      expect(result.ui).toBeNull();
+    });
+
+    it('should respect custom line spacing', () => {
+      const snippet = { code: 'test', lang: 'js', test: false };
+      const result = lens(snippet, config({ lineSpacing: 1 }));
+      
+      const newlineCount = (result.snippet.code.match(/\n/g) || []).length;
+      expect(newlineCount).toBe(2); // 1 before + 1 after = 2 total
+      expect(result.ui).toBeNull();
+    });
+
+    it('should handle zero line spacing', () => {
+      const snippet = { code: 'test', lang: 'js', test: false };
+      const result = lens(snippet, config({ lineSpacing: 0 }));
+      
+      expect(result.snippet.code).toContain('debugger;test/* ----------------------------- */   debugger;');
+      expect(result.ui).toBeNull();
+    });
+
+    it('should use custom prefix and suffix when provided', () => {
+      const snippet = { code: 'test code', lang: 'js', test: false };
+      const result = lens(snippet, config({
+        customPrefix: 'START DEBUG',
+        customSuffix: 'END DEBUG'
+      }));
+      
+      expect(result.snippet.code).toContain('START DEBUG');
+      expect(result.snippet.code).toContain('END DEBUG');
+      expect(result.snippet.code).toContain('test code');
+      expect(result.snippet.code).not.toContain('debugger;'); // Should not use default
+      expect(result.ui).toBeNull();
+    });
+
+    it('should work with default config factory', () => {
+      const snippet = { code: 'default test', lang: 'js', test: false };
+      const result = lens(snippet, config());
+      
+      expect(result.snippet.code).toContain('debugger;');
+      expect(result.snippet.code).toContain('default test');
+      expect(result.ui).toBeNull();
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should handle empty code', () => {
+      const snippet = { code: '', lang: 'js', test: false };
+      const result = lens(snippet);
+      
+      expect(result.snippet.code).toContain('debugger;');
+      expect(result.ui).toBeNull();
+    });
+
+    it('should handle code with existing debugger statements', () => {
+      const snippet = { code: 'debugger; console.log("test");', lang: 'js', test: false };
+      const result = lens(snippet);
+      
+      expect(result.snippet.code).toContain('debugger;');
+      expect(result.snippet.code).toContain('console.log("test");');
+      // Should have more debugger statements than just the original
+      expect((result.snippet.code.match(/debugger;/g) || []).length).toBeGreaterThan(1);
+      expect(result.ui).toBeNull();
+    });
+
+    it('should handle multiline code', () => {
+      const snippet = {
+        code: 'function test() {\n  console.log("hello");\n  return 42;\n}',
+        lang: 'js',
+        test: false
+      };
+      const result = lens(snippet);
+      
+      expect(result.snippet.code).toContain('debugger;');
+      expect(result.snippet.code).toContain('function test()');
+      expect(result.snippet.code).toContain('return 42;');
+      expect(result.ui).toBeNull();
+    });
+
+    it('should handle code with special characters', () => {
+      const snippet = { code: 'const emoji = "🐛"; // Debug emoji', lang: 'js', test: false };
+      const result = lens(snippet);
+      
+      expect(result.snippet.code).toContain('debugger;');
+      expect(result.snippet.code).toContain('🐛');
+      expect(result.snippet.code).toContain('Debug emoji');
+      expect(result.ui).toBeNull();
+    });
+  });
+
+  describe('language-specific formatting', () => {
+    it('should use proper JavaScript formatting', () => {
+      const snippet = { code: 'console.log("js");', lang: 'js', test: false };
+      const result = lens(snippet);
+      
+      expect(result.snippet.code).toMatch(/^\/\* -+ \*\/\s+debugger;/);
+      expect(result.snippet.code).toMatch(/debugger;\s*$/);
+    });
+
+    it('should use proper Python formatting', () => {
+      const snippet = { code: 'print("python")', lang: 'py', test: false };
+      const result = lens(snippet);
+      
+      expect(result.snippet.code).toMatch(/^# -+ #/);
+      expect(result.snippet.code).toContain('import pdb; pdb.set_trace()');
+    });
+
+    it('should use proper Java formatting', () => {
+      const snippet = { code: 'System.out.println("java");', lang: 'java', test: false };
+      const result = lens(snippet);
+      
+      expect(result.snippet.code).toMatch(/^\/\* -+ \*\//);
+      expect(result.snippet.code).toContain('// Add breakpoint here');
+    });
+  });
+
+  describe('transform lens characteristics', () => {
+    it('should always return null ui (transform lens)', () => {
+      const snippet = { code: 'any code', lang: 'js', test: false };
+      const result = lens(snippet);
+      
+      expect(result.ui).toBeNull();
+    });
+
+    it('should always return a modified snippet', () => {
+      const originalSnippet = { code: 'original', lang: 'js', test: false };
+      const result = lens(originalSnippet);
+      
+      expect(result.snippet.code).not.toBe(originalSnippet.code);
+      expect(result.snippet.code.length).toBeGreaterThan(originalSnippet.code.length);
+    });
+
+    it('should not mutate the original snippet', () => {
+      const originalSnippet = { code: 'immutable', lang: 'js', test: false };
+      const snippetCopy = { ...originalSnippet };
+      
+      lens(originalSnippet);
+      
+      expect(originalSnippet).toEqual(snippetCopy);
+    });
+  });
+});

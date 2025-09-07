@@ -14,7 +14,7 @@ export const lens = (snippet: Snippet, config = _config()): LensOutput => ({
     ...snippet,
     code: snippet.code.split('').reverse().join(''),
   },
-  view: null,
+  ui: null,
 });
 
 // Default export for convenience

@@ -1,16 +1,20 @@
 /**
- * View Component
- * Web component wrapper around lens with same signature
- * Deferred loading until DOM connection
+ * Snippet Web Component Registration
+ * Register function creates and defines the web component
  */
 
 import lens, { type SnippetOptions } from './parse.js';
 
 /**
- * Enhanced sl-snippet web component with file loading support
- * Supports both code="" and src="" attributes with same logic as lens
+ * Register the sl-snippet web component
+ * Creates and defines the component only when called
  */
-export class view extends HTMLElement {
+export const register = () => {
+  const tagName = 'sl-snippet';
+  
+  if (!customElements.get(tagName)) {
+    // Create the web component class inside the register function
+    class SnippetWC extends HTMLElement {
   private _snippet: { code: string; lang: string; test: boolean } | null = null;
   private _loading = false;
 
@@ -114,7 +118,13 @@ export class view extends HTMLElement {
   get snippet() {
     return this._snippet;
   }
-}
+    }
+    
+    customElements.define(tagName, SnippetWC);
+  }
+  
+  return tagName;
+};
 
-// Default export for convenience
-export default view;
+// Named and default export - ONLY the register function
+export default register;

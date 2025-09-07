@@ -10,7 +10,7 @@ import type { LensFunction } from '../types.js';
 describe('createLensElement', () => {
   const mockLensFunction: LensFunction = (snippet) => ({
     snippet: { ...snippet, code: snippet.code.toUpperCase() },
-    view: null,
+    ui: null,
   });
 
   const mockViewLensFunction: LensFunction = (snippet) => {
@@ -18,7 +18,7 @@ describe('createLensElement', () => {
     div.textContent = `View: ${snippet.code}`;
     return {
       snippet,
-      view: div,
+      ui: div,
     };
   };
 
@@ -106,7 +106,7 @@ describe('createLensElement', () => {
     it('should work with transform lenses', () => {
       const transformLens: LensFunction = (snippet) => ({
         snippet: { ...snippet, code: snippet.code.split('').reverse().join('') },
-        view: null,
+        ui: null,
       });
 
       const ElementClass = createLensElement('reverse', transformLens);
@@ -121,7 +121,7 @@ describe('createLensElement', () => {
         div.textContent = `Analysis of: ${snippet.code}`;
         return {
           snippet,
-          view: div,
+          ui: div,
         };
       };
 
@@ -136,7 +136,7 @@ describe('createLensElement', () => {
         await new Promise((resolve) => setTimeout(resolve, 1));
         return {
           snippet: { ...snippet, code: snippet.code + '-async' },
-          view: null,
+          ui: null,
         };
       };
 
@@ -275,10 +275,10 @@ describe('createLensElement', () => {
   describe('function signature validation', () => {
     it('should accept valid lens function signatures', () => {
       const validLenses = [
-        (snippet: any) => ({ snippet, view: null }),
-        (snippet: any, config: any) => ({ snippet, view: null }),
-        async (snippet: any) => ({ snippet, view: null }),
-        async (snippet: any, config: any) => ({ snippet, view: null }),
+        (snippet: any) => ({ snippet, ui: null }),
+        (snippet: any, config: any) => ({ snippet, ui: null }),
+        async (snippet: any) => ({ snippet, ui: null }),
+        async (snippet: any, config: any) => ({ snippet, ui: null }),
       ];
 
       validLenses.forEach((lens, index) => {
@@ -289,7 +289,7 @@ describe('createLensElement', () => {
     });
 
     it('should work with minimal lens functions', () => {
-      const minimalLens: LensFunction = (snippet) => ({ snippet, view: null });
+      const minimalLens: LensFunction = (snippet) => ({ snippet, ui: null });
 
       expect(() => {
         createLensElement('minimal', minimalLens);
@@ -315,7 +315,7 @@ describe('createLensElement', () => {
 
         return {
           snippet: { ...snippet, code: processedCode },
-          view: div,
+          ui: div,
         };
       };
 

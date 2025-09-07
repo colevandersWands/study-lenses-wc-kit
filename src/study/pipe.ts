@@ -17,7 +17,7 @@ import type {
  * Run code through lens pipeline until terminus
  *
  * Pipeline stops when:
- * 1. A lens returns a view (HTMLElement or JSX component)
+ * 1. A lens returns a ui (HTMLElement or JSX component)
  * 2. A lens returns falsey non-string (undefined, null, false) indicating side effect
  *
  * Supports 4 LensSpec patterns:
@@ -28,7 +28,7 @@ import type {
  *
  * @param snippet The code snippet to process
  * @param lenses Array of lens specifications (functions, objects, or [item, config] tuples)
- * @returns Final result with snippet and optional view
+ * @returns Final result with snippet and optional ui
  */
 export const pipe = async (snippet: Snippet, lenses: LensSpec[] = []): Promise<StudyOutput> => {
   let currentSnippet = { ...snippet };
@@ -68,11 +68,11 @@ export const pipe = async (snippet: Snippet, lenses: LensSpec[] = []): Promise<S
 
       const result = await lensFunction(currentSnippet, lensConfig);
 
-      // Terminus condition 1: View returned (visual output)
-      if (result.view) {
+      // Terminus condition 1: UI returned (visual output)
+      if (result.ui) {
         return {
           snippet: result.snippet,
-          view: result.view,
+          ui: result.ui,
         };
       }
 
@@ -83,7 +83,7 @@ export const pipe = async (snippet: Snippet, lenses: LensSpec[] = []): Promise<S
       ) {
         return {
           snippet: currentSnippet, // Return pre-side-effect snippet
-          view: null,
+          ui: null,
         };
       }
 
@@ -101,7 +101,7 @@ export const pipe = async (snippet: Snippet, lenses: LensSpec[] = []): Promise<S
   // Pipeline completed without terminus - return final snippet
   return {
     snippet: currentSnippet,
-    view: null,
+    ui: null,
   };
 };
 

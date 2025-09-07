@@ -1,5 +1,5 @@
 /**
- * Uppercase Lens Barrel Export
+ * Debugger Lens Barrel Export
  */
 
 import { name } from './name.js';
